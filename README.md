@@ -15,3 +15,11 @@ Develop an adaptive AI-based autonomous urban bus perception system using:
 4. KITTI Classical CV Module
 5. RL + Fuzzy Intelligence Module
 6. Frontend + Deployment Module
+
+## Progress Update
+
+### Module 1 Started
+- BDD100K dataset structure created
+- OpenCV installed
+- First image loader program completed
+- Jupyter notebook environment setup completed
