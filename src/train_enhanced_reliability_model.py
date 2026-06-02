@@ -15,9 +15,11 @@ from sklearn.metrics import (
 # LOAD DATASET
 # =========================================================
 
-DATASET = "outputs/bdd100k_training_dataset.csv"
+DATASET_PATH = (
+    "outputs/enhanced_training_dataset.csv"
+)
 
-df = pd.read_csv(DATASET)
+df = pd.read_csv(DATASET_PATH)
 
 print(f"Loaded {len(df)} samples")
 
@@ -25,23 +27,37 @@ print(f"Loaded {len(df)} samples")
 # ENCODE CATEGORICAL FEATURES
 # =========================================================
 
-df["weather"] = df["weather"].astype("category").cat.codes
-df["timeofday"] = df["timeofday"].astype("category").cat.codes
+df["weather"] = (
+    df["weather"]
+    .astype("category")
+    .cat.codes
+)
+
+df["timeofday"] = (
+    df["timeofday"]
+    .astype("category")
+    .cat.codes
+)
 
 # =========================================================
 # FEATURES
 # =========================================================
 
-X = df[
-    [
-        "brightness",
-        "contrast",
-        "blur_score",
-        "edge_count",
-        "weather",
-        "timeofday"
-    ]
+FEATURE_COLUMNS = [
+    "brightness",
+    "contrast",
+    "blur_score",
+    "edge_count",
+    "edge_density",
+    "entropy",
+    "object_count",
+    "person_count",
+    "vehicle_count",
+    "weather",
+    "timeofday"
 ]
+
+X = df[FEATURE_COLUMNS]
 
 # =========================================================
 # TARGET
@@ -60,16 +76,16 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42
 )
 
-print(f"\nTraining Samples: {len(X_train)}")
-print(f"Testing Samples : {len(X_test)}")
+print(f"\nTraining Samples : {len(X_train)}")
+print(f"Testing Samples  : {len(X_test)}")
 
 # =========================================================
-# RANDOM FOREST
+# RANDOM FOREST MODEL
 # =========================================================
 
 model = RandomForestRegressor(
-    n_estimators=300,
-    max_depth=15,
+    n_estimators=500,
+    max_depth=20,
     random_state=42,
     n_jobs=-1
 )
@@ -110,9 +126,9 @@ r2 = r2_score(
     predictions
 )
 
-print("\n==============================")
+print("\n================================")
 print("MODEL PERFORMANCE")
-print("==============================")
+print("================================")
 
 print(f"MAE  : {mae:.4f}")
 print(f"RMSE : {rmse:.4f}")
@@ -122,30 +138,50 @@ print(f"R²   : {r2:.4f}")
 # FEATURE IMPORTANCE
 # =========================================================
 
-print("\n==============================")
-print("FEATURE IMPORTANCE")
-print("==============================")
-
-feature_importance = pd.DataFrame({
-    "feature": X.columns,
+importance_df = pd.DataFrame({
+    "feature": FEATURE_COLUMNS,
     "importance": model.feature_importances_
 })
 
-feature_importance = feature_importance.sort_values(
-    by="importance",
-    ascending=False
+importance_df = (
+    importance_df
+    .sort_values(
+        by="importance",
+        ascending=False
+    )
 )
 
-print(feature_importance)
+print("\n================================")
+print("FEATURE IMPORTANCE")
+print("================================")
+
+print(importance_df)
 
 # =========================================================
 # SAVE FEATURE IMPORTANCE
 # =========================================================
 
-os.makedirs("outputs", exist_ok=True)
+os.makedirs(
+    "outputs",
+    exist_ok=True
+)
 
-feature_importance.to_csv(
-    "outputs/feature_importance.csv",
+importance_df.to_csv(
+    "outputs/enhanced_feature_importance.csv",
+    index=False
+)
+
+# =========================================================
+# SAVE TEST PREDICTIONS
+# =========================================================
+
+prediction_df = pd.DataFrame({
+    "actual": y_test.values,
+    "predicted": predictions
+})
+
+prediction_df.to_csv(
+    "outputs/model_predictions.csv",
     index=False
 )
 
@@ -153,12 +189,36 @@ feature_importance.to_csv(
 # SAVE MODEL
 # =========================================================
 
-os.makedirs("models", exist_ok=True)
+os.makedirs(
+    "models",
+    exist_ok=True
+)
 
 joblib.dump(
     model,
-    "models/reliability_model.pkl"
+    "models/enhanced_reliability_model.pkl"
 )
 
-print("\nModel saved:")
-print("models/reliability_model.pkl")
+print("\n================================")
+print("MODEL SAVED")
+print("================================")
+
+print(
+    "models/enhanced_reliability_model.pkl"
+)
+
+print(
+    "\nFeature importance saved:"
+)
+
+print(
+    "outputs/enhanced_feature_importance.csv"
+)
+
+print(
+    "\nPredictions saved:"
+)
+
+print(
+    "outputs/model_predictions.csv"
+)
