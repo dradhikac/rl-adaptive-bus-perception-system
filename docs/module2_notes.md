@@ -183,3 +183,136 @@ Key Concept:
 Camera provides semantic information.
 LiDAR provides spatial information.
 Fusion combines both.
+
+### STEP 9 — Calibration-Based Sensor Fusion ✅
+
+Completed:
+
+- Loaded LiDAR point cloud
+- Loaded camera calibration
+- Loaded LiDAR calibration
+- Performed coordinate transformations
+- Projected 3D LiDAR points into camera image
+- Created real fusion visualization
+
+Key Concepts:
+
+LiDAR Frame
+→ Vehicle Frame
+→ Camera Frame
+→ Image Plane
+
+First true sensor fusion pipeline implemented.
+
+### STEP 10 — Multi-Camera Perception System ✅
+
+Completed:
+
+- Loaded six camera streams
+- Built 360° surround view
+- Created multi-camera visualization
+
+Cameras:
+
+- CAM_FRONT
+- CAM_FRONT_LEFT
+- CAM_FRONT_RIGHT
+- CAM_BACK
+- CAM_BACK_LEFT
+- CAM_BACK_RIGHT
+
+Result:
+
+360° environmental awareness achieved.
+
+Key Concept:
+
+Autonomous buses require perception beyond the front camera to monitor blind spots and surrounding traffic.
+
+### STEP 11 — Sensor Reliability Estimation ✅
+
+Completed:
+
+- Camera reliability estimation
+- LiDAR reliability estimation
+- Environmental difficulty scoring
+- Fusion confidence scoring
+
+Metrics:
+
+- Brightness
+- Contrast
+- Blur
+- Edge Count
+- LiDAR Point Count
+- LiDAR Intensity
+
+Outputs:
+
+- Camera Reliability
+- LiDAR Reliability
+- Environment Difficulty
+- Fusion Confidence
+
+Key Concept:
+
+Sensor fusion quality depends on the reliability of each individual sensor.
+
+### STEP 12 — Adaptive Sensor Weighting ✅
+
+Completed:
+
+- Computed sensor reliability scores
+- Converted reliability into dynamic weights
+- Built adaptive weighting engine
+
+Results:
+
+Camera Reliability : 0.800
+LiDAR Reliability  : 1.000
+
+Camera Weight      : 0.444
+LiDAR Weight       : 0.556
+
+Key Concept:
+
+More reliable sensors receive greater influence in the perception pipeline.
+
+### STEP 13 — Multi-Camera Reliability Analysis ✅
+
+Completed:
+
+- Evaluated all six cameras
+- Computed per-camera reliability
+- Ranked cameras by quality
+- Identified best and worst camera streams
+
+Outputs:
+
+- Camera reliability table
+- Camera ranking
+- Reliability report CSV
+
+Key Concept:
+
+Different cameras may experience different environmental conditions and should not be treated equally.
+
+### STEP 15 — Fusion Dashboard ✅
+
+Completed:
+
+- Unified sensor dashboard
+- Adaptive weighting display
+- Global confidence calculation
+- Environment difficulty estimation
+- System status monitoring
+
+Outputs:
+
+- Fusion dashboard
+- Sensor status report
+- Confidence metrics
+
+Key Concept:
+
+The dashboard acts as the central perception monitor for the autonomous bus.

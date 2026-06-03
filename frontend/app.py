@@ -1,34 +1,50 @@
 import streamlit as st
-from ultralytics import YOLO
 import cv2
 import numpy as np
-from PIL import Image
+import pandas as pd
+import sys
 import os
+
+from PIL import Image
+
+
+# Add project root folder to Python path
+sys.path.append(
+    os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            ".."
+        )
+    )
+)
+
+from src.autonomous_brain import analyze_scene
+
 
 # =========================================================
 # PAGE CONFIGURATION
 # =========================================================
 
 st.set_page_config(
-    page_title="Adaptive Autonomous Bus Perception System",
+    page_title="Autonomous Bus AI Dashboard",
+    page_icon="🚍",
     layout="wide"
 )
 
 # =========================================================
-# LOAD YOLO MODEL
+# TITLE
 # =========================================================
 
-@st.cache_resource
-def load_model():
-    return YOLO("yolov8n.pt")
+st.title(
+    "🚍 Autonomous Bus Perception & Decision System"
+)
 
-model = load_model()
-
-# =========================================================
-# CREATE OUTPUTS FOLDER
-# =========================================================
-
-os.makedirs("outputs", exist_ok=True)
+st.markdown(
+    """
+    Intelligent perception, sensor fusion,
+    risk assessment and autonomous decision engine.
+    """
+)
 
 # =========================================================
 # SIDEBAR
@@ -36,24 +52,19 @@ os.makedirs("outputs", exist_ok=True)
 
 st.sidebar.title("System Modules")
 
-st.sidebar.write("✅ Object Detection")
-st.sidebar.write("✅ Reliability Analysis")
-st.sidebar.write("✅ Blind Spot Intelligence")
-st.sidebar.write("✅ Adaptive Risk Intelligence")
-st.sidebar.write("🔜 Sensor Fusion")
-st.sidebar.write("🔜 Reinforcement Learning")
+st.sidebar.success("✅ Reliability Intelligence")
 
-# =========================================================
-# TITLE
-# =========================================================
+st.sidebar.success("✅ Sensor Fusion")
 
-st.title(
-    "Adaptive Autonomous Bus Perception System"
-)
+st.sidebar.success("✅ Traffic Intelligence")
 
-st.write(
-    "AI-powered reliability, blind spot, and adaptive environmental intelligence dashboard."
-)
+st.sidebar.success("✅ Risk Intelligence")
+
+st.sidebar.success("✅ Decision Engine")
+
+st.sidebar.info("🔄 Video Analytics")
+
+st.sidebar.info("🔜 Blind Spot Intelligence")
 
 # =========================================================
 # FILE UPLOADERS
@@ -70,231 +81,253 @@ uploaded_video = st.file_uploader(
 )
 
 # =========================================================
-# IMAGE PROCESSING
+# IMAGE ANALYSIS
 # =========================================================
 
 if uploaded_image is not None:
-
-    # -----------------------------------------------------
-    # LOAD IMAGE
-    # -----------------------------------------------------
 
     image = Image.open(uploaded_image)
 
     image_np = np.array(image)
 
-    # -----------------------------------------------------
-    # DISPLAY ORIGINAL IMAGE
-    # -----------------------------------------------------
+    result = analyze_scene(image_np)
 
-    st.subheader("Uploaded Image")
+    # =====================================================
+    # OVERVIEW METRICS
+    # =====================================================
 
-    st.image(
-        image_np,
-        use_container_width=True
-    )
+    st.subheader("🚍 Autonomous Driving Overview")
 
-    # -----------------------------------------------------
-    # YOLO OBJECT DETECTION
-    # -----------------------------------------------------
-
-    results = model(image_np)
-
-    # Annotated image
-    annotated_frame = results[0].plot()
-
-    # -----------------------------------------------------
-    # DISPLAY DETECTION RESULTS
-    # -----------------------------------------------------
-
-    st.subheader("Object Detection Results")
-
-    st.image(
-        annotated_frame,
-        use_container_width=True
-    )
-
-    # -----------------------------------------------------
-    # DETECTION DETAILS
-    # -----------------------------------------------------
-
-    st.subheader("Detection Information")
-
-    object_count = len(results[0].boxes)
-
-    for box in results[0].boxes:
-
-        class_id = int(box.cls[0])
-
-        confidence = float(box.conf[0])
-
-        class_name = model.names[class_id]
-
-        st.write(
-            f"Object: {class_name} | Confidence: {confidence:.2f}"
-        )
-
-    # -----------------------------------------------------
-    # ENVIRONMENTAL RELIABILITY
-    # -----------------------------------------------------
-
-    gray = cv2.cvtColor(
-        image_np,
-        cv2.COLOR_RGB2GRAY
-    )
-
-    # Brightness
-    brightness = np.mean(gray)
-
-    # Contrast
-    contrast = gray.std()
-
-    # Blur detection
-    laplacian = cv2.Laplacian(
-        gray,
-        cv2.CV_64F
-    )
-
-    blur_score = laplacian.var()
-
-    # Reliability estimation
-    reliability = 1.0
-
-    if brightness < 60:
-        reliability -= 0.3
-
-    if contrast < 40:
-        reliability -= 0.3
-
-    if blur_score < 100:
-        reliability -= 0.3
-
-    reliability = max(
-        0.0,
-        min(reliability, 1.0)
-    )
-
-    # -----------------------------------------------------
-    # ADAPTIVE RISK ANALYSIS
-    # -----------------------------------------------------
-
-    adaptive_risk = 0
-
-    # Low reliability
-    if reliability < 0.5:
-        adaptive_risk += 3
-
-    # Crowded environment
-    if object_count > 10:
-        adaptive_risk += 3
-
-    elif object_count > 5:
-        adaptive_risk += 2
-
-    # -----------------------------------------------------
-    # RISK LEVEL
-    # -----------------------------------------------------
-
-    risk_level = "LOW"
-
-    if adaptive_risk >= 3:
-        risk_level = "HIGH"
-
-    if adaptive_risk >= 5:
-        risk_level = "CRITICAL"
-
-    # -----------------------------------------------------
-    # METRIC CARDS
-    # -----------------------------------------------------
-
-    st.subheader("System Metrics")
-
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4, col5 = st.columns(5)
 
     col1.metric(
-        "Objects Detected",
-        object_count
+        "Objects",
+        result["object_count"]
     )
 
     col2.metric(
-        "Reliability Score",
-        f"{reliability:.2f}"
+        "Signal",
+        result["traffic_signal"]
     )
 
     col3.metric(
-        "Risk Level",
-        risk_level
+        "Risk",
+        result["risk_score"]
     )
 
-    # -----------------------------------------------------
-    # ENVIRONMENTAL ANALYSIS
-    # -----------------------------------------------------
-
-    st.subheader("Environmental Intelligence")
-
-    st.write(
-        f"Brightness Score: {brightness:.2f}"
+    col4.metric(
+        "Decision",
+        result["decision"]
     )
 
-    st.write(
-        f"Contrast Score: {contrast:.2f}"
+    col5.metric(
+        "Speed",
+        f'{result["recommended_speed"]} km/h'
     )
 
-    st.write(
-        f"Blur Score: {blur_score:.2f}"
-    )
+    # =====================================================
+    # TABS
+    # =====================================================
 
-    st.write(
-        f"Camera Reliability Score: {reliability:.2f}"
-    )
+    tabs = st.tabs([
 
-    # -----------------------------------------------------
-    # ADAPTIVE RISK DISPLAY
-    # -----------------------------------------------------
+        "🚍 Perception",
 
-    st.subheader("Adaptive Risk Analysis")
+        "📷 Reliability",
 
-    st.write(
-        f"Adaptive Risk Score: {adaptive_risk}"
-    )
+        "📡 Fusion",
 
-    st.write(
-        f"Adaptive Risk Level: {risk_level}"
-    )
+        "🚦 Traffic",
 
-    # -----------------------------------------------------
-    # ALERT SYSTEM
-    # -----------------------------------------------------
+        "🚗 Distance",
 
-    if risk_level == "LOW":
+        "⚠️ Risk",
 
-        st.success(
-            "Environment appears safe."
+        "🤖 Decision"
+    ])
+
+    # =====================================================
+    # TAB 1 : PERCEPTION
+    # =====================================================
+
+    with tabs[0]:
+
+        st.subheader(
+            "Detected Scene"
         )
 
-    elif risk_level == "HIGH":
-
-        st.warning(
-            "Elevated environmental risk detected."
+        st.image(
+            result["annotated_image"],
+            use_container_width=True
         )
 
-    elif risk_level == "CRITICAL":
-
-        st.error(
-            "CRITICAL danger detected!"
+        st.write(
+            f'Objects: {result["object_count"]}'
         )
 
-    # -----------------------------------------------------
-    # SAVE OUTPUT IMAGE
-    # -----------------------------------------------------
-
-    cv2.imwrite(
-        "outputs/frontend_detection.jpg",
-        cv2.cvtColor(
-            annotated_frame,
-            cv2.COLOR_RGB2BGR
+        st.write(
+            f'Vehicles: {result["vehicle_count"]}'
         )
-    )
+
+        st.write(
+            f'Pedestrians: {result["pedestrian_count"]}'
+        )
+
+    # =====================================================
+    # TAB 2 : RELIABILITY
+    # =====================================================
+
+    with tabs[1]:
+
+        c1, c2, c3, c4 = st.columns(4)
+
+        c1.metric(
+            "Brightness",
+            result["brightness"]
+        )
+
+        c2.metric(
+            "Contrast",
+            result["contrast"]
+        )
+
+        c3.metric(
+            "Blur",
+            result["blur_score"]
+        )
+
+        c4.metric(
+            "Reliability",
+            result["camera_reliability"]
+        )
+
+    # =====================================================
+    # TAB 3 : SENSOR FUSION
+    # =====================================================
+
+    with tabs[2]:
+
+        st.metric(
+            "Fusion Confidence",
+            result["fusion_confidence"]
+        )
+
+        st.progress(
+            float(result["fusion_confidence"])
+        )
+
+        st.write(
+            "Camera Reliability"
+        )
+
+        st.write(
+            result["camera_reliability"]
+        )
+
+        st.write(
+            "LiDAR Reliability"
+        )
+
+        st.write(
+            "1.0"
+        )
+
+    # =====================================================
+    # TAB 4 : TRAFFIC
+    # =====================================================
+
+    with tabs[3]:
+
+        signal = result["traffic_signal"]
+
+        if signal == "RED":
+
+            st.error(
+                "🔴 RED SIGNAL"
+            )
+
+        elif signal == "YELLOW":
+
+            st.warning(
+                "🟡 YELLOW SIGNAL"
+            )
+
+        elif signal == "GREEN":
+
+            st.success(
+                "🟢 GREEN SIGNAL"
+            )
+
+        else:
+
+            st.info(
+                "⚪ SIGNAL UNKNOWN"
+            )
+
+    # =====================================================
+    # TAB 5 : DISTANCE
+    # =====================================================
+
+    with tabs[4]:
+
+        st.metric(
+            "Lead Vehicle Distance",
+            result["vehicle_distance"]
+        )
+
+    # =====================================================
+    # TAB 6 : RISK
+    # =====================================================
+
+    with tabs[5]:
+
+        st.metric(
+            "Risk Score",
+            result["risk_score"]
+        )
+
+        st.metric(
+            "Risk Level",
+            result["risk_level"]
+        )
+
+        st.subheader(
+            "Reasons"
+        )
+
+        for reason in result["reasons"]:
+
+            st.write(
+                f"• {reason}"
+            )
+
+    # =====================================================
+    # TAB 7 : DECISION
+    # =====================================================
+
+    with tabs[6]:
+
+        decision = result["decision"]
+
+        speed = result["recommended_speed"]
+
+        if decision == "STOP":
+
+            st.error(
+                f"🛑 STOP\n\nRecommended Speed: {speed} km/h"
+            )
+
+        elif decision == "SLOW DOWN":
+
+            st.warning(
+                f"⚠️ SLOW DOWN\n\nRecommended Speed: {speed} km/h"
+            )
+
+        else:
+
+            st.success(
+                f"✅ MOVE\n\nRecommended Speed: {speed} km/h"
+            )
 
 # =========================================================
 # VIDEO SECTION
@@ -302,20 +335,14 @@ if uploaded_image is not None:
 
 if uploaded_video is not None:
 
-    st.subheader("Uploaded Video")
-
-    st.video(uploaded_video)
-
-    st.info(
-        "Full real-time video intelligence pipeline will be integrated in the next module."
+    st.subheader(
+        "Uploaded Driving Video"
     )
 
-# =========================================================
-# FOOTER
-# =========================================================
+    st.video(
+        uploaded_video
+    )
 
-st.markdown("---")
-
-st.write(
-    "Adaptive Autonomous Bus Perception System | Module 1 Dashboard"
-)
+    st.info(
+        "Video Timeline Analytics will be connected next."
+    )

@@ -33,3 +33,62 @@ Develop an adaptive AI-based autonomous urban bus perception system using:
 - Blind spot analysis
 - Adaptive environmental intelligence
 - Streamlit dashboard foundation
+
+# MODULE 2 — Sensor Fusion Module (Completed)
+
+## Objective
+
+Develop a multi-sensor perception system using nuScenes data for autonomous bus applications.
+
+---
+
+## Components Implemented
+
+### Camera Perception
+
+* Camera loading
+* Multi-camera loading
+* 360° perception system
+
+### LiDAR Perception
+
+* Point cloud loading
+* Point cloud visualization
+* Spatial environment understanding
+
+### Sensor Fusion
+
+* Camera-LiDAR synchronization
+* Calibration processing
+* Projection pipeline
+* Fusion visualization
+
+### Reliability Intelligence
+
+* Camera reliability estimation
+* LiDAR reliability estimation
+* Environmental difficulty estimation
+* Adaptive sensor weighting
+
+### Confidence Monitoring
+
+* Multi-camera confidence analysis
+* Sensor confidence map
+* Fusion dashboard
+
+---
+
+## Key Outputs
+
+* Camera Reliability
+* LiDAR Reliability
+* Fusion Confidence
+* Adaptive Sensor Weights
+* Global Confidence Score
+* System Health Status
+
+---
+
+## Final Result
+
+A working Camera + LiDAR Sensor Fusion framework capable of adaptive confidence estimation and perception monitoring for autonomous buses.
