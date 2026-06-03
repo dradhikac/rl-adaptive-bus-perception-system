@@ -1,8 +1,8 @@
-from ultralytics import YOLO
-from risk_based_decision_engine import calculate_risk
-
 import cv2
 import numpy as np
+
+from ultralytics import YOLO
+from risk_based_decision_engine import calculate_risk
 
 # ====================================
 # LOAD MODEL ONCE
@@ -34,9 +34,23 @@ def analyze_scene(image):
 
     traffic_state = "UNKNOWN"
 
+    # ====================================
+    # LEAD VEHICLE INTELLIGENCE
+    # ====================================
+
+    best_vehicle = None
+
+    best_score = -999999
+
+    lead_area = 0
+
     largest_area = 0
 
     distance_state = "FAR"
+
+    image_height, image_width = image.shape[:2]
+
+    image_center = image_width / 2
 
     # ====================================
     # PROCESS DETECTIONS
@@ -55,7 +69,6 @@ def analyze_scene(image):
             pedestrian_count += 1
 
         if class_name in vehicle_classes:
-
             vehicle_count += 1
 
             x1, y1, x2, y2 = box.xyxy[0]
@@ -65,8 +78,24 @@ def analyze_scene(image):
 
             area = width * height
 
-            if area > largest_area:
+            center_x = (x1 + x2) / 2
 
+            center_distance = abs(
+                center_x - image_center
+            )
+
+            score = (
+                area / 1000
+            ) - (
+                center_distance
+            )
+
+            if score > best_score:
+                best_score = score
+                best_vehicle = class_name
+                lead_area = area
+
+            if area > largest_area:
                 largest_area = area
 
         # ====================================
@@ -74,7 +103,6 @@ def analyze_scene(image):
         # ====================================
 
         if class_name == "traffic light":
-
             x1, y1, x2, y2 = map(
                 int,
                 box.xyxy[0]
@@ -146,21 +174,67 @@ def analyze_scene(image):
 
                 traffic_state = "GREEN"
 
+            print("\nTraffic Light Found")
+
+            print(
+                "Box:",
+                x1, y1, x2, y2
+            )
+
+            print(
+                "Red:",
+                red_pixels
+            )
+
+            print(
+                "Yellow:",
+                yellow_pixels
+            )
+
+            print(
+                "Green:",
+                green_pixels
+            )
+
+            print(
+                "State:",
+                traffic_state
+            )
+
     # ====================================
-    # DISTANCE ESTIMATION
+    # LEAD VEHICLE DISTANCE
     # ====================================
 
-    if largest_area > 150000:
+    if lead_area > 120000:
 
         distance_state = "VERY CLOSE"
 
-    elif largest_area > 50000:
+    elif lead_area > 60000:
 
         distance_state = "MEDIUM"
 
     else:
 
         distance_state = "FAR"
+
+    print("\n===== LEAD VEHICLE =====")
+
+    print(
+        "Vehicle:",
+        best_vehicle
+    )
+
+    print(
+        "Area:",
+        int(lead_area)
+    )
+
+    print(
+        "Distance:",
+        distance_state
+    )
+
+    print("========================\n")
 
     # ====================================
     # RELIABILITY
@@ -238,6 +312,8 @@ def analyze_scene(image):
     # ====================================
 
     annotated_image = results[0].plot()
+    
+    
 
     # ====================================
     # RETURN EVERYTHING
@@ -247,6 +323,12 @@ def analyze_scene(image):
 
         "annotated_image":
             annotated_image,
+
+        "lead_vehicle":
+            best_vehicle,
+
+        "lead_vehicle_area":
+            int(lead_area),
 
         "object_count":
             object_count,

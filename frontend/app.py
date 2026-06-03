@@ -130,22 +130,15 @@ if uploaded_image is not None:
     # =====================================================
 
     tabs = st.tabs([
-
-        "🚍 Perception",
-
-        "📷 Reliability",
-
-        "📡 Fusion",
-
-        "🚦 Traffic",
-
-        "🚗 Distance",
-
-        "⚠️ Risk",
-
-        "🤖 Decision"
-    ])
-
+    "🚍 Perception",
+    "📷 Reliability",
+    "📡 Fusion",
+    "🚦 Traffic",
+    "🚗 Distance",
+    "⚠️ Risk",
+    "🤖 Decision",
+    "🎥 Video Analytics"
+])
     # =====================================================
     # TAB 1 : PERCEPTION
     # =====================================================
@@ -346,3 +339,56 @@ if uploaded_video is not None:
     st.info(
         "Video Timeline Analytics will be connected next."
     )
+    
+    with tabs[7]:
+
+        st.subheader(
+        "Video Risk Analytics"
+    )
+
+    try:
+
+        df = pd.read_csv(
+            "outputs/video_risk_timeline.csv"
+        )
+
+        st.dataframe(
+            df,
+            use_container_width=True
+        )
+
+        st.subheader(
+            "Risk Score Trend"
+        )
+
+        st.line_chart(
+            df.set_index("time_sec")[
+                "risk_score"
+            ]
+        )
+
+        st.subheader(
+            "Recommended Speed Trend"
+        )
+
+        st.line_chart(
+            df.set_index("time_sec")[
+                "recommended_speed"
+            ]
+        )
+
+        st.subheader(
+            "Decision Distribution"
+        )
+
+        st.bar_chart(
+            df["decision"].value_counts()
+        )
+
+    except:
+
+        st.info(
+            "Run video_timeline_v2.py first."
+        )
+        
+        

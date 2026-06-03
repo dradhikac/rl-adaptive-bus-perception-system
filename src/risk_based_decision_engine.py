@@ -50,9 +50,13 @@ def calculate_risk(
     # DISTANCE
     # ==========================
 
+    # ==========================
+# DISTANCE
+# ==========================
+
     if distance_state == "VERY CLOSE":
 
-        risk_score += 50
+        risk_score += 80
 
         reasons.append(
             "Very close vehicle"
@@ -60,7 +64,7 @@ def calculate_risk(
 
     elif distance_state == "MEDIUM":
 
-        risk_score += 15
+        risk_score += 30
 
         reasons.append(
             "Vehicle ahead"
@@ -72,7 +76,7 @@ def calculate_risk(
 
         reasons.append(
             "Vehicle far ahead"
-        )
+        )   
 
     # ==========================
     # RELIABILITY
