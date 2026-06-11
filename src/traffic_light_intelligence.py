@@ -14,7 +14,7 @@ image = cv2.imread(IMAGE_PATH)
 
 results = model(image)
 
-traffic_state = "UNKNOWN"
+traffic_states = []
 
 # ====================================
 # FIND TRAFFIC LIGHT
@@ -113,34 +113,33 @@ for box in results[0].boxes:
             green_pixels
         )
 
-        if (
-            red_pixels >
-            yellow_pixels
-            and
-            red_pixels >
-            green_pixels
-        ):
+        if red_pixels > yellow_pixels and red_pixels > green_pixels:
+            traffic_states.append("RED")
             traffic_state = "RED"
-
-        elif (
-            yellow_pixels >
-            red_pixels
-            and
-            yellow_pixels >
-            green_pixels
-        ):
+        elif yellow_pixels > red_pixels and yellow_pixels > green_pixels:
+            traffic_states.append("YELLOW")
             traffic_state = "YELLOW"
-
-        elif (
-            green_pixels >
-            red_pixels
-            and
-            green_pixels >
-            yellow_pixels
-        ):
+        elif green_pixels > red_pixels and green_pixels > yellow_pixels:
+            traffic_states.append("GREEN")
             traffic_state = "GREEN"
+        else:
+            traffic_state = "UNKNOWN"
 
         break
+
+if "RED" in traffic_states:
+    traffic_state = "RED"
+elif "YELLOW" in traffic_states:
+    traffic_state = "YELLOW"
+elif "GREEN" in traffic_states:
+    traffic_state = "GREEN"
+else:
+    traffic_state = "UNKNOWN"
+
+print("\n========== TRAFFIC DEBUG ==========")
+print("Traffic States Found:", traffic_states)
+print("Final Traffic State :", traffic_state)
+print("===================================\n")
 
 print("\n======================")
 print("TRAFFIC LIGHT STATUS")

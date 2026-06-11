@@ -86,12 +86,23 @@ uploaded_video = st.file_uploader(
 
 if uploaded_image is not None:
 
-    image = Image.open(uploaded_image)
+    image = Image.open(uploaded_image).convert("RGB")
 
     image_np = np.array(image)
 
+    # Convert PIL RGB → OpenCV BGR
+    image_np = cv2.cvtColor(
+        image_np,
+        cv2.COLOR_RGB2BGR
+    )
+
     result = analyze_scene(image_np)
 
+    # Debug Output
+    st.write("DEBUG SIGNAL:", result["traffic_signal"])
+    st.write("DEBUG RISK:", result["risk_score"])
+    st.write("DEBUG DECISION:", result["decision"])
+    
     # =====================================================
     # OVERVIEW METRICS
     # =====================================================
@@ -390,5 +401,7 @@ if uploaded_video is not None:
         st.info(
             "Run video_timeline_v2.py first."
         )
+        
+        
         
         

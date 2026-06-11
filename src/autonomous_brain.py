@@ -2,7 +2,8 @@ import cv2
 import numpy as np
 
 from ultralytics import YOLO
-from risk_based_decision_engine import calculate_risk
+from src.risk_based_decision_engine import calculate_risk
+from src.traffic_light_intelligence import traffic_states
 
 # ====================================
 # LOAD MODEL ONCE
@@ -318,6 +319,11 @@ def analyze_scene(image):
     # ====================================
     # RETURN EVERYTHING
     # ====================================
+
+    print("\n========== TRAFFIC DEBUG ==========")
+    print("Traffic States Found:", traffic_states)
+    print("Final Traffic State :", traffic_state)
+    print("===================================\n")
 
     return {
 
