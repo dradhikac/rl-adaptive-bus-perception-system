@@ -19,7 +19,7 @@ actions = [
 ]
 
 # ====================================
-# SCENARIOS
+# RESEARCH-LEVEL SCENARIOS
 # ====================================
 
 scenarios = [
@@ -31,6 +31,7 @@ scenarios = [
             "GREEN",
             "FAR",
             "LOW",
+            "CLEAR",
             "SAFE",
             "SAFE"
         ),
@@ -46,6 +47,7 @@ scenarios = [
             "GREEN",
             "MEDIUM",
             "LOW",
+            "CLEAR",
             "SAFE",
             "SAFE"
         ),
@@ -61,6 +63,54 @@ scenarios = [
             "RED",
             "VERY_CLOSE",
             "HIGH",
+            "CLEAR",
+            "SAFE",
+            "SAFE"
+        ),
+
+        "best_action":
+            "STOP"
+    },
+
+    {
+        "name": "Pedestrian Crossing",
+
+        "state": (
+            "GREEN",
+            "FAR",
+            "MEDIUM",
+            "PEDESTRIAN",
+            "SAFE",
+            "SAFE"
+        ),
+
+        "best_action":
+            "SLOW_DOWN"
+    },
+
+    {
+        "name": "Crowded Crosswalk",
+
+        "state": (
+            "GREEN",
+            "FAR",
+            "HIGH",
+            "CROWDED",
+            "SAFE",
+            "SAFE"
+        ),
+
+        "best_action":
+            "STOP"
+    },
+    {
+        "name": "Pedestrian Ahead",
+
+        "state": (
+            "GREEN",
+            "FAR",
+            "HIGH",
+            "PEDESTRIAN",
             "SAFE",
             "SAFE"
         ),
@@ -76,6 +126,7 @@ scenarios = [
             "GREEN",
             "MEDIUM",
             "LOW",
+            "CLEAR",
             "SAFE",
             "UNSAFE"
         ),
@@ -91,6 +142,7 @@ scenarios = [
             "GREEN",
             "MEDIUM",
             "LOW",
+            "CLEAR",
             "UNSAFE",
             "SAFE"
         ),
@@ -106,7 +158,40 @@ scenarios = [
             "GREEN",
             "MEDIUM",
             "HIGH",
+            "CLEAR",
             "UNSAFE",
+            "UNSAFE"
+        ),
+
+        "best_action":
+            "STOP"
+    },
+
+    {
+        "name": "Crowded Crosswalk Left Unsafe",
+
+        "state": (
+            "GREEN",
+            "FAR",
+            "HIGH",
+            "CROWDED",
+            "UNSAFE",
+            "SAFE"
+        ),
+
+        "best_action":
+            "STOP"
+    },
+
+    {
+        "name": "Crowded Crosswalk Right Unsafe",
+
+        "state": (
+            "GREEN",
+            "FAR",
+            "HIGH",
+            "CROWDED",
+            "SAFE",
             "UNSAFE"
         ),
 
@@ -156,7 +241,7 @@ def get_reward(
 
 alpha = 0.1
 
-episodes = 5000
+episodes = 10000
 
 print("\nTraining Scenario RL Agent...\n")
 
@@ -191,9 +276,9 @@ for episode in range(episodes):
 # DISPLAY POLICY
 # ====================================
 
-print("=" * 45)
-print(" SCENARIO BASED RL POLICY ")
-print("=" * 45)
+print("=" * 50)
+print(" RESEARCH LEVEL RL POLICY ")
+print("=" * 50)
 
 policy_rows = []
 
@@ -236,11 +321,14 @@ for scenario in scenarios:
         "risk_level":
             state[2],
 
-        "blind_left":
+        "pedestrian_zone":
             state[3],
 
-        "blind_right":
+        "blind_left":
             state[4],
+
+        "blind_right":
+            state[5],
 
         "best_action":
             best_action
@@ -255,7 +343,9 @@ df = pd.DataFrame(
 )
 
 df.to_csv(
+
     "outputs/scenario_rl_policy.csv",
+
     index=False
 )
 

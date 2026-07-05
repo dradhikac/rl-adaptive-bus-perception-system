@@ -208,7 +208,7 @@ def analyze_scene(image):
 
     if lead_area > 120000:
 
-        distance_state = "VERY CLOSE"
+        distance_state = "VERY_CLOSE"
 
     elif lead_area > 60000:
 

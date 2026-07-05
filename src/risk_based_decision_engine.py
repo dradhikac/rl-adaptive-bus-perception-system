@@ -2,12 +2,17 @@
 # RISK BASED DECISION ENGINE
 # ====================================
 
+
 def calculate_risk(
     traffic_state,
     pedestrian_count,
+    pedestrian_status,
     distance_state,
     fusion_confidence,
-    camera_reliability
+    camera_reliability,
+    collision_risk,
+    left_lane_status,
+    right_lane_status
 ):
 
     risk_score = 0
@@ -38,14 +43,29 @@ def calculate_risk(
     # PEDESTRIAN
     # ==========================
 
-    if pedestrian_count > 0:
+    if pedestrian_status == "IN_LANE":
 
-        risk_score += 25
+        risk_score += 100
 
         reasons.append(
-            f"{pedestrian_count} pedestrian(s)"
+            "Pedestrian in driving lane"
         )
 
+    elif pedestrian_status == "NEAR_LANE":
+
+        risk_score += 30
+
+        reasons.append(
+            "Pedestrian near lane"
+        )
+
+    elif pedestrian_status == "SIDEWALK":
+
+        risk_score += 10
+
+        reasons.append(
+            "Pedestrian on sidewalk"
+        )
     # ==========================
     # DISTANCE
     # ==========================
@@ -54,7 +74,7 @@ def calculate_risk(
 # DISTANCE
 # ==========================
 
-    if distance_state == "VERY CLOSE":
+    if distance_state == "VERY_CLOSE":
 
         risk_score += 80
 
@@ -77,7 +97,34 @@ def calculate_risk(
         reasons.append(
             "Vehicle far ahead"
         )   
+    # ==========================
+    # BLIND SPOT INTELLIGENCE
+    # ==========================
 
+    if collision_risk >= 100:
+
+        risk_score += 40
+
+        reasons.append(
+            "High blind spot collision risk"
+        )
+
+    if left_lane_status == "UNSAFE":
+
+        risk_score += 20
+
+        reasons.append(
+            "Left lane unsafe"
+    )
+
+    if right_lane_status == "UNSAFE":
+
+        risk_score += 20
+
+        reasons.append(
+            "Right lane unsafe"
+    )
+        
     # ==========================
     # RELIABILITY
     # ==========================
@@ -101,7 +148,43 @@ def calculate_risk(
         reasons.append(
             "Low fusion confidence"
         )
+# ==========================
+# BLIND SPOT INTELLIGENCE
+# ==========================
+#
+# V4 ARCHITECTURE:
+# Blind Spot Intelligence is now
+# handled by the Lane Change Engine.
+#
+# We keep the inputs for future
+# Decision Fusion Engine V2.
+#
+# DO NOT add blind spot penalties
+# to forward-driving risk.
+# ==========================
 
+    blind_spot_info = {
+
+    "collision_risk":
+        collision_risk,
+
+    "left_lane_status":
+        left_lane_status,
+
+    "right_lane_status":
+        right_lane_status
+
+}
+
+# Reserved for:
+#
+# decision_fusion_engine.py
+#
+# Future lane-change decisions:
+#
+# CHANGE_LEFT
+# CHANGE_RIGHT
+# KEEP_LANE
     # ==========================
     # DECISION
     # ==========================
@@ -123,7 +206,19 @@ def calculate_risk(
         decision = "MOVE"
         speed = 40
         level = "LOW"
+        
+    lane_data = {
 
+    "collision_risk":
+        collision_risk,
+
+    "left_lane_status":
+        left_lane_status,
+
+    "right_lane_status":
+        right_lane_status
+
+}
     return (
         risk_score,
         level,
@@ -144,9 +239,13 @@ if __name__ == "__main__":
         calculate_risk(
             traffic_state="RED",
             pedestrian_count=0,
+            pedestrian_status="IN_LANE",
             distance_state="MEDIUM",
             fusion_confidence=1.0,
-            camera_reliability=1.0
+            camera_reliability=1.0,
+            collision_risk=0,
+            left_lane_status="SAFE",
+            right_lane_status="SAFE"
         )
     )
 
