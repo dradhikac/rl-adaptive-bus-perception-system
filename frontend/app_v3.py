@@ -194,6 +194,43 @@ CUSTOM_CSS = """
     font-size: 0.9rem;
 }
 
+/* ---------- Range bars ---------- */
+.range-track {
+    position: relative;
+    height: 7px;
+    background: #EDEFF4;
+    border-radius: 4px;
+    margin-top: 0.7rem;
+}
+
+.range-fill {
+    height: 7px;
+    border-radius: 4px;
+}
+
+.range-marker {
+    position: absolute;
+    top: -3px;
+    width: 2px;
+    height: 13px;
+    background: #1F2937;
+    opacity: 0.55;
+}
+
+.range-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    color: #9AA3B2;
+    margin-top: 0.25rem;
+}
+
+.range-note {
+    font-size: 0.7rem;
+    color: #6B7488;
+    margin-top: 0.15rem;
+}
+
 /* ---------- Tabs ---------- */
 .stTabs [data-baseweb="tab-list"] {
     gap: 4px;
@@ -247,6 +284,38 @@ def metric_card(label, value, icon="", accent="navy"):
         <div class="metric-card accent-{accent}">
             <div class="metric-label">{icon} {label}</div>
             <div class="metric-value">{value}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def metric_card_ranged(label, value_display, icon, accent, raw_value, min_val, max_val, threshold, unit=""):
+    """Metric card with a small range bar showing where raw_value falls
+    between min_val and max_val, plus a marker at the acceptable threshold."""
+
+    span = max_val - min_val
+    fill_pct = max(0, min(100, ((raw_value - min_val) / span) * 100))
+    marker_pct = max(0, min(100, ((threshold - min_val) / span) * 100))
+
+    good = raw_value >= threshold
+    bar_color = "var(--teal)" if good else "var(--orange)"
+    status_text = "Good" if good else "Below threshold"
+
+    st.markdown(
+        f"""
+        <div class="metric-card accent-{accent}">
+            <div class="metric-label">{icon} {label}</div>
+            <div class="metric-value">{value_display}{unit}</div>
+            <div class="range-track">
+                <div class="range-fill" style="width:{fill_pct}%; background:{bar_color};"></div>
+                <div class="range-marker" style="left:{marker_pct}%;"></div>
+            </div>
+            <div class="range-scale">
+                <span>{min_val}</span>
+                <span>{max_val}</span>
+            </div>
+            <div class="range-note">Min acceptable: {threshold}{unit} &nbsp;•&nbsp; {status_text}</div>
         </div>
         """,
         unsafe_allow_html=True
@@ -434,7 +503,9 @@ if all([
         metric_card("Objects", result["object_count"], "🔷", "navy")
 
     with c3:
-        metric_card("Risk", result["risk_score"], "⚠️", "red")
+        risk_level_val = str(result["risk_level"]).upper()
+        risk_accent = "teal" if risk_level_val == "LOW" else ("orange" if risk_level_val in ("MEDIUM", "MED") else "red")
+        metric_card("Risk", result["risk_level"], "⚠️", risk_accent)
 
     with c4:
         metric_card("RL Action", result["rl_action"], "🤖", "teal")
@@ -639,16 +710,28 @@ if all([
         r1, r2, r3, r4 = st.columns(4)
 
         with r1:
-            metric_card("Brightness", result["brightness"], "☀️", "orange")
+            metric_card_ranged(
+                "Brightness", result["brightness"], "☀️", "orange",
+                raw_value=result["brightness"], min_val=0, max_val=255, threshold=60
+            )
 
         with r2:
-            metric_card("Contrast", result["contrast"], "◐", "navy")
+            metric_card_ranged(
+                "Contrast", result["contrast"], "◐", "navy",
+                raw_value=result["contrast"], min_val=0, max_val=120, threshold=40
+            )
 
         with r3:
-            metric_card("Blur Score", result["blur_score"], "🌫️", "teal")
+            metric_card_ranged(
+                "Blur Score", result["blur_score"], "🌫️", "teal",
+                raw_value=result["blur_score"], min_val=0, max_val=500, threshold=100
+            )
 
         with r4:
-            metric_card("Reliability", result["camera_reliability"], "✅", "teal")
+            metric_card_ranged(
+                "Reliability", result["camera_reliability"], "✅", "teal",
+                raw_value=result["camera_reliability"], min_val=0, max_val=1, threshold=0.6
+            )
 
     # ====================================
     # FUSION
@@ -678,11 +761,14 @@ if all([
 
         rk1, rk2 = st.columns(2)
 
+        risk_level_val = str(result["risk_level"]).upper()
+        risk_accent = "teal" if risk_level_val == "LOW" else ("orange" if risk_level_val in ("MEDIUM", "MED") else "red")
+
         with rk1:
-            metric_card("Risk Score", result["risk_score"], "⚠️", "red")
+            metric_card("Risk Level", result["risk_level"], "🎯", risk_accent)
 
         with rk2:
-            metric_card("Risk Level", result["risk_level"], "🎯", "orange")
+            metric_card("Risk Score", result["risk_score"], "⚠️", "navy")
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("**Contributing Factors:**")
