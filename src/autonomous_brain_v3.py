@@ -14,7 +14,7 @@ from src.pedestrian_intelligence import (analyze_pedestrians)
 # LOAD MODELS
 # ====================================
 
-model = YOLO("yolov8n.pt")
+model = YOLO("yolov8n")
 
 vehicle_classes = [
 
