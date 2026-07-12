@@ -25,3 +25,8 @@ outputs/
 # OS files
 .DS_Store
 Thumbs.db
+
+
+# Jupyter notebooks
+*.ipynb
+.ipynb_checkpoints/
