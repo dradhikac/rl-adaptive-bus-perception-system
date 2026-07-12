@@ -532,8 +532,6 @@ if all([
 
         "📷 Reliability",
 
-        "📡 Fusion",
-
         "⚠️ Risk",
 
         "👀 Blind Spot",
@@ -733,29 +731,12 @@ if all([
                 raw_value=result["camera_reliability"], min_val=0, max_val=1, threshold=0.6
             )
 
-    # ====================================
-    # FUSION
-    # ====================================
-
-    with tabs[4]:
-
-        section_header("Sensor Fusion Confidence", "📡")
-
-        metric_card("Fusion Confidence", result["fusion_confidence"], "📡", "teal")
-
-        st.markdown("<br>", unsafe_allow_html=True)
-
-        st.progress(
-            float(
-                result["fusion_confidence"]
-            )
-        )
-
+    
     # ====================================
     # RISK
     # ====================================
 
-    with tabs[5]:
+    with tabs[4]:
 
         section_header("Risk Assessment", "⚠️")
 
@@ -783,7 +764,7 @@ if all([
     # BLIND SPOT
     # ====================================
 
-    with tabs[6]:
+    with tabs[5]:
 
         section_header("Blind Spot Intelligence", "👀")
 
@@ -809,7 +790,7 @@ if all([
     # RL
     # ====================================
 
-    with tabs[7]:
+    with tabs[6]:
 
         section_header("Reinforcement Learning Decision", "🤖")
 
@@ -819,7 +800,7 @@ if all([
     # DECISION FUSION
     # ====================================
 
-    with tabs[8]:
+    with tabs[7]:
 
         section_header("Decision Fusion", "🧠")
 
@@ -835,7 +816,7 @@ if all([
     # AUTONOMOUS BRAIN
     # ====================================
 
-    with tabs[9]:
+    with tabs[8]:
 
         section_header("Autonomous Brain — Final Output", "🚍")
 
