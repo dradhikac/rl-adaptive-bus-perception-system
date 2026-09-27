@@ -1,0 +1,39 @@
+{
+  "route_id": "ROUTE_42A",
+  "route_name": "Central Station to Cyber City Express",
+  "version": "1.0",
+  "stops": [
+    {
+      "stop_id": "STOP_001",
+      "name": "Central Railway Station",
+      "latitude": 17.4399,
+      "longitude": 78.4983,
+      "radius_meters": 35.0,
+      "approach_distance_meters": 120.0
+    },
+    {
+      "stop_id": "STOP_002",
+      "name": "Tech Hub Junction",
+      "latitude": 17.4485,
+      "longitude": 78.3756,
+      "radius_meters": 30.0,
+      "approach_distance_meters": 100.0
+    },
+    {
+      "stop_id": "STOP_003",
+      "name": "University South Gate",
+      "latitude": 17.4560,
+      "longitude": 78.3840,
+      "radius_meters": 30.0,
+      "approach_distance_meters": 100.0
+    },
+    {
+      "stop_id": "STOP_004",
+      "name": "Botanical Gardens",
+      "latitude": 17.4621,
+      "longitude": 78.3654,
+      "radius_meters": 35.0,
+      "approach_distance_meters": 120.0
+    }
+  ]
+}

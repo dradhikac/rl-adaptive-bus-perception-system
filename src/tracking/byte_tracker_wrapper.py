@@ -187,8 +187,18 @@ class ByteTrackerWrapper:
                             best_iou = iou
                             best_tid = int(tracker_ids[t_idx])
 
-                    if best_iou >= 0.5 and best_tid is not None:
+                    if best_iou >= 0.25 and best_tid is not None:
                         assigned_track_ids[d_idx] = best_tid
+                    elif best_tid is not None:
+                        # Centroid proximity fallback for fast-moving targets
+                        in_cx = (in_box[0] + in_box[2]) / 2.0
+                        in_cy = (in_box[1] + in_box[3]) / 2.0
+                        for t_idx, t_box in enumerate(tracked_boxes):
+                            t_cx = (t_box[0] + t_box[2]) / 2.0
+                            t_cy = (t_box[1] + t_box[3]) / 2.0
+                            if (in_cx - t_cx) ** 2 + (in_cy - t_cy) ** 2 <= (80.0 ** 2):
+                                assigned_track_ids[d_idx] = int(tracker_ids[t_idx])
+                                break
 
             # Build enriched output
             for idx, det in enumerate(detections):
