@@ -11,10 +11,24 @@ from src.blind_spot_intelligence import analyze_blind_spots
 from src.decision_fusion_engine import ( fuse_decisions)
 from src.pedestrian_intelligence import (analyze_pedestrians)
 # ====================================
-# LOAD MODELS
+# CONFIG & LOAD MODELS
 # ====================================
+import os
+from pathlib import Path
 
-model = YOLO("yolov8n")
+# Config flag: set environment variable USE_FINE_TUNED_MODEL="true" or BUS_YOLO_MODEL_PATH
+# Defaults to "yolov8n" (root yolov8n.pt) so nothing breaks if flag is not set
+FINE_TUNED_MODEL_PATH = Path("models/yolov8_bus_v1.pt")
+CONFIGURED_MODEL_PATH = os.environ.get("BUS_YOLO_MODEL_PATH")
+
+if CONFIGURED_MODEL_PATH and Path(CONFIGURED_MODEL_PATH).is_file():
+    YOLO_MODEL_PATH = CONFIGURED_MODEL_PATH
+elif os.environ.get("USE_FINE_TUNED_MODEL", "false").lower() in ("true", "1") and FINE_TUNED_MODEL_PATH.is_file():
+    YOLO_MODEL_PATH = str(FINE_TUNED_MODEL_PATH)
+else:
+    YOLO_MODEL_PATH = "yolov8n"
+
+model = YOLO(YOLO_MODEL_PATH)
 
 vehicle_classes = [
 
