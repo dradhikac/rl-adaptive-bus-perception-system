@@ -1,0 +1,118 @@
+# ==============================================================================
+# Autonomous Bus Perception & Decision System - Datasets Registry
+# ==============================================================================
+# This registry defines all datasets, model weights, and external sources used
+# across perception, safety, and decision phases.
+#
+# Supported Types:
+#   - weights   : Pre-trained deep learning model weights
+#   - archive   : HTTP/HTTPS direct download zip/tar archives
+#   - roboflow  : Datasets ingested via Roboflow API (requires ROBOFLOW_API_KEY)
+#   - manual    : Locally collected video/image footage placed manually
+# ==============================================================================
+
+datasets:
+  coco-weights:
+    name: "COCO Pre-trained YOLOv8n Weights"
+    source: "Ultralytics auto-download (yolov8n.pt)"
+    type: "weights"
+    approx_size: "~6 MB"
+    size_bytes: 6549796
+    used_in_phase: "3 (already have it)"
+    download_url: "https://github.com/ultralytics/assets/releases/download/v8.2.0/yolov8n.pt"
+    local_path: "yolov8n.pt"
+    description: "YOLOv8 nano baseline model weights pre-trained on the MS COCO dataset for real-time inference."
+
+  idd-lite:
+    name: "India Driving Dataset - Lite (IDD-Lite)"
+    source: "https://idd.insaan.iiit.ac.in/"
+    type: "archive"
+    approx_size: "26.9 MB"
+    size_bytes: 28206694
+    used_in_phase: "3"
+    download_url: "https://idd.insaan.iiit.ac.in/dataset/download/"
+    fallback_url: "https://github.com/autonlab/idd-lite-mirror/releases/download/v1.0/idd-lite.zip"
+    local_path: "datasets/idd20k_lite/"
+    archive_format: "zip"
+    registration_required: true
+    description: "Subset of the India Driving Dataset (IDD) focused on unstructured traffic and road obstacles in India."
+
+  fgvd:
+    name: "Fine-Grained Vehicle Detection (FGVD)"
+    source: "https://zenodo.org/record/7488960"
+    type: "archive"
+    approx_size: "~2.6–3 GB"
+    size_bytes: 2756233295
+    used_in_phase: "3"
+    download_url: "https://zenodo.org/api/records/7488960/files/IDD_FGVD.tar.gz/content"
+    local_path: "datasets/IDD_FGVD/"
+    archive_format: "tar.gz"
+    registration_required: false
+    description: "Fine-Grained Vehicle Detection dataset containing detailed annotations for Indian commercial and transit vehicles."
+
+  roboflow-pothole:
+    name: "Pothole Detection"
+    source: "Roboflow API (intel-unnati-training-program/pothole-detection-bqu6s)"
+    type: "roboflow"
+    workspace: "intel-unnati-training-program"
+    project: "pothole-detection-bqu6s"
+    version: 9
+    approx_size: "~100–300 MB"
+    size_bytes: 209715200
+    used_in_phase: "stretch"
+    local_path: "datasets/roboflow-pothole/"
+    export_format: "yolov8"
+    description: "Road surface condition, road damage, and pothole detection dataset for active suspension & route safety."
+
+  roboflow-traffic-sign:
+    name: "Indian Traffic Signs Detection"
+    source: "Roboflow API (sdi/indian-traffic-sign)"
+    type: "roboflow"
+    workspace: "sdi"
+    project: "indian-traffic-sign"
+    fallback_url: "https://ieee-dataport.org/comment/6097"
+    version: 1
+    approx_size: "~50–200 MB"
+    size_bytes: 104857600
+    used_in_phase: "3"
+    local_path: "datasets/roboflow-traffic-sign/"
+    export_format: "yolov8"
+    description: "Comprehensive dataset of standard Indian regulatory, warning, and informatory road signs."
+
+  roboflow-door:
+    name: "Bus Door State Detection"
+    source: "Roboflow API (object-detect-zjtnj/door-jqeug)"
+    type: "roboflow"
+    workspace: "object-detect-zjtnj"
+    project: "door-jqeug"
+    version: 3
+    approx_size: "~50–500 MB"
+    size_bytes: 262144000
+    used_in_phase: "7"
+    local_path: "datasets/roboflow-door/"
+    export_format: "yolov8"
+    description: "Bus passenger door open/closed state recognition for boarding safety interlock validation."
+
+  roboflow-bus-passenger:
+    name: "Bus Passenger Crowd & Boarding Detection"
+    source: "Roboflow API (fusar-dataset/passenger-bplok)"
+    type: "roboflow"
+    workspace: "fusar-dataset"
+    project: "passenger-bplok"
+    version: 1
+    approx_size: "~100 MB–1 GB"
+    size_bytes: 524288000
+    used_in_phase: "6, 7"
+    local_path: "datasets/roboflow-bus-passenger/"
+    export_format: "yolov8"
+    description: "Detection of passenger crowds and boarding activity around bus stops and doors."
+
+  self-collected:
+    name: "Self-Collected Bus-Stop & Door Footage"
+    source: "Local folder filled manually (bus-stop + door footage you record)"
+    type: "manual"
+    approx_size: "varies"
+    size_bytes: 0
+    used_in_phase: "5, 6, 7"
+    local_path: "datasets/self-collected/"
+    description: "Real-world footage captured at local bus stops and onboard passenger boarding doors for validation."
