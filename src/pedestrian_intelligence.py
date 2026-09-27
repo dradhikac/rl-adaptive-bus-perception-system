@@ -1,5 +1,13 @@
 import cv2
 
+try:
+    from src.temporal.motion_intent import classify_motion_intent
+except ImportError:
+    try:
+        from temporal.motion_intent import classify_motion_intent
+    except ImportError:
+        classify_motion_intent = None
+
 # ====================================
 # PEDESTRIAN POSITION ANALYSIS
 # ====================================
@@ -20,6 +28,8 @@ def analyze_pedestrians(
 
     pedestrian_status = "NONE"
 
+    pedestrian_intents = []
+
     # ====================================
     # DRIVING LANE REGION
     # ====================================
@@ -37,6 +47,22 @@ def analyze_pedestrians(
             continue
 
         pedestrian_count += 1
+
+        # ====================================
+        # MOTION INTENT CLASSIFICATION
+        # ====================================
+        if classify_motion_intent is not None:
+            ped_history = box.get("history", [box])
+            ped_intent = classify_motion_intent(
+                ped_history,
+                image_width=image_width,
+                image_height=image_height
+            )
+        else:
+            ped_intent = "stationary"
+
+        box["motion_intent"] = ped_intent
+        pedestrian_intents.append(ped_intent)
 
         x1 = box["x1"]
         y1 = box["y1"]
@@ -158,6 +184,21 @@ def analyze_pedestrians(
 
     print("==============================\n")
 
+    # ====================================
+    # DOMINANT MOTION INTENT
+    # ====================================
+    INTENT_PRIORITY = {
+        "erratic": 5,
+        "approaching-road": 4,
+        "crossing": 3,
+        "receding": 2,
+        "stationary": 1,
+        "NONE": 0
+    }
+    dominant_motion_intent = "NONE"
+    if pedestrian_intents:
+        dominant_motion_intent = max(pedestrian_intents, key=lambda x: INTENT_PRIORITY.get(x, 0))
+
     return {
 
         "pedestrian_count":
@@ -173,5 +214,11 @@ def analyze_pedestrians(
             sidewalk_count,
 
         "pedestrian_status":
-            pedestrian_status
+            pedestrian_status,
+
+        "motion_intent":
+            dominant_motion_intent,
+
+        "pedestrian_intents":
+            pedestrian_intents
     }
