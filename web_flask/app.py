@@ -58,7 +58,7 @@ from src.doors.door_zone_monitor import DoorZoneMonitor, DoorZoneState, get_defa
 
 def create_app() -> Tuple[Flask, SocketIO]:
     """Factory creating and configuring the Flask + SocketIO app."""
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="static", static_url_path="/static")
     app.config["SECRET_KEY"] = "bus_perception_secure_token_v3"
     socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
     register_routes(app, socketio)
@@ -152,6 +152,10 @@ _SHARED_DOCKING_SM = DockingStateMachine()
 # ==============================================================================
 
 def register_routes(app: Flask, socketio: SocketIO) -> None:
+    @app.route("/", methods=["GET"])
+    def landing_page():
+        """Serves the single-screen autonomous bus landing page."""
+        return app.send_static_file("index.html")
 
     @app.route("/api/health", methods=["GET"])
     def health_check():

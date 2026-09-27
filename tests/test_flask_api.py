@@ -35,6 +35,14 @@ class TestFlaskAPI(unittest.TestCase):
         cls.sample_image_path = REPO_ROOT / "data" / "front.jpg"
         assert cls.sample_image_path.is_file(), f"Sample image missing: {cls.sample_image_path}"
 
+    def test_00_landing_page(self):
+        """GET / should return 200 and render the autonomous bus landing page HTML."""
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"AutoBus", response.data)
+        self.assertIn(b"SMARTER BUSES", response.data)
+        self.assertIn(b"hero-bus-video", response.data)
+
     def test_01_health_check(self):
         """GET /api/health should return 200 and system operational status."""
         response = self.client.get("/api/health")
