@@ -28,6 +28,7 @@ import io
 import os
 import sys
 import time
+import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -42,6 +43,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 # Import existing unmodified autonomous brain
+import src.autonomous_brain_v3 as brain_module
 from src.autonomous_brain_v3 import analyze_scene, model
 
 # Import Phase 4-7 optional modules
@@ -51,6 +53,16 @@ from src.stops.bus_stop_detector import BusStopDetector, get_default_bus_stop_de
 from src.stops.docking_state_machine import DockingStateMachine, DockingState
 from src.doors.door_zone_monitor import DoorZoneMonitor, DoorZoneState, get_default_door_monitor
 
+# Import Step 2 Video Pipeline modules
+from src.video.video_pipeline import (
+    VideoIngestionPipeline,
+    VideoJobStore,
+    get_global_job_store,
+    start_video_pipeline_thread,
+    normalize_slot_name,
+    CANONICAL_SLOTS,
+)
+
 
 # ==============================================================================
 # FLASK & SOCKETIO INITIALIZATION
@@ -58,7 +70,7 @@ from src.doors.door_zone_monitor import DoorZoneMonitor, DoorZoneState, get_defa
 
 def create_app() -> Tuple[Flask, SocketIO]:
     """Factory creating and configuring the Flask + SocketIO app."""
-    app = Flask(__name__, static_folder="static", static_url_path="/static")
+    app = Flask(__name__, static_folder="static", static_url_path="")
     app.config["SECRET_KEY"] = "bus_perception_secure_token_v3"
     socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
     register_routes(app, socketio)
@@ -157,15 +169,99 @@ def register_routes(app: Flask, socketio: SocketIO) -> None:
         """Serves the single-screen autonomous bus landing page."""
         return app.send_static_file("index.html")
 
+    @app.route("/static/<path:filename>", methods=["GET"])
+    def serve_static_fallback(filename: str):
+        """Fallback for explicit /static/ URLs."""
+        return app.send_static_file(filename)
+
+    @app.route("/Create_a_photorealistic_premiu.mp4", methods=["GET"])
+    def serve_hero_video_root():
+        """Serves the hero video when requested from root."""
+        return app.send_static_file("videos/bus_hero.mp4")
+
+    @app.route("/demo", methods=["GET"])
+    @app.route("/pages/live_demo", methods=["GET"])
+    @app.route("/live_demo", methods=["GET"])
+    def demo_page():
+        """Serves the interactive multi-camera perception and decision demo page."""
+        return app.send_static_file("demo.html")
+
+    @app.route("/api/sample-videos", methods=["GET"])
+    def sample_videos():
+        """Returns available sample video clips in the repository for 1-click video demo."""
+        return jsonify({
+            "urban_traffic": "/datasets/self-collected/eval_clips/clip_03_urban_traffic.mp4",
+            "bus_stop_approach": "/datasets/self-collected/eval_clips/clip_01_bus_stop_approach.mp4",
+            "door_boarding": "/datasets/self-collected/eval_clips/clip_02_door_boarding.mp4",
+            "synthetic_clip": "/tests/synthetic_test_clip.mp4",
+        }), 200
+
+    @app.route("/datasets/<path:filename>", methods=["GET"])
+    def serve_dataset_file(filename: str):
+        """Serves sample video/image files directly from datasets/ directory."""
+        from flask import send_from_directory
+        return send_from_directory(str(REPO_ROOT / "datasets"), filename)
+
+    @app.route("/tests/<path:filename>", methods=["GET"])
+    def serve_test_file(filename: str):
+        """Serves test video files directly from tests/ directory."""
+        from flask import send_from_directory
+        return send_from_directory(str(REPO_ROOT / "tests"), filename)
+
+    @app.route("/api/sample-cameras", methods=["GET"])
+    def sample_cameras():
+        """Returns the list of available sample camera files in data/ for presets."""
+        return jsonify({
+            "front": "/data/front.jpg",
+            "front_left": "/data/front_left.jpg",
+            "front_right": "/data/front_right.jpg",
+            "rear_left": "/data/rear_left.jpg",
+            "rear_right": "/data/rear_right.jpg"
+        }), 200
+
+    @app.route("/api/sample-images", methods=["GET"])
+    def sample_images():
+        """Returns sample multi-camera image presets for instant perception demo."""
+        return jsonify({
+            "red_light_crossing": {
+                "name": "Red Light & Crossing Pedestrians",
+                "front": "/data/red_light_sample.jpg"
+            },
+            "urban_street": {
+                "name": "Urban Multi-Vehicle Scene",
+                "front": "/data/front.jpg",
+                "front_left": "/data/front_left.jpg",
+                "front_right": "/data/front_right.jpg"
+            },
+            "full_surround": {
+                "name": "360° 5-Camera Surround Coverage",
+                "front": "/data/front.jpg",
+                "front_left": "/data/front_left.jpg",
+                "front_right": "/data/front_right.jpg",
+                "rear_left": "/data/rear_left.jpg",
+                "rear_right": "/data/rear_right.jpg"
+            }
+        }), 200
+
+    @app.route("/data/<path:filename>", methods=["GET"])
+    def serve_data_file(filename: str):
+        """Serves sample image files directly from the data/ directory."""
+        from flask import send_from_directory
+        return send_from_directory(str(REPO_ROOT / "data"), filename)
+
     @app.route("/api/health", methods=["GET"])
     def health_check():
         """Health check endpoint."""
+        fine_tuned_avail = (REPO_ROOT / "models" / "yolov8_bus_v1.pt").is_file()
+        current_model_name = str(getattr(brain_module.model, "model_name", "yolov8n"))
         return jsonify({
             "status": "healthy",
             "timestamp": time.time(),
             "models": {
                 "yolo_detector": "active",
-                "yolo_model_path": str(getattr(model, "model_name", "yolov8n"))
+                "current_model": current_model_name,
+                "fine_tuned_available": fine_tuned_avail,
+                "stock_available": (REPO_ROOT / "yolov8n.pt").is_file()
             },
             "phases_available": {
                 "phase_4_tracking": True,
@@ -174,6 +270,166 @@ def register_routes(app: Flask, socketio: SocketIO) -> None:
                 "phase_7_door_monitor": True
             }
         }), 200
+
+    # =========================================================================
+    # STEP 2 VIDEO INGESTION ENDPOINTS
+    # =========================================================================
+
+    @app.route("/api/demo/upload", methods=["POST"])
+    def demo_upload_videos():
+        """
+        Accepts 1 to 5 uploaded video files mapped to camera slots:
+          - front (or front_image)
+          - front_left
+          - front_right
+          - rear_left (or back_left)
+          - rear_right (or back_right)
+        Samples frames at a configurable rate (default 5 fps) time-aligned.
+        Missing feeds are handled using sensor_reliability degraded dead-frame path.
+        Spawns background processing job and returns job_id for polling.
+        """
+        job_store = get_global_job_store()
+        job_id = str(uuid.uuid4())
+        upload_dir = REPO_ROOT / "data" / "temp_videos" / job_id
+        upload_dir.mkdir(parents=True, exist_ok=True)
+
+        video_paths: Dict[str, str] = {}
+
+        # 1. Multipart file upload check
+        if request.files:
+            for key in request.files:
+                norm_slot = normalize_slot_name(key)
+                if norm_slot:
+                    file_obj = request.files[key]
+                    if file_obj and file_obj.filename:
+                        safe_ext = Path(file_obj.filename).suffix.lower() or ".mp4"
+                        target_file = upload_dir / f"{norm_slot}{safe_ext}"
+                        file_obj.save(str(target_file))
+                        video_paths[norm_slot] = str(target_file)
+
+        # 2. JSON or form-data check for local file paths
+        data = request.get_json(silent=True) if request.is_json else request.form
+        if data:
+            for key, val in data.items():
+                norm_slot = normalize_slot_name(key)
+                if norm_slot and norm_slot not in video_paths and isinstance(val, str) and val.strip():
+                    cand_path = Path(val.strip())
+                    if not cand_path.is_file():
+                        cand_path = REPO_ROOT / val.strip().lstrip("/\\")
+                    if cand_path.is_file():
+                        video_paths[norm_slot] = str(cand_path)
+
+        if not video_paths:
+            return jsonify({
+                "error": "No valid video files provided. Upload 1 to 5 video files under slots: "
+                         "front, front_left, front_right, rear_left, rear_right (or back_left, back_right)."
+            }), 400
+
+        # Target FPS: default to 1.0 FPS for fast, seconds-level analysis
+        target_fps = request.args.get("target_fps", type=float)
+        if target_fps is None and data:
+            try:
+                target_fps = float(data.get("target_fps", 1.0))
+            except (ValueError, TypeError):
+                target_fps = 1.0
+        if target_fps is None or target_fps <= 0:
+            target_fps = 1.0
+
+        max_duration_sec = request.args.get("max_duration_sec", type=float)
+        if max_duration_sec is None and data:
+            try:
+                raw_dur = data.get("max_duration_sec")
+                if raw_dur is not None:
+                    max_duration_sec = float(raw_dur)
+            except (ValueError, TypeError):
+                max_duration_sec = 60.0
+        if max_duration_sec is None:
+            max_duration_sec = 60.0
+
+        # Model selection: default to stock yolov8n for production accuracy (recognizes traffic lights & red signals)
+        requested_model = (request.args.get("model") or (data.get("model") if data else "") or "stock").lower()
+        fine_tuned_path = REPO_ROOT / "models" / "yolov8_bus_v1.pt"
+        stock_path = REPO_ROOT / "yolov8n.pt"
+        if requested_model == "fine_tuned" and fine_tuned_path.is_file():
+            if not hasattr(brain_module, "_fine_tuned_instance"):
+                from ultralytics import YOLO
+                brain_module._fine_tuned_instance = YOLO(str(fine_tuned_path))
+            brain_module.model = brain_module._fine_tuned_instance
+        else:
+            if not hasattr(brain_module, "_stock_instance") and stock_path.is_file():
+                from ultralytics import YOLO
+                brain_module._stock_instance = YOLO(str(stock_path))
+            if hasattr(brain_module, "_stock_instance"):
+                brain_module.model = brain_module._stock_instance
+
+        active_slots = [s for s in CANONICAL_SLOTS if s in video_paths]
+        missing_slots = [s for s in CANONICAL_SLOTS if s not in video_paths]
+
+        # Register and start background job
+        job_store.create_job(
+            active_slots=active_slots,
+            missing_slots=missing_slots,
+            target_fps=target_fps,
+            video_paths=video_paths,
+            max_duration_sec=max_duration_sec,
+            job_id=job_id
+        )
+
+        start_video_pipeline_thread(
+            job_id=job_id,
+            video_paths=video_paths,
+            target_fps=target_fps,
+            max_duration_sec=max_duration_sec,
+            job_store=job_store,
+            socketio_instance=socketio
+        )
+
+        return jsonify({
+            "job_id": job_id,
+            "status": "processing",
+            "target_fps": target_fps,
+            "max_duration_sec": max_duration_sec,
+            "active_cameras": active_slots,
+            "missing_cameras": missing_slots,
+            "message": "Video ingestion started. Poll /api/demo/status/<job_id> for timeline."
+        }), 202
+
+    @app.route("/api/demo/status/<job_id>", methods=["GET"])
+    def demo_job_status(job_id: str):
+        """
+        Returns the current progress, state, and decision timeline when complete.
+        """
+        job_store = get_global_job_store()
+        job_data = job_store.get_job(job_id)
+        if not job_data:
+            return jsonify({"error": f"Job ID '{job_id}' not found."}), 404
+        return jsonify(job_data), 200
+
+    @app.route("/api/demo/video/<job_id>/<slot>", methods=["GET"])
+    def demo_get_video(job_id: str, slot: str):
+        """
+        Serves the video file corresponding to a job slot for HTML5 video playback.
+        """
+        norm_slot = normalize_slot_name(slot) or slot
+        job_dir = REPO_ROOT / "data" / "temp_videos" / job_id
+        for ext in [".mp4", ".mov", ".avi", ".webm"]:
+            cand = job_dir / f"{norm_slot}{ext}"
+            if cand.is_file():
+                from flask import send_file
+                return send_file(str(cand), mimetype="video/mp4")
+
+        # Check job store if original path was provided
+        job_store = get_global_job_store()
+        job_data = job_store.get_job(job_id)
+        if job_data:
+            active_paths = job_data.get("video_paths", {})
+            if norm_slot in active_paths:
+                from flask import send_file
+                p = Path(active_paths[norm_slot])
+                if p.is_file():
+                    return send_file(str(p), mimetype="video/mp4")
+
+        return jsonify({"error": f"Video for slot '{slot}' not found."}), 404
 
     @app.route("/api/analyze", methods=["POST"])
     def analyze_api():
@@ -189,6 +445,22 @@ def register_routes(app: Flask, socketio: SocketIO) -> None:
         enable_bus_stops = request.args.get("enable_bus_stops", "false").lower() in ("true", "1")
         enable_door_monitor = request.args.get("enable_door_monitor", "false").lower() in ("true", "1")
         include_base64_images = request.args.get("include_images", "false").lower() in ("true", "1")
+
+        # Dynamic model selection: default to stock yolov8n for production accuracy
+        requested_model = (request.args.get("model") or "stock").lower()
+        fine_tuned_path = REPO_ROOT / "models" / "yolov8_bus_v1.pt"
+        stock_path = REPO_ROOT / "yolov8n.pt"
+        if requested_model == "fine_tuned" and fine_tuned_path.is_file():
+            if not hasattr(brain_module, "_fine_tuned_instance"):
+                from ultralytics import YOLO
+                brain_module._fine_tuned_instance = YOLO(str(fine_tuned_path))
+            brain_module.model = brain_module._fine_tuned_instance
+        else:
+            if not hasattr(brain_module, "_stock_instance") and stock_path.is_file():
+                from ultralytics import YOLO
+                brain_module._stock_instance = YOLO(str(stock_path))
+            if hasattr(brain_module, "_stock_instance"):
+                brain_module.model = brain_module._stock_instance
 
         # 1. Retrieve camera images
         front_img = None
@@ -247,6 +519,15 @@ def register_routes(app: Flask, socketio: SocketIO) -> None:
         response_payload = dict(raw_scene_output)
         if "final_decision" not in response_payload and "decision" in response_payload:
             response_payload["final_decision"] = response_payload["decision"]
+
+        model_name_str = str(getattr(brain_module.model, "model_name", "YOLOv8"))
+        is_fine_tuned = "bus_v1" in model_name_str.lower()
+        response_payload["active_model"] = {
+            "name": "YOLOv8 Bus v1 (Fine-Tuned FGVD/IDD)" if is_fine_tuned else "YOLOv8n Base (80 COCO Classes)",
+            "version": "v1.0-custom" if is_fine_tuned else "v8.0-stock",
+            "is_fine_tuned": is_fine_tuned,
+            "classes": len(brain_module.model.names) if hasattr(brain_module.model, "names") else 80
+        }
 
         # 3. Optional Phase 4: ByteTrack Tracking Enrichment
         if enable_tracking or enable_motion_intent:
@@ -335,6 +616,53 @@ def register_routes(app: Flask, socketio: SocketIO) -> None:
                 timestamp=now
             )
             response_payload["door_zone_monitor"] = door_telemetry
+
+        # 7. Generate rich visual annotations on front camera for instant UI display
+        try:
+            annotated_canvas = front_img.copy()
+            sig = response_payload.get("traffic_signal", "UNKNOWN")
+            dec = response_payload.get("final_decision", "MOVE")
+            spd = response_payload.get("recommended_speed", 25)
+            risk = response_payload.get("risk_score", 0)
+
+            # Draw bounding boxes for detected objects
+            det_res = brain_module.model(front_img, conf=0.18, verbose=False)
+            if det_res and len(det_res) > 0 and det_res[0].boxes is not None:
+                for b in det_res[0].boxes:
+                    cid = int(b.cls[0])
+                    cname = brain_module.model.names[cid]
+                    bx1, by1, bx2, by2 = map(int, b.xyxy[0])
+                    bconf = float(b.conf[0])
+
+                    if cname in ("traffic light", "traffic_light"):
+                        box_col = (0, 0, 255) if sig == "RED" else ((0, 255, 255) if sig == "YELLOW" else (0, 255, 0))
+                        box_lbl = f"SIGNAL: {sig} ({bconf:.2f})"
+                    elif cname == "person":
+                        box_col = (0, 140, 255)
+                        box_lbl = f"PEDESTRIAN ({bconf:.2f})"
+                    elif cname in ("car", "bus", "truck", "motorcycle", "autorickshaw"):
+                        box_col = (255, 180, 0)
+                        box_lbl = f"{cname.upper()} ({bconf:.2f})"
+                    else:
+                        box_col = (180, 180, 180)
+                        box_lbl = f"{cname} ({bconf:.2f})"
+
+                    cv2.rectangle(annotated_canvas, (bx1, by1), (bx2, by2), box_col, 2)
+                    lbl_w = len(box_lbl) * 8 + 8
+                    cv2.rectangle(annotated_canvas, (bx1, max(0, by1 - 20)), (bx1 + lbl_w, by1), box_col, -1)
+                    cv2.putText(annotated_canvas, box_lbl, (bx1 + 4, max(14, by1 - 5)), cv2.FONT_HERSHEY_SIMPLEX, 0.42, (0, 0, 0), 1, cv2.LINE_AA)
+
+            # Draw HUD status banner
+            hud_bg = (15, 23, 42)
+            cv2.rectangle(annotated_canvas, (0, 0), (annotated_canvas.shape[1], 44), hud_bg, -1)
+            act_col = (0, 0, 255) if dec == "STOP" else ((0, 255, 0) if dec == "MOVE" else (0, 255, 255))
+            hud_str = f"ACTION: {dec} | SPEED: {spd} km/h | SIGNAL: {sig} | RISK SCORE: {risk}"
+            cv2.putText(annotated_canvas, hud_str, (16, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.65, act_col, 2, cv2.LINE_AA)
+
+            _, buf = cv2.imencode(".jpg", annotated_canvas, [cv2.IMWRITE_JPEG_QUALITY, 85])
+            response_payload["annotated_front_image"] = "data:image/jpeg;base64," + base64.b64encode(buf).decode("utf-8")
+        except Exception as anno_err:
+            print(f"[WARN] Failed to generate visual annotation: {anno_err}")
 
         # Serialize numpy arrays safely for JSON response
         serialized_response = serialize_for_json(response_payload, include_base64_images)

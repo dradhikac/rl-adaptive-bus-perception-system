@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoBus AI — Multi-Camera Video Perception & Decision Live Demo</title>
+  <meta name="description" content="Interactive multi-camera video perception and temporal decision-making live demo for autonomous urban buses using YOLOv8, sensor reliability degradation, blind-spot analysis, and reinforcement learning fusion.">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%232563eb%22><path d=%22M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z%22/></svg>">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/static/css/demo.css">
+</head>
+<body>
+
+  <!-- Sticky Navbar (Matches Marketing Site Design) -->
+  <header class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="brand-icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/>
+        </svg>
+      </div>
+      <span class="brand-text">
+        AutoBus
+        <span class="brand-ai-badge">AI</span>
+      </span>
+    </a>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link">Overview</a></li>
+        <li><a href="/#technology" class="nav-link">Technology</a></li>
+        <li><a href="/#features" class="nav-link">Features</a></li>
+        <li><a href="/demo" class="nav-link active">Live Demo</a></li>
+        <li><a href="/#architecture" class="nav-link">System Architecture</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="/" class="btn-nav-back">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Back to Home</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Demo Container -->
+  <main class="demo-page-wrapper">
+
+    <!-- Compact Live Demo Header (Single-line engineering console bar) -->
+    <section class="demo-compact-header">
+      <div class="compact-header-left">
+        <h1 class="compact-title">360° Multi-Camera Perception & Autonomous Decision Console</h1>
+        <span class="compact-badge"><span class="pulse-dot"></span>Live Console</span>
+      </div>
+      <div class="compact-header-right">
+        <div class="compact-model-group">
+          <span class="compact-model-label">Engine:</span>
+          <div class="model-toggle-group">
+            <button class="model-toggle-btn active" data-model="stock" id="btn-model-stock">
+              yolov8n (High-Accuracy Production)
+            </button>
+            <button class="model-toggle-btn" data-model="fine_tuned" id="btn-model-finetuned">
+              yolov8_bus_v1 (Custom Fine-Tuned)
+            </button>
+          </div>
+          <span class="active-model-tag" id="active-model-tag">Model: yolov8n (High-Accuracy Production)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Analysis Mode Switcher: Images vs Videos -->
+    <section class="mode-switcher-container">
+      <div class="mode-switcher-pills">
+        <button class="mode-tab active" id="tab-mode-images" data-mode="images">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>📷 Image Analysis Mode (< 1s Instant)</span>
+        </button>
+        <button class="mode-tab" id="tab-mode-videos" data-mode="videos">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="23 7 16 12 23 17 23 7"/>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+          </svg>
+          <span>🎥 Video Stream Analysis Mode (~2-3s)</span>
+        </button>
+      </div>
+      <div class="mode-info-tag">
+        <span id="mode-summary-text">⚡ Instant Static Multi-Camera Inference • Immediate Sub-Second Arbitration</span>
+      </div>
+    </section>
+
+    <!-- 1-Click Presets Toolbar (Adaptive based on Mode) -->
+    <section class="presets-container">
+      <div class="presets-left">
+        <span class="presets-label">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          Quick Presets:
+        </span>
+        
+        <!-- Image Mode Presets -->
+        <div class="presets-chip-group" id="presets-group-images">
+          <button class="preset-chip active" data-img-preset="red_light" id="preset-img-redlight">
+            <span>🚦 Red Light Crossing (Verified)</span>
+          </button>
+          <button class="preset-chip" data-img-preset="urban_street" id="preset-img-urban">
+            <span>🏙️ Urban Street View</span>
+          </button>
+          <button class="preset-chip" data-img-preset="full_surround" id="preset-img-surround">
+            <span>🚗 360° 5-Camera Surround</span>
+          </button>
+        </div>
+
+        <!-- Video Mode Presets -->
+        <div class="presets-chip-group" id="presets-group-videos" style="display:none;">
+          <button class="preset-chip" data-clip="urban_traffic" id="preset-urban">
+            <span>🚦 Urban Traffic (Crossing)</span>
+          </button>
+          <button class="preset-chip" data-clip="bus_stop" id="preset-busstop">
+            <span>🚏 Bus Stop Approach</span>
+          </button>
+          <button class="preset-chip" data-clip="door_boarding" id="preset-door">
+            <span>🚪 Passenger Boarding Zone</span>
+          </button>
+          <button class="preset-chip" data-clip="synthetic" id="preset-synthetic">
+            <span>🧪 Synthetic Multi-Camera</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="presets-right">
+        <button class="btn-reset-feeds" id="btn-reset-feeds">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="1 4 1 10 7 10"/>
+            <polyline points="23 20 23 14 17 14"/>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+          </svg>
+          <span>Reset Feeds</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 5 Camera Upload Drop Zones -->
+    <section class="camera-upload-section">
+      <div class="section-heading-bar">
+        <h3>5 Camera Angle Drop Zones</h3>
+        <span class="section-subtext">Front camera is required; missing camera feeds are handled via automatic sensor reliability degradation.</span>
+      </div>
+
+      <div class="camera-grid">
+        
+        <!-- Slot 1: Front (Required) -->
+        <div class="camera-card primary-required" id="card-front">
+          <div class="camera-header">
+            <div class="camera-title-group">
+              <span class="camera-badge front-badge">⬆️ Front Camera</span>
+              <span class="required-tag">REQUIRED</span>
+            </div>
+            <span class="camera-status-pill pill-loaded" id="status-front">Loaded (Preset)</span>
+          </div>
+          <div class="camera-dropzone" id="dropzone-front">
+            <div class="dropzone-content" id="dz-content-front">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <div class="dz-text-group">
+                <strong id="dz-name-front">red_light_sample.jpg</strong>
+                <span id="dz-meta-front">Ready for Analysis • Drop Image or Video to replace</span>
+              </div>
+            </div>
+            <input type="file" id="input-front" class="hidden-file-input" accept="image/*,video/*">
+          </div>
+        </div>
+
+        <!-- Slot 2: Front Left (Optional) -->
+        <div class="camera-card" id="card-front_left">
+          <div class="camera-header">
+            <div class="camera-title-group">
+              <span class="camera-badge">↖️ Front-Left</span>
+              <span class="optional-tag">OPTIONAL</span>
+            </div>
+            <span class="camera-status-pill pill-empty" id="status-front_left">Auto-Degraded</span>
+          </div>
+          <div class="camera-dropzone" id="dropzone-front_left">
+            <div class="dropzone-content" id="dz-content-front_left">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <div class="dz-text-group">
+                <strong id="dz-name-front_left">Drop Image / Video or Click</strong>
+                <span id="dz-meta-front_left">If omitted, treated as dead sensor (0.0 rel)</span>
+              </div>
+            </div>
+            <input type="file" id="input-front_left" class="hidden-file-input" accept="image/*,video/*">
+          </div>
+        </div>
+
+        <!-- Slot 3: Front Right (Optional) -->
+        <div class="camera-card" id="card-front_right">
+          <div class="camera-header">
+            <div class="camera-title-group">
+              <span class="camera-badge">↗️ Front-Right</span>
+              <span class="optional-tag">OPTIONAL</span>
+            </div>
+            <span class="camera-status-pill pill-empty" id="status-front_right">Auto-Degraded</span>
+          </div>
+          <div class="camera-dropzone" id="dropzone-front_right">
+            <div class="dropzone-content" id="dz-content-front_right">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <div class="dz-text-group">
+                <strong id="dz-name-front_right">Drop Image / Video or Click</strong>
+                <span id="dz-meta-front_right">If omitted, treated as dead sensor (0.0 rel)</span>
+              </div>
+            </div>
+            <input type="file" id="input-front_right" class="hidden-file-input" accept="image/*,video/*">
+          </div>
+        </div>
+
+        <!-- Slot 4: Back Left (Optional) -->
+        <div class="camera-card" id="card-rear_left">
+          <div class="camera-header">
+            <div class="camera-title-group">
+              <span class="camera-badge">↙️ Back-Left</span>
+              <span class="optional-tag">OPTIONAL</span>
+            </div>
+            <span class="camera-status-pill pill-empty" id="status-rear_left">Auto-Degraded</span>
+          </div>
+          <div class="camera-dropzone" id="dropzone-rear_left">
+            <div class="dropzone-content" id="dz-content-rear_left">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <div class="dz-text-group">
+                <strong id="dz-name-rear_left">Drop Image / Video or Click</strong>
+                <span id="dz-meta-rear_left">If omitted, treated as dead sensor (0.0 rel)</span>
+              </div>
+            </div>
+            <input type="file" id="input-rear_left" class="hidden-file-input" accept="image/*,video/*">
+          </div>
+        </div>
+
+        <!-- Slot 5: Back Right (Optional) -->
+        <div class="camera-card" id="card-rear_right">
+          <div class="camera-header">
+            <div class="camera-title-group">
+              <span class="camera-badge">↘️ Back-Right</span>
+              <span class="optional-tag">OPTIONAL</span>
+            </div>
+            <span class="camera-status-pill pill-empty" id="status-rear_right">Auto-Degraded</span>
+          </div>
+          <div class="camera-dropzone" id="dropzone-rear_right">
+            <div class="dropzone-content" id="dz-content-rear_right">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <div class="dz-text-group">
+                <strong id="dz-name-rear_right">Drop Image / Video or Click</strong>
+                <span id="dz-meta-rear_right">If omitted, treated as dead sensor (0.0 rel)</span>
+              </div>
+            </div>
+            <input type="file" id="input-rear_right" class="hidden-file-input" accept="image/*,video/*">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Run Analysis Action Bar -->
+    <section class="action-bar-container">
+      <div class="action-bar-content">
+        <div class="action-left">
+          <button class="btn-run-pipeline" id="btn-run-analysis">
+            <span class="spinner" id="run-spinner"></span>
+            <span id="run-btn-text">⚡ Run Instant Image Perception (< 1s)</span>
+          </button>
+          
+          <div class="model-badge-wrapper">
+            <span class="badge-label">Active Engine:</span>
+            <span class="model-indicator-badge" id="btn-model-version-badge">
+              Model: yolov8n (High-Accuracy Production)
+            </span>
+          </div>
+        </div>
+
+        <div class="action-right">
+          <div class="fps-selector" id="fps-selector-wrapper" style="display:none;">
+            <span class="fps-label">Video Scan Rate:</span>
+            <select id="select-fps" class="fps-select">
+              <option value="1" selected>⚡ 1 FPS (Super Fast ~2-3s)</option>
+              <option value="2">⚡ 2 FPS (Balanced ~5s)</option>
+              <option value="5">5 FPS (High-Fidelity)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Async Processing Progress State -->
+    <section class="processing-section" id="processing-section" style="display: none;">
+      <div class="processing-card">
+        <div class="processing-header">
+          <div class="spinner-large"></div>
+          <div class="processing-text-group">
+            <h4 id="processing-stage-text">Sampling frames and preparing multi-camera alignment...</h4>
+            <span class="processing-subtext" id="processing-subtext">Executing background ingestion pipeline via asynchronous job store.</span>
+          </div>
+          <span class="progress-percent" id="progress-percent-label">0%</span>
+        </div>
+
+        <div class="progress-track">
+          <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+
+        <div class="processing-footer">
+          <span id="processing-frames-counter">Awaiting worker thread...</span>
+          <span class="rotating-status-pill" id="rotating-status-pill">Sampling frames...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Section (Visible Once Processing Completes) -->
+    <section class="results-section" id="results-section" style="display: none;">
+      
+      <!-- Top Results Header -->
+      <div class="results-header-bar">
+        <div class="results-title-group">
+          <span class="results-badge">PIPELINE ANALYSIS COMPLETE</span>
+          <h2>Temporal Multi-Camera Decision Stream</h2>
+        </div>
+        <div class="results-actions">
+          <button class="btn-secondary-sm" id="btn-play-pause">
+            <span id="btn-play-icon">▶</span>
+            <span id="btn-play-text">Play Feed</span>
+          </button>
+          <span class="playback-time-badge" id="playback-time-badge">0.00s / 0.00s</span>
+        </div>
+      </div>
+
+      <!-- Main Video Player & Decision Panel Split (55% / 45%) -->
+      <div class="video-decision-split">
+        
+        <!-- LEFT: Primary Video Player with Bounding-Box Overlay -->
+        <div class="player-column">
+          <div class="video-container" id="video-container">
+            <video id="front-video-player" playsinline muted preload="auto" style="display:none;">
+              <source id="front-video-source" src="" type="video/mp4">
+              Your browser does not support HTML5 video.
+            </video>
+            <img id="front-image-player" style="display:block; width:100%; height:100%; object-fit:contain; border-radius:12px; background:#0b132b;" alt="Camera Perception Feed" src="/data/red_light_sample.jpg">
+            <canvas id="overlay-canvas"></canvas>
+            
+            <div class="video-overlay-header">
+              <span class="cam-feed-tag" id="cam-feed-label">CAM 1: FRONT (PRIMARY)</span>
+              <span class="det-count-tag" id="live-det-count">Ready for Analysis</span>
+            </div>
+
+            <!-- Big Action Overlay Pill on top of Video -->
+            <div class="video-action-overlay">
+              <span class="overlay-decision-pill pill-move" id="overlay-decision-pill">READY</span>
+            </div>
+          </div>
+
+          <!-- Video Playback & Scrubbing Controls -->
+          <div class="video-controls-bar" id="video-controls-bar" style="display:none;">
+            <button class="ctrl-btn" id="ctrl-btn-rewind" title="Rewind 1s">⏪</button>
+            <button class="ctrl-btn ctrl-play" id="ctrl-btn-play" title="Play/Pause">▶</button>
+            <button class="ctrl-btn" id="ctrl-btn-forward" title="Forward 1s">⏩</button>
+            
+            <div class="speed-toggle-group">
+              <button class="speed-btn active" data-speed="1.0">1.0x</button>
+              <button class="speed-btn" data-speed="0.5">0.5x</button>
+              <button class="speed-btn" data-speed="2.0">2.0x</button>
+            </div>
+          </div>
+
+          <!-- The Scrubbable Timeline Strip (CORE REQUIRED FEATURE) -->
+          <div class="timeline-strip-container" id="timeline-strip-container" style="display:none;">
+            <div class="timeline-header">
+              <span class="timeline-title">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Temporal Decision Strip (Click or drag any point to jump moment):
+              </span>
+              <span class="timeline-info" id="timeline-hover-info">Hover for timestep details</span>
+            </div>
+
+            <div class="timeline-strip-track" id="timeline-strip-track">
+              <!-- Rendered segments by decision color -->
+              <div class="timeline-segments-wrapper" id="timeline-segments-wrapper"></div>
+              <!-- Moving Playhead Needle -->
+              <div class="timeline-playhead" id="timeline-playhead" style="left: 0%;">
+                <div class="playhead-handle"></div>
+              </div>
+            </div>
+
+            <!-- Decision Color Legend -->
+            <div class="timeline-legend">
+              <span class="legend-item"><span class="legend-box color-move"></span> MOVE</span>
+              <span class="legend-item"><span class="legend-box color-slow"></span> SLOW_DOWN</span>
+              <span class="legend-item"><span class="legend-box color-stop"></span> STOP</span>
+              <span class="legend-item"><span class="legend-box color-lane"></span> CHANGE_LANE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Live Synchronized Decision Panel -->
+        <div class="decision-column">
+          <div class="decision-panel-card">
+            
+            <!-- 1. Dominant Current Action Status Pill -->
+            <div class="action-banner-card">
+              <div class="action-label-row">
+                <span class="action-meta-title">CURRENT ARBITRATED ACTION</span>
+                <span class="action-time-ticker" id="panel-time-ticker">T = 0.00s</span>
+              </div>
+              <div class="action-pill-display">
+                <span class="current-action-pill pill-move" id="panel-action-pill">MOVE</span>
+              </div>
+            </div>
+
+            <!-- 2. Primary Driving Telemetry Grid -->
+            <div class="telemetry-grid">
+              
+              <!-- Recommended Speed -->
+              <div class="telemetry-box accent-speed">
+                <span class="box-label">Recommended Speed</span>
+                <div class="box-val-row">
+                  <span class="box-value" id="val-speed">40</span>
+                  <span class="box-unit">km/h</span>
+                </div>
+                <span class="box-hint" id="hint-speed">Fusion Safe Envelope</span>
+              </div>
+
+              <!-- Risk Score Meter -->
+              <div class="telemetry-box accent-risk">
+                <span class="box-label">Collision Risk</span>
+                <div class="box-val-row">
+                  <span class="box-value" id="val-risk">5</span>
+                  <span class="risk-badge badge-low" id="badge-risk-level">LOW RISK</span>
+                </div>
+                <div class="mini-progress-bar">
+                  <div class="mini-bar-fill" id="bar-risk-fill" style="width: 5%;"></div>
+                </div>
+              </div>
+
+              <!-- Lane Action -->
+              <div class="telemetry-box accent-lane">
+                <span class="box-label">Lane Action</span>
+                <span class="box-value-text" id="val-lane-action">MAINTAIN_LANE</span>
+                <span class="box-hint" id="hint-lane">Lateral clearance nominal</span>
+              </div>
+
+              <!-- Traffic Light Status -->
+              <div class="telemetry-box accent-signal">
+                <span class="box-label">Traffic Signal</span>
+                <span class="box-value-text sig-green" id="val-signal">GREEN</span>
+                <span class="box-hint">Autonomous detector</span>
+              </div>
+
+              <!-- Pedestrian Zoning -->
+              <div class="telemetry-box accent-ped">
+                <span class="box-label">Pedestrian Zoning</span>
+                <span class="box-value-text" id="val-pedestrians">0 Detected</span>
+                <span class="box-hint" id="hint-pedestrians">Sidewalk: 0 • In-Lane: 0</span>
+              </div>
+
+              <!-- Blind Spot Monitor -->
+              <div class="telemetry-box accent-blind">
+                <span class="box-label">Blind Spot Status</span>
+                <span class="box-value-text" id="val-blindspot">L: CLEAR | R: CLEAR</span>
+                <span class="box-hint" id="hint-blindspot">Overlapping coverage</span>
+              </div>
+
+            </div>
+
+            <!-- 3. Decision Reasoning / Explanation Feed -->
+            <div class="explanation-box">
+              <span class="explanation-title">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="16" x2="12" y2="12"/>
+                  <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                Arbitration Explanation & Safety Rationale:
+              </span>
+              <ul class="reasoning-list" id="reasoning-list">
+                <li>Clear roadway ahead; traffic signal is GREEN; no pedestrian in-lane conflict.</li>
+              </ul>
+            </div>
+
+            <!-- 4. Per-Camera Reliability Breakdown -->
+            <div class="reliability-breakdown-card">
+              <div class="rel-header-row">
+                <span class="rel-title">5-Camera Sensor Reliability Telemetry:</span>
+                <span class="rel-overall-val" id="rel-overall-val">Overall: 100%</span>
+              </div>
+              <div class="camera-rel-bars">
+                
+                <div class="rel-bar-row">
+                  <span class="rel-cam-name">Front (Cam 1)</span>
+                  <div class="rel-track"><div class="rel-fill" id="rel-fill-front" style="width: 80%;"></div></div>
+                  <span class="rel-percent" id="rel-text-front">80%</span>
+                </div>
+
+                <div class="rel-bar-row">
+                  <span class="rel-cam-name">Front-Left (Cam 2)</span>
+                  <div class="rel-track"><div class="rel-fill degraded" id="rel-fill-front_left" style="width: 0%;"></div></div>
+                  <span class="rel-percent degraded" id="rel-text-front_left">Degraded</span>
+                </div>
+
+                <div class="rel-bar-row">
+                  <span class="rel-cam-name">Front-Right (Cam 3)</span>
+                  <div class="rel-track"><div class="rel-fill degraded" id="rel-fill-front_right" style="width: 0%;"></div></div>
+                  <span class="rel-percent degraded" id="rel-text-front_right">Degraded</span>
+                </div>
+
+                <div class="rel-bar-row">
+                  <span class="rel-cam-name">Back-Left (Cam 4)</span>
+                  <div class="rel-track"><div class="rel-fill degraded" id="rel-fill-rear_left" style="width: 0%;"></div></div>
+                  <span class="rel-percent degraded" id="rel-text-rear_left">Degraded</span>
+                </div>
+
+                <div class="rel-bar-row">
+                  <span class="rel-cam-name">Back-Right (Cam 5)</span>
+                  <div class="rel-track"><div class="rel-fill degraded" id="rel-fill-rear_right" style="width: 0%;"></div></div>
+                  <span class="rel-percent degraded" id="rel-text-rear_right">Degraded</span>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Playback Summary Card -->
+      <div class="playback-summary-section" id="playback-summary-section">
+        <div class="summary-card">
+          <div class="summary-card-header">
+            <h4>Video Session Analytics & Performance Summary</h4>
+            <span class="summary-badge" id="sum-badge-dominant">Dominant: MOVE</span>
+          </div>
+
+          <div class="summary-stats-grid">
+            <div class="sum-stat-box">
+              <span class="sum-stat-num" id="sum-total-frames">30</span>
+              <span class="sum-stat-label">Timesteps Analyzed</span>
+            </div>
+            <div class="sum-stat-box">
+              <span class="sum-stat-num" id="sum-duration">6.0s</span>
+              <span class="sum-stat-label">Temporal Window</span>
+            </div>
+            <div class="sum-stat-box">
+              <span class="sum-stat-num" id="sum-avg-risk">5.0</span>
+              <span class="sum-stat-label">Average Risk Score</span>
+            </div>
+            <div class="sum-stat-box">
+              <span class="sum-stat-num" id="sum-max-risk">5.0</span>
+              <span class="sum-stat-label">Peak Risk Score</span>
+            </div>
+            <div class="sum-stat-box">
+              <span class="sum-stat-num" id="sum-avg-speed">40.0 km/h</span>
+              <span class="sum-stat-label">Mean Safe Velocity</span>
+            </div>
+            <div class="sum-stat-box">
+              <span class="sum-stat-num" id="sum-cams-active">1 / 5</span>
+              <span class="sum-stat-label">Active Sensors</span>
+            </div>
+          </div>
+
+          <!-- Decision State Distribution Bar -->
+          <div class="decision-distribution-container">
+            <span class="dist-label">Decision State Breakdown:</span>
+            <div class="distribution-stacked-bar" id="dist-stacked-bar">
+              <!-- Dynamically rendered colored bars -->
+            </div>
+            <div class="dist-legend-row" id="dist-legend-row"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="/static/js/demo.js"></script>
+</body>
+</html>

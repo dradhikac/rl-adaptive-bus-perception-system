@@ -51,20 +51,20 @@
           <li><a href="#overview" class="nav-link active" data-target="overview">Overview</a></li>
           <li><a href="#technology" class="nav-link" data-target="technology">Technology</a></li>
           <li><a href="#features" class="nav-link" data-target="features">Features</a></li>
-          <li><a href="#demo" class="nav-link" data-target="demo">Live Demo</a></li>
+          <li><a href="/demo" class="nav-link">Live Demo</a></li>
           <li><a href="#architecture" class="nav-link" data-target="architecture">System Architecture</a></li>
         </ul>
       </nav>
 
       <!-- Right: Action Button -->
       <div class="nav-actions">
-        <button class="btn-nav-demo" id="btn-nav-demo">
+        <a href="/demo" class="btn-nav-demo" id="btn-nav-demo">
           <span>View Demo</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
           </svg>
-        </button>
+        </a>
       </div>
     </header>
 
@@ -95,13 +95,13 @@
 
         <!-- Call To Actions -->
         <div class="hero-actions">
-          <button class="btn-primary" id="btn-hero-demo">
+          <a href="/demo" class="btn-primary" id="btn-hero-demo">
             <span>Live Demo</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
             </svg>
-          </button>
+          </a>
           <button class="btn-secondary" id="btn-explore-system">
             <span>Explore the System</span>
           </button>
@@ -201,109 +201,8 @@
               Your browser does not support HTML5 video.
             </video>
 
-            <!-- ----------------------------------------------------------------
-                 MULTI-LAYER SEAMLESS ATMOSPHERIC BLEND
-                 ---------------------------------------------------------------- -->
-            <!-- Layer 1: Left Soft Gradient Dissolve -->
-            <div class="video-fade-left"></div>
-
-            <!-- Layer 2: Pale Blue Atmospheric Glow -->
-            <div class="video-atmospheric-glow"></div>
-
-            <!-- Layer 3: Top/Bottom Subtle Feather -->
-            <div class="video-fade-edges"></div>
-
-            <!-- ----------------------------------------------------------------
-                 INTEGRATED COMPUTER VISION PERCEPTION HUD OVERLAYS
-                 ---------------------------------------------------------------- -->
-            <div class="perception-overlay-container">
-              
-              <!-- Sensor Stream Indicator -->
-              <div class="sensor-stream-indicator">
-                <span class="live-rec">ACTIVE PERCEPTION</span>
-                <span class="sensor-divider"></span>
-                <span>LiDAR 128ch</span>
-                <span class="sensor-divider"></span>
-                <span>5x CAM HD</span>
-              </div>
-
-              <!-- Bounding Box 1: Lead Vehicle Detection -->
-              <div class="bbox-element bbox-vehicle">
-                <div class="bbox-corner tl"></div>
-                <div class="bbox-corner tr"></div>
-                <div class="bbox-corner bl"></div>
-                <div class="bbox-corner br"></div>
-                <div class="bbox-tag">VEHICLE 0.87 (14.2m)</div>
-              </div>
-
-              <!-- Bounding Box 2: Pedestrian Detection -->
-              <div class="bbox-element bbox-pedestrian">
-                <div class="bbox-corner tl"></div>
-                <div class="bbox-corner tr"></div>
-                <div class="bbox-corner bl"></div>
-                <div class="bbox-corner br"></div>
-                <div class="bbox-tag">PEDESTRIAN 0.92</div>
-              </div>
-
-              <!-- Bounding Box 3: Traffic Signal Detection -->
-              <div class="bbox-element bbox-signal">
-                <div class="bbox-corner tl"></div>
-                <div class="bbox-corner tr"></div>
-                <div class="bbox-corner bl"></div>
-                <div class="bbox-corner br"></div>
-                <div class="bbox-tag">SIGNAL 0.99</div>
-              </div>
-
-              <!-- Subtle Dynamic Lane Projection Lines on Road -->
-              <svg class="lane-projection-svg" viewBox="0 0 500 300" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="cyan-lane-grad" x1="0%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.85"/>
-                    <stop offset="65%" stop-color="#6366f1" stop-opacity="0.45"/>
-                    <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-                <!-- Left Projected Lane Boundary -->
-                <path class="lane-path" d="M 120 300 Q 240 180 340 70" />
-                <!-- Right Projected Lane Boundary -->
-                <path class="lane-path" d="M 380 300 Q 360 180 370 70" />
-              </svg>
-
-              <!-- Sensor Radar Arc Sweep -->
-              <div class="radar-sweep-arc"></div>
-
-            </div>
-
-            <!-- ----------------------------------------------------------------
-                 SYSTEM STATUS FLOATING GLASS PANEL (LOWER RIGHT)
-                 ---------------------------------------------------------------- -->
-            <div class="system-status-panel">
-              <div class="panel-header">
-                <span class="panel-title">SYSTEM STATUS</span>
-                <span class="panel-status-indicator">
-                  <span class="status-dot"></span>
-                  Active
-                </span>
-              </div>
-              <div class="telemetry-list">
-                <div class="telemetry-row">
-                  <span class="telemetry-label">Cameras</span>
-                  <span class="telemetry-val" id="telemetry-cameras">5 / 5</span>
-                </div>
-                <div class="telemetry-row">
-                  <span class="telemetry-label">Fusion Confidence</span>
-                  <span class="telemetry-val confidence" id="telemetry-confidence">92%</span>
-                </div>
-                <div class="telemetry-row">
-                  <span class="telemetry-label">Environment Safety</span>
-                  <span class="telemetry-val safety" id="telemetry-safety">Clear</span>
-                </div>
-                <div class="telemetry-row">
-                  <span class="telemetry-label">Current Decision</span>
-                  <span class="decision-badge" id="telemetry-decision">MOVE</span>
-                </div>
-              </div>
-            </div>
+            <!-- Narrow, subtle edge camouflage (only leftmost 70px, bus is untouched) -->
+            <div class="video-edge-blend"></div>
 
             <!-- Subtle Video Pause / Play Toggle -->
             <button class="video-media-toggle" id="video-media-toggle" title="Pause or Play Cinematic Video">

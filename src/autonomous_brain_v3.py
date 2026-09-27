@@ -16,9 +16,8 @@ from src.pedestrian_intelligence import (analyze_pedestrians)
 import os
 from pathlib import Path
 
-# Config flag: set environment variable USE_FINE_TUNED_MODEL="true" or BUS_YOLO_MODEL_PATH
-# Defaults to "yolov8n" (root yolov8n.pt) so nothing breaks if flag is not set
-FINE_TUNED_MODEL_PATH = Path("models/yolov8_bus_v1.pt")
+REPO_ROOT = Path(__file__).resolve().parent.parent
+FINE_TUNED_MODEL_PATH = REPO_ROOT / "models" / "yolov8_bus_v1.pt"
 CONFIGURED_MODEL_PATH = os.environ.get("BUS_YOLO_MODEL_PATH")
 
 if CONFIGURED_MODEL_PATH and Path(CONFIGURED_MODEL_PATH).is_file():
@@ -26,7 +25,7 @@ if CONFIGURED_MODEL_PATH and Path(CONFIGURED_MODEL_PATH).is_file():
 elif os.environ.get("USE_FINE_TUNED_MODEL", "false").lower() in ("true", "1") and FINE_TUNED_MODEL_PATH.is_file():
     YOLO_MODEL_PATH = str(FINE_TUNED_MODEL_PATH)
 else:
-    YOLO_MODEL_PATH = "yolov8n"
+    YOLO_MODEL_PATH = str(REPO_ROOT / "yolov8n.pt") if (REPO_ROOT / "yolov8n.pt").is_file() else "yolov8n.pt"
 
 model = YOLO(YOLO_MODEL_PATH)
 
@@ -35,7 +34,8 @@ vehicle_classes = [
     "car",
     "truck",
     "bus",
-    "motorcycle"
+    "motorcycle",
+    "autorickshaw"
 ]
 
 # ====================================
@@ -138,47 +138,40 @@ def analyze_scene(
     # ====================================
 
     results = model(
-
         front_image,
-
+        conf=0.18,
         verbose=False
     )
     
-    front_left_result = model(
-    front_left,
-    verbose=False
-    )
+    class _DummyResult:
+        def __init__(self, img):
+            self.boxes = []
+            self.orig_img = img
+        def plot(self):
+            if self.orig_img is not None and isinstance(self.orig_img, np.ndarray) and self.orig_img.size > 0:
+                return self.orig_img.copy()
+            return np.zeros((480, 640, 3), dtype=np.uint8)
 
-    front_right_result = model(
-    front_right,
-    verbose=False
-)
+    # Helper to avoid expensive redundant YOLO inference on dead or blank camera feeds
+    def _safe_infer_secondary(cam_img):
+        if cam_img is None or not isinstance(cam_img, np.ndarray) or cam_img.size == 0:
+            return [_DummyResult(cam_img)]
+        # Fast check for solid color placeholder or dead canvas
+        if cam_img.shape[0] < 20 or cam_img.shape[1] < 20:
+            return [_DummyResult(cam_img)]
+        if float(np.max(cam_img)) < 5.0 or float(np.std(cam_img[:32, :32])) < 2.0:
+            return [_DummyResult(cam_img)]
+        return model(cam_img, conf=0.18, verbose=False)
 
-    rear_left_result = model(
-    rear_left,
-    verbose=False
-)
-
-    rear_right_result = model(
-    rear_right,
-    verbose=False
-)
+    front_left_result = _safe_infer_secondary(front_left)
+    front_right_result = _safe_infer_secondary(front_right)
+    rear_left_result = _safe_infer_secondary(rear_left)
+    rear_right_result = _safe_infer_secondary(rear_right)
     
-    front_left_objects = len(
-        front_left_result[0].boxes
-)
-
-    front_right_objects = len(
-        front_right_result[0].boxes
-)
-
-    rear_left_objects = len(
-        rear_left_result[0].boxes
-)
-
-    rear_right_objects = len(
-        rear_right_result[0].boxes
-)
+    front_left_objects = len(front_left_result[0].boxes)
+    front_right_objects = len(front_right_result[0].boxes)
+    rear_left_objects = len(rear_left_result[0].boxes)
+    rear_right_objects = len(rear_right_result[0].boxes)
 
 
     object_count = 0
@@ -277,125 +270,34 @@ def analyze_scene(
         # TRAFFIC SIGNAL
         # ==========================
 
-        if class_name == "traffic light":
+        if class_name in ("traffic light", "traffic_light"):
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            crop = front_image[y1:y2, x1:x2]
 
-            x1, y1, x2, y2 = map(
+            if crop.size > 0:
+                hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
 
-                int,
+                red1 = cv2.inRange(hsv, np.array([0, 50, 40]), np.array([12, 255, 255]))
+                red2 = cv2.inRange(hsv, np.array([168, 50, 40]), np.array([180, 255, 255]))
+                red_pixels = cv2.countNonZero(red1 + red2)
 
-                box.xyxy[0]
-            )
-
-            crop = front_image[
-                y1:y2,
-                x1:x2
-            ]
-
-            if crop.size == 0:
-                continue
-
-            hsv = cv2.cvtColor(
-
-                crop,
-
-                cv2.COLOR_BGR2HSV
-            )
-
-            red1 = cv2.inRange(
-
-                hsv,
-
-                np.array([0,70,50]),
-
-                np.array([10,255,255])
-            )
-
-            red2 = cv2.inRange(
-
-                hsv,
-
-                np.array([170,70,50]),
-
-                np.array([180,255,255])
-            )
-
-            red_pixels = cv2.countNonZero(
-                red1 + red2
-            )
-
-            yellow_pixels = cv2.countNonZero(
-
-                cv2.inRange(
-
-                    hsv,
-
-                    np.array(
-                        [20,100,100]
-                    ),
-
-                    np.array(
-                        [35,255,255]
-                    )
+                yellow_pixels = cv2.countNonZero(
+                    cv2.inRange(hsv, np.array([15, 70, 70]), np.array([35, 255, 255]))
                 )
-            )
 
-            green_pixels = cv2.countNonZero(
-
-                cv2.inRange(
-
-                    hsv,
-
-                    np.array(
-                        [40,50,50]
-                    ),
-
-                    np.array(
-                        [90,255,255]
-                    )
+                green_pixels = cv2.countNonZero(
+                    cv2.inRange(hsv, np.array([36, 50, 50]), np.array([90, 255, 255]))
                 )
-            )
 
-            if (
-
-                red_pixels >
-                yellow_pixels
-
-                and
-
-                red_pixels >
-                green_pixels
-
-            ):
-
-                traffic_signal = "RED"
-
-            elif (
-
-                yellow_pixels >
-                red_pixels
-
-                and
-
-                yellow_pixels >
-                green_pixels
-
-            ):
-
-                traffic_signal = "YELLOW"
-
-            elif (
-
-                green_pixels >
-                red_pixels
-
-                and
-
-                green_pixels >
-                yellow_pixels
-
-            ):
-
-                traffic_signal = "GREEN"
+                # Prioritize RED signal for vehicle safety
+                if red_pixels > yellow_pixels and red_pixels > green_pixels and red_pixels >= 8:
+                    traffic_signal = "RED"
+                elif yellow_pixels > red_pixels and yellow_pixels > green_pixels and yellow_pixels >= 8:
+                    if traffic_signal != "RED":
+                        traffic_signal = "YELLOW"
+                elif green_pixels > red_pixels and green_pixels > yellow_pixels and green_pixels >= 8:
+                    if traffic_signal not in ("RED", "YELLOW"):
+                        traffic_signal = "GREEN"
 
     
     # ====================================

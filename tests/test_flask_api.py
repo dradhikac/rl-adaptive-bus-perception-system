@@ -15,6 +15,7 @@ Verifies:
 import base64
 import os
 import sys
+import time
 import unittest
 from pathlib import Path
 
@@ -42,6 +43,26 @@ class TestFlaskAPI(unittest.TestCase):
         self.assertIn(b"AutoBus", response.data)
         self.assertIn(b"SMARTER BUSES", response.data)
         self.assertIn(b"hero-bus-video", response.data)
+
+    def test_00b_demo_page(self):
+        """GET /demo should return 200 and render the multi-camera Live Demo page HTML."""
+        response = self.client.get("/demo")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"AutoBus", response.data)
+        self.assertIn(b"360", response.data)
+        self.assertIn(b"btn-run-pipeline", response.data)
+        self.assertIn(b"results-section", response.data)
+
+    def test_00c_sample_cameras(self):
+        """GET /api/sample-cameras should return 200 with camera preset paths."""
+        response = self.client.get("/api/sample-cameras")
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertIn("front", data)
+        self.assertIn("front_left", data)
+        self.assertIn("front_right", data)
+        self.assertIn("rear_left", data)
+        self.assertIn("rear_right", data)
 
     def test_01_health_check(self):
         """GET /api/health should return 200 and system operational status."""
@@ -157,6 +178,42 @@ class TestFlaskAPI(unittest.TestCase):
         self.assertEqual(first_event["args"][0]["status"], "connected")
         ws_client.disconnect(namespace="/ws/live")
 
+    def test_06_video_demo_upload_and_status(self):
+        """POST /api/demo/upload and GET /api/demo/status/<job_id> step 2 integration."""
+        test_clip = REPO_ROOT / "tests" / "synthetic_test_clip.mp4"
+        self.assertTrue(test_clip.is_file())
+
+        # Test upload
+        res = self.client.post("/api/demo/upload", data={
+            "front": str(test_clip),
+            "target_fps": 5.0,
+            "max_duration_sec": 0.4
+        })
+        self.assertEqual(res.status_code, 202)
+        data = res.get_json()
+        self.assertIn("job_id", data)
+        self.assertEqual(data["status"], "processing")
+        job_id = data["job_id"]
+
+        # Poll status
+        max_wait = 15.0
+        start = time.time()
+        final_data = {}
+        while time.time() - start < max_wait:
+            poll = self.client.get(f"/api/demo/status/{job_id}")
+            self.assertEqual(poll.status_code, 200)
+            final_data = poll.get_json()
+            if final_data.get("status") == "completed":
+                break
+            time.sleep(0.4)
+
+        self.assertEqual(final_data.get("status"), "completed")
+        self.assertGreater(len(final_data.get("timeline", [])), 0)
+        first_step = final_data["timeline"][0]
+        for key in ["timestamp", "frame_index", "decision", "speed", "lane_action", "risk_score", "risk_level", "explanation", "reliability_scores"]:
+            self.assertIn(key, first_step)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
