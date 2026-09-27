@@ -163,7 +163,6 @@ The following screenshots demonstrate the complete perception-to-decision pipeli
 ├── frontend/             # Streamlit dashboard
 │   └── app_v3.py
 ├── models/               # Model weights / config (large weights git-ignored)
-├── docs/                 # Architecture notes and design documentation
 ├── screenshots/          # Dashboard screenshots for this README
 ├── requirements.txt
 ├── packages.txt          # Linux system deps for Streamlit Cloud
