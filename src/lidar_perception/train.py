@@ -94,6 +94,7 @@ def main():
     parser.add_argument("--batch_size", type=int, default=4, help="Batch size for training")
     parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
     parser.add_argument("--checkpoint_dir", type=str, default="models/checkpoints", help="Output checkpoint dir")
+    parser.add_argument("--augment", action="store_true", help="Enable data augmentation for training")
     args = parser.parse_args()
     
     os.makedirs(args.checkpoint_dir, exist_ok=True)
@@ -101,7 +102,7 @@ def main():
     os.makedirs(art_dir, exist_ok=True)
     
     print("============================================================")
-    print("STAGE 8 — BASELINE 3D DETECTION MODEL TRAINING")
+    print("AUTOBUS 3D DETECTION MODEL TRAINING")
     print("============================================================")
     print(f"Model: TinyCenterNet3D-Lite (0.49M params, CenterPoint-style)")
     print(f"Input representation: 6-channel BEV Pseudo-Image (256 x 256, 0.25m resolution)")
@@ -109,6 +110,7 @@ def main():
     print(f"Train samples: 283 samples (7 scenes)")
     print(f"Validation samples: 41 samples (1 scene)")
     print(f"Test samples: 80 samples (2 scenes)")
+    print(f"Augmentation: {args.augment}")
     print(f"Batch size: {args.batch_size}")
     print(f"Learning rate: {args.lr}")
     print(f"Number of epochs: {args.epochs}")
@@ -121,7 +123,7 @@ def main():
     
     # Datasets
     print("Initializing datasets & preprocessors...")
-    train_dataset = AutoBusLidarDataset(split="TRAIN", config=config, use_cache=True)
+    train_dataset = AutoBusLidarDataset(split="TRAIN", config=config, use_cache=True, augment=args.augment)
     val_dataset = AutoBusLidarDataset(split="VALIDATION", config=config, use_cache=True)
     test_dataset = AutoBusLidarDataset(split="TEST", config=config, use_cache=True)
     

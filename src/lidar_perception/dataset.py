@@ -17,7 +17,8 @@ class AutoBusLidarDataset(Dataset):
         self, 
         split: str = "TRAIN", 
         config: LidarConfig = DEFAULT_CONFIG,
-        use_cache: bool = True
+        use_cache: bool = True,
+        augment: bool = False
     ):
         """
         PyTorch Dataset for AutoBus LiDAR 3D Perception.
@@ -26,6 +27,7 @@ class AutoBusLidarDataset(Dataset):
         self.split = split.upper()
         self.config = config
         self.use_cache = use_cache
+        self.augment = augment and (self.split == "TRAIN")
         
         # Load controlled split metadata
         if not os.path.exists(config.split_file):
@@ -54,9 +56,31 @@ class AutoBusLidarDataset(Dataset):
         
         # Convert to PyTorch tensors
         # bev_map: (6, H, W)
-        bev_tensor = torch.from_numpy(processed["bev_map"]).float()
-        boxes_sensor_tensor = torch.from_numpy(processed["boxes_sensor"]).float()
-        boxes_grid_tensor = torch.from_numpy(processed["boxes_grid"]).float()
+        bev_tensor = torch.from_numpy(processed["bev_map"].copy()).float()
+        boxes_sensor_tensor = torch.from_numpy(processed["boxes_sensor"].copy()).float()
+        boxes_grid_tensor = torch.from_numpy(processed["boxes_grid"].copy()).float()
+        
+        # Stochastic bilateral horizontal flip augmentation (p=0.5)
+        if self.augment and (torch.rand(1).item() < 0.5):
+            # 1. Flip BEV map along width dimension (dim 2)
+            bev_tensor = torch.flip(bev_tensor, dims=[2])
+            
+            # 2. Flip boxes if any exist
+            if len(boxes_sensor_tensor) > 0:
+                # Invert metric X in sensor frame
+                boxes_sensor_tensor[:, 0] = -boxes_sensor_tensor[:, 0]
+                
+                # Invert discrete X in BEV grid continuous frame
+                boxes_grid_tensor[:, 0] = float(self.config.grid_size_x - 1) - boxes_grid_tensor[:, 0]
+                
+                # Invert heading yaw: theta' = atan2(sin(theta), -cos(theta))
+                yaw_s = boxes_sensor_tensor[:, 6]
+                new_yaw_s = torch.atan2(torch.sin(yaw_s), -torch.cos(yaw_s))
+                boxes_sensor_tensor[:, 6] = new_yaw_s
+                
+                yaw_g = boxes_grid_tensor[:, 6]
+                new_yaw_g = torch.atan2(torch.sin(yaw_g), -torch.cos(yaw_g))
+                boxes_grid_tensor[:, 6] = new_yaw_g
         
         return {
             "sample_token": sample_token,
