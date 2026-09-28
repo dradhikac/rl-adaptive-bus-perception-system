@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en" class="standalone-page-html">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoBus AI — Deployable Features & Capabilities</title>
+  <meta name="description" content="Capabilities provided by AutoBus AI: 360° surround perception, traffic signal compliance, blind spot collision mitigation, adaptive sensor fusion, RL tactical decision-making, and fail-safe decision fusion.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%232563eb%22><path d=%22M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z%22/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Compact Alternating Feature Presentation Styles */
+    .feature-showcase-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 24px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 22px 24px;
+      box-shadow: var(--shadow-subtle);
+      transition: all 0.25s ease;
+    }
+    .feature-showcase-row:hover {
+      box-shadow: 0 12px 28px -6px rgba(37, 99, 235, 0.08);
+      border-color: rgba(37, 99, 235, 0.25);
+    }
+    .feature-showcase-row.reverse {
+      flex-direction: row-reverse;
+    }
+    .feature-content-col {
+      flex: 1 1 50%;
+    }
+    .feature-visual-col {
+      flex: 1 1 50%;
+    }
+    .feature-category-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+    .tag-blue { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+    .tag-rose { background: rgba(225, 29, 72, 0.1); color: #e11d48; }
+    .tag-amber { background: rgba(217, 119, 6, 0.1); color: #d97706; }
+    .tag-cyan { background: rgba(8, 145, 178, 0.1); color: #0891b2; }
+    .tag-violet { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
+    .tag-emerald { background: rgba(5, 150, 105, 0.1); color: #059669; }
+
+    .feature-heading {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+    .feature-summary {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .feature-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .feature-metric-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+    .metric-val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+    .metric-lbl {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+    .feature-bullet-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .feature-bullet-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.35;
+    }
+    .feature-bullet-list li svg {
+      width: 14px;
+      height: 14px;
+      color: var(--accent-blue);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .feature-graphic-wrapper {
+      background: #f8fafc;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px;
+      height: 175px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+    .feature-graphic-wrapper .tech-svg {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    @media (max-width: 900px) {
+      .feature-showcase-row,
+      .feature-showcase-row.reverse {
+        flex-direction: column;
+        gap: 24px;
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body class="standalone-page">
+  <div class="page-background"></div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="brand-icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/>
+        </svg>
+      </div>
+      <span class="brand-text">AutoBus <span class="brand-ai-badge">AI</span></span>
+    </a>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link">Overview</a></li>
+        <li><a href="/static/technology.html" class="nav-link">Technology</a></li>
+        <li><a href="/static/features.html" class="nav-link active">Features</a></li>
+        <li><a href="/static/architecture.html" class="nav-link">System Architecture</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="/demo" class="btn-nav-demo">
+        <span>View Demo</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="standalone-container">
+    <div class="standalone-header">
+      <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        <span class="badge-text">AUTONOMOUS CAPABILITIES</span>
+      </div>
+      <h1 class="standalone-title">What the AutoBus AI System Provides</h1>
+      <p class="standalone-subtitle">
+        Deployable capabilities engineered to protect passengers, detect blind-spot hazards, respect traffic signals, and make auditable driving decisions.
+      </p>
+    </div>
+
+    <!-- FEATURE 1: 360° Multi-Camera Perception -->
+    <section class="feature-showcase-row">
+      <div class="feature-content-col">
+        <span class="feature-category-tag tag-blue">Capability 01 • Surround Vision</span>
+        <h2 class="feature-heading">360° Multi-Camera Perception</h2>
+        <p class="feature-summary">
+          Provides real-time spatial awareness across five synchronized hardware camera streams. Combines front-facing long-range optics with peripheral and rear views to ensure zero blind spots around the entire bus chassis.
+        </p>
+        <div class="feature-metrics-grid">
+          <div class="feature-metric-card">
+            <div class="metric-val" style="color: #2563eb;">5 Synced</div>
+            <div class="metric-lbl">Viewpoints (Front, FL, FR, RL, RR)</div>
+          </div>
+          <div class="feature-metric-card">
+            <div class="metric-val" style="color: #2563eb;">360°</div>
+            <div class="metric-lbl">Surround Detection Sphere</div>
+          </div>
+        </div>
+        <ul class="feature-bullet-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Simultaneous multi-stream inference identifying buses, auto-rickshaws, pedestrians, and cyclists
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Eliminates high-risk blind zones during turns and curbside bus-stop maneuvers
+          </li>
+        </ul>
+      </div>
+      <div class="feature-visual-col">
+        <div class="feature-graphic-wrapper">
+          <svg viewBox="0 0 520 260" class="tech-svg">
+            <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
+            <!-- 5 Directional Feeds visual -->
+            <g transform="translate(10, 15)">
+              <rect x="0" y="0" width="90" height="42" rx="6" fill="#0f172a" stroke="#3b82f6"/>
+              <text x="45" y="24" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">FRONT</text>
+              <text x="45" y="36" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="6.5" text-anchor="middle">1080p @ 30 FPS</text>
+
+              <rect x="105" y="0" width="90" height="42" rx="6" fill="#0f172a" stroke="#6366f1"/>
+              <text x="150" y="24" fill="#818cf8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">FRONT_LEFT</text>
+              <text x="150" y="36" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="6.5" text-anchor="middle">1080p @ 30 FPS</text>
+
+              <rect x="210" y="0" width="90" height="42" rx="6" fill="#0f172a" stroke="#6366f1"/>
+              <text x="255" y="24" fill="#818cf8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">FRONT_RIGHT</text>
+              <text x="255" y="36" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="6.5" text-anchor="middle">1080p @ 30 FPS</text>
+
+              <rect x="315" y="0" width="90" height="42" rx="6" fill="#0f172a" stroke="#6366f1"/>
+              <text x="360" y="24" fill="#818cf8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">REAR_LEFT</text>
+              <text x="360" y="36" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="6.5" text-anchor="middle">1080p @ 30 FPS</text>
+
+              <rect x="420" y="0" width="90" height="42" rx="6" fill="#0f172a" stroke="#6366f1"/>
+              <text x="465" y="24" fill="#818cf8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">REAR_RIGHT</text>
+              <text x="465" y="36" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="6.5" text-anchor="middle">1080p @ 30 FPS</text>
+            </g>
+            <!-- Surround Synthesis -->
+            <path d="M 260 65 L 260 90" stroke="#3b82f6" stroke-width="2"/>
+            <g transform="translate(40, 95)">
+              <rect x="0" y="0" width="440" height="145" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+              <!-- Overhead Bus -->
+              <rect x="190" y="25" width="60" height="95" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-width="1.8"/>
+              <text x="220" y="76" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">AUTOBUS</text>
+              <!-- 360 Sensing Cones -->
+              <circle cx="220" cy="25" r="4" fill="#38bdf8"/>
+              <path d="M 220 25 L 140 10 L 300 10 Z" fill="rgba(56, 189, 248, 0.15)"/>
+              <text x="220" y="20" fill="#0284c7" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="700" text-anchor="middle">FRONT CONE</text>
+
+              <path d="M 190 40 L 70 20 L 70 80 Z" fill="rgba(99, 102, 241, 0.15)"/>
+              <text x="60" y="55" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="600">FL PERCEPTION</text>
+
+              <path d="M 250 40 L 370 20 L 370 80 Z" fill="rgba(99, 102, 241, 0.15)"/>
+              <text x="380" y="55" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="600">FR PERCEPTION</text>
+
+              <path d="M 190 100 L 70 85 L 70 140 Z" fill="rgba(99, 102, 241, 0.15)"/>
+              <text x="60" y="115" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="600">RL BLIND SPOT</text>
+
+              <path d="M 250 100 L 370 85 L 370 140 Z" fill="rgba(99, 102, 241, 0.15)"/>
+              <text x="380" y="115" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="600">RR BLIND SPOT</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE 2: Traffic Signal Recognition -->
+    <section class="feature-showcase-row reverse">
+      <div class="feature-content-col">
+        <span class="feature-category-tag tag-rose">Capability 02 • Signal Compliance</span>
+        <h2 class="feature-heading">Traffic Signal Recognition</h2>
+        <p class="feature-summary">
+          Recognizes and classifies traffic-light states in real time using visual color classification in HSV space. Enforces strict zero-violation intersection interlocks to guarantee compliance with municipal signals.
+        </p>
+        <div class="feature-metrics-grid">
+          <div class="feature-metric-card">
+            <div class="metric-val" style="color: #e11d48;">HSV Space</div>
+            <div class="metric-lbl">Illumination & Glare Invariance</div>
+          </div>
+          <div class="feature-metric-card">
+            <div class="metric-val" style="color: #e11d48;">0 km/h</div>
+            <div class="metric-lbl">Mandatory Red Light Interlock</div>
+          </div>
+        </div>
+        <ul class="feature-bullet-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Robust signal segmentation across bright sunlight, heavy rain, and night glares
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Deterministic emergency braking override preventing intersection collisions
+          </li>
+        </ul>
+      </div>
+      <div class="feature-visual-col">
+        <div class="feature-graphic-wrapper">
+          <svg viewBox="0 0 520 260" class="tech-svg">
+            <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
+            <!-- Physical Traffic Light -->
+            <g transform="translate(40, 30)">
+              <rect x="0" y="0" width="70" height="190" rx="14" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+              <!-- Red active -->
+              <circle cx="35" cy="40" r="22" fill="#ef4444" stroke="#f87171" stroke-width="3"/>
+              <circle cx="35" cy="40" r="28" fill="none" stroke="rgba(239, 68, 68, 0.3)" stroke-width="2" stroke-dasharray="4,3"/>
+              <!-- Yellow inactive -->
+              <circle cx="35" cy="95" r="20" fill="#334155"/>
+              <!-- Green inactive -->
+              <circle cx="35" cy="150" r="20" fill="#334155"/>
+              <text x="35" y="210" fill="#dc2626" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">ACTIVE: RED</text>
+            </g>
+
+            <path d="M 125 125 L 175 125" stroke="#ef4444" stroke-width="2"/>
+
+            <!-- Recognition Processing Pipeline -->
+            <g transform="translate(185, 30)">
+              <rect x="0" y="0" width="300" height="190" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+              <text x="20" y="30" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">SIGNAL ANALYSIS PIPELINE</text>
+              
+              <rect x="20" y="45" width="260" height="32" rx="5" fill="#ffffff" stroke="#e2e8f0"/>
+              <text x="35" y="65" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8">1. YOLOv8 Traffic Light Crop</text>
+
+              <rect x="20" y="85" width="260" height="32" rx="5" fill="#ffffff" stroke="#e2e8f0"/>
+              <text x="35" y="105" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8">2. HSV Hue Mask: H &isin; [0, 10] &cup; [160, 180]</text>
+
+              <!-- State Output Box -->
+              <rect x="20" y="125" width="260" height="45" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+              <text x="35" y="145" fill="#b91c1c" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700">SIGNAL STATE: RED (CONF: 99.4%)</text>
+              <text x="35" y="160" fill="#dc2626" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800">AUTOMATIC INTERLOCK: SPEED LIMIT = 0 KM/H</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE 3: Blind Spot Intelligence -->
+    <section class="feature-showcase-row">
+      <div class="feature-content-col">
+        <span class="feature-category-tag tag-amber">Capability 03 • Spatial Safety</span>
+        <h2 class="feature-heading">Blind Spot Intelligence</h2>
+        <p class="feature-summary">
+          Continuously evaluates lane occupancy, approaching vehicle velocity, and collision risk during planned turns or lane changes. Dynamically calculates Time-To-Collision (TTC) to inhibit dangerous side impacts.
+        </p>
+        <div class="feature-metrics-grid">
+          <div class="feature-metric-card">
+            <div class="metric-val" style="color: #d97706;">0 - 100</div>
+            <div class="metric-lbl">Collision Threat Index</div>
+          </div>
+          <div class="feature-metric-card">
+            <div class="metric-val" style="color: #d97706;">Dynamic TTC</div>
+            <div class="metric-lbl">Time-to-Collision Tracking</div>
+          </div>
+        </div>
+        <ul class="feature-bullet-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Specialized tracking for filtering high-speed motorcycles and filtering lane-splitting vehicles
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Inhibits lane changes until clear spatial buffer is mathematically guaranteed
+          </li>
+        </ul>
+      </div>
+      <div class="feature-visual-col">
+        <div class="feature-graphic-wrapper">
+          <svg viewBox="0 0 520 260" class="tech-svg">
+            <rect width="100%" height="100%" fill="#1e293b" rx="8"/>
+            <!-- Road Lanes -->
+            <line x1="160" y1="0" x2="160" y2="260" stroke="#64748b" stroke-width="2" stroke-dasharray="10,10"/>
+            <line x1="340" y1="0" x2="340" y2="260" stroke="#64748b" stroke-width="2" stroke-dasharray="10,10"/>
+
+            <!-- Center Bus -->
+            <g transform="translate(215, 60)">
+              <rect x="0" y="0" width="70" height="135" rx="14" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+              <text x="35" y="75" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">AUTOBUS</text>
+            </g>
+
+            <!-- Left Blind Zone Hazard -->
+            <polygon points="215,100 80,90 60,210 215,185" fill="rgba(239, 68, 68, 0.35)" stroke="#ef4444" stroke-width="1.5"/>
+            <!-- Car in Blindspot -->
+            <g transform="translate(90, 130)">
+              <rect x="0" y="0" width="36" height="55" rx="6" fill="#f59e0b" stroke="#ffffff"/>
+              <text x="18" y="32" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="700" text-anchor="middle">CAR</text>
+              <line x1="18" y1="0" x2="18" y2="-20" stroke="#ef4444" stroke-width="2"/>
+              <polygon points="15,-18 18,-24 21,-18" fill="#ef4444"/>
+            </g>
+
+            <!-- Right Clear Zone -->
+            <polygon points="285,100 420,90 440,210 285,185" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="1.5"/>
+            <text x="360" y="150" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700">RIGHT: CLEAR</text>
+
+            <!-- Realtime Telemetry Overlay -->
+            <g transform="translate(15, 20)">
+              <rect x="0" y="0" width="130" height="55" rx="6" fill="#0f172a" stroke="#ef4444"/>
+              <text x="10" y="20" fill="#f87171" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700">LEFT RISK: 86/100</text>
+              <text x="10" y="35" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7">TTC: 1.4s (CRITICAL)</text>
+              <text x="10" y="47" fill="#ef4444" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="700">LANE CHANGE INHIBITED</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE 4: Adaptive Sensor Fusion -->
+    <section class="feature-showcase-row reverse">
+      <div class="feature-content-col">
+        <span class="feature-category-tag tag-cyan">Capability 04 • Self-Healing Vision</span>
+        <h2 class="feature-heading">Adaptive Sensor Fusion</h2>
+        <p class="feature-summary">
+          Measures real-time lens degradation across all cameras using blur variance, contrast spread, and brightness distribution. Obscured or rain-splattered lenses are down-weighted dynamically while pristine camera streams receive boosted trust.
+        </p>
+        <div class="feature-metrics-grid">
+          <div class="feature-metric-card">
+            <div class="metric-val" style="color: #0891b2;">Dynamic</div>
+            <div class="metric-lbl">Laplacian Quality Scoring</div>
+          </div>
+          <div class="feature-metric-card">
+            <div class="metric-val" style="color: #0891b2;">Zero Pause</div>
+            <div class="metric-lbl">Graceful Sensor Degradation</div>
+          </div>
+        </div>
+        <ul class="feature-bullet-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Prevents false alerts caused by muddy lenses, headlight glare, or sudden raindrops
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Continuously recalibrates weights as the bus exits adverse weather or tunnels
+          </li>
+        </ul>
+      </div>
+      <div class="feature-visual-col">
+        <div class="feature-graphic-wrapper">
+          <svg viewBox="0 0 520 260" class="tech-svg">
+            <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
+            <!-- 5 Feeds Convergence -->
+            <g transform="translate(25, 25)">
+              <rect x="0" y="0" width="110" height="28" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+              <text x="10" y="18" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">CAM 1: Trust 98%</text>
+
+              <rect x="0" y="38" width="110" height="28" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+              <text x="10" y="56" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">CAM 2: Trust 94%</text>
+
+              <rect x="0" y="76" width="110" height="28" rx="4" fill="#fef2f2" stroke="#fca5a5"/>
+              <text x="10" y="94" fill="#b91c1c" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">CAM 3: Trust 38% (RAIN)</text>
+
+              <rect x="0" y="114" width="110" height="28" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+              <text x="10" y="132" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">CAM 4: Trust 96%</text>
+
+              <rect x="0" y="152" width="110" height="28" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+              <text x="10" y="170" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">CAM 5: Trust 97%</text>
+            </g>
+
+            <!-- Weighted Convergence Arrows -->
+            <path d="M 145 35 L 210 100" stroke="#16a34a" stroke-width="2"/>
+            <path d="M 145 70 L 210 105" stroke="#16a34a" stroke-width="2"/>
+            <path d="M 145 105 L 210 110" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="3,3"/>
+            <path d="M 145 140 L 210 115" stroke="#16a34a" stroke-width="2"/>
+            <path d="M 145 175 L 210 120" stroke="#16a34a" stroke-width="2"/>
+
+            <!-- Center Convergence Core -->
+            <g transform="translate(215, 45)">
+              <rect x="0" y="0" width="135" height="135" rx="12" fill="#0f172a" stroke="#06b6d4" stroke-width="2"/>
+              <text x="67" y="32" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">ADAPTIVE WEIGHT</text>
+              <text x="67" y="50" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7.5" text-anchor="middle">FUSION CORE</text>
+              <rect x="15" y="65" width="105" height="24" rx="4" fill="#0284c7"/>
+              <text x="67" y="80" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Re-Normalized</text>
+              <text x="67" y="112" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="7" text-anchor="middle">w_i = (q_i &middot; c_i) / &Sigma;</text>
+            </g>
+
+            <!-- Output Confidence Score -->
+            <path d="M 360 112 L 395 112" stroke="#06b6d4" stroke-width="2.5"/>
+            <g transform="translate(400, 50)">
+              <rect x="0" y="0" width="105" height="125" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+              <text x="52" y="28" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="700" text-anchor="middle">FUSED TRUST</text>
+              <text x="52" y="66" fill="#0284c7" font-family="'JetBrains Mono', monospace" font-size="24" font-weight="800" text-anchor="middle">92%</text>
+              <text x="52" y="94" fill="#16a34a" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">OPERATIONAL</text>
+              <text x="52" y="110" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="6.5" text-anchor="middle">Degradation: -3%</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE 5: Reinforcement Learning Decision Engine -->
+    <section class="feature-showcase-row">
+      <div class="feature-content-col">
+        <span class="feature-category-tag tag-violet">Capability 05 • Autonomous Policy</span>
+        <h2 class="feature-heading">Reinforcement Learning Decision Engine</h2>
+        <p class="feature-summary">
+          Trained on complex real-world urban transit scenarios to output tactical decisions based on the current scene and safety state. Discrete action space provides stable, passenger-comfortable transitions between five supported states: MOVE, SLOW_DOWN, STOP, CHANGE_LEFT, and CHANGE_RIGHT.
+        </p>
+        <div class="feature-metrics-grid">
+          <div class="feature-metric-card">
+            <div class="metric-val" style="color: #7c3aed;">5 Actions</div>
+            <div class="metric-lbl">MOVE, SLOW_DOWN, STOP, CH_L, CH_R</div>
+          </div>
+          <div class="feature-metric-card">
+            <div class="metric-val" style="color: #7c3aed;">Comfort Score</div>
+            <div class="metric-lbl">Optimized Jerk & Deceleration</div>
+          </div>
+        </div>
+        <ul class="feature-bullet-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Trained with reward functions balancing pedestrian clearance and schedule adherence
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Selects driving maneuvers smoothly to maintain standing passenger stability
+          </li>
+        </ul>
+      </div>
+      <div class="feature-visual-col">
+        <div class="feature-graphic-wrapper">
+          <svg viewBox="0 0 520 260" class="tech-svg">
+            <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
+            <!-- Decision Flow -->
+            <g transform="translate(20, 30)">
+              <rect x="0" y="0" width="130" height="185" rx="8" fill="#f8fafc" stroke="#c4b5fd"/>
+              <text x="65" y="24" fill="#6d28d9" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">SCENE OBSERVATION</text>
+              <text x="15" y="50" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="7.5">&bull; Obstacle Distance</text>
+              <text x="15" y="70" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="7.5">&bull; Signal Color State</text>
+              <text x="15" y="90" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="7.5">&bull; Blind Spot Risk</text>
+              <text x="15" y="110" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="7.5">&bull; Current Velocity</text>
+              <rect x="10" y="135" width="110" height="35" rx="4" fill="#f5f3ff" stroke="#a78bfa"/>
+              <text x="65" y="152" fill="#5b21b6" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">STATE VECTOR</text>
+              <text x="65" y="163" fill="#6b21a8" font-family="'JetBrains Mono', monospace" font-size="7" text-anchor="middle">S_t &isin; &reals;<sup>18</sup></text>
+            </g>
+
+            <path d="M 160 120 L 195 120" stroke="#7c3aed" stroke-width="2.5"/>
+
+            <!-- 5 Discrete Supported Actions -->
+            <g transform="translate(205, 20)">
+              <rect x="0" y="0" width="295" height="205" rx="10" fill="#0f172a" stroke="#7c3aed" stroke-width="1.8"/>
+              <text x="147" y="24" fill="#c4b5fd" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">5 SUPPORTED DRIVING ACTIONS</text>
+              
+              <!-- 1. MOVE -->
+              <rect x="20" y="36" width="255" height="26" rx="4" fill="#1e293b"/>
+              <text x="35" y="53" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">ACTION 1: MOVE (Target: 32 km/h)</text>
+
+              <!-- 2. SLOW_DOWN -->
+              <rect x="20" y="68" width="255" height="26" rx="4" fill="#1e293b"/>
+              <text x="35" y="85" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">ACTION 2: SLOW_DOWN (Target: 15 km/h)</text>
+
+              <!-- 3. STOP (Selected active) -->
+              <rect x="20" y="100" width="255" height="32" rx="4" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+              <text x="35" y="120" fill="#dc2626" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="800">ACTION 3: STOP &star; SELECTED (Target: 0 km/h)</text>
+
+              <!-- 4. CHANGE_LEFT -->
+              <rect x="20" y="138" width="255" height="26" rx="4" fill="#1e293b"/>
+              <text x="35" y="155" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">ACTION 4: CHANGE_LEFT (Lane Offset -1)</text>
+
+              <!-- 5. CHANGE_RIGHT -->
+              <rect x="20" y="170" width="255" height="26" rx="4" fill="#1e293b"/>
+              <text x="35" y="187" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">ACTION 5: CHANGE_RIGHT (Lane Offset +1)</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE 6: Decision Fusion -->
+    <section class="feature-showcase-row reverse">
+      <div class="feature-content-col">
+        <span class="feature-category-tag tag-emerald">Capability 06 • Fail-Safe Fusion</span>
+        <h2 class="feature-heading">Decision Fusion</h2>
+        <p class="feature-summary">
+          Combines learned policy recommendations with deterministic, risk-based safety rules to produce the final decision. Hardcoded safety envelopes guarantee that machine learning recommendations can never violate critical physical safety rules.
+        </p>
+        <div class="feature-metrics-grid">
+          <div class="feature-metric-card">
+            <div class="metric-val" style="color: #059669;">Arbitration</div>
+            <div class="metric-lbl">RL Recommendation &cap; Safety Envelope</div>
+          </div>
+          <div class="feature-metric-card">
+            <div class="metric-val" style="color: #059669;">Auditable</div>
+            <div class="metric-lbl">Plain English Rationale Output</div>
+          </div>
+        </div>
+        <ul class="feature-bullet-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Safety rules strictly override RL policy when red lights or proximity hazards are present
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Generates synchronized speed recommendations, lane actions, and human-readable diagnostic logs
+          </li>
+        </ul>
+      </div>
+      <div class="feature-visual-col">
+        <div class="feature-graphic-wrapper">
+          <svg viewBox="0 0 520 260" class="tech-svg">
+            <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
+            <!-- Dual Inputs -->
+            <g transform="translate(20, 30)">
+              <!-- RL Input -->
+              <rect x="0" y="0" width="145" height="75" rx="8" fill="#f5f3ff" stroke="#c4b5fd"/>
+              <text x="72" y="24" fill="#6d28d9" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">RL RECOMMENDATION</text>
+              <rect x="15" y="35" width="115" height="26" rx="4" fill="#ffffff"/>
+              <text x="72" y="52" fill="#7c3aed" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">MOVE (28 km/h)</text>
+
+              <!-- Safety Rules Input -->
+              <rect x="0" y="95" width="145" height="75" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+              <text x="72" y="119" fill="#b91c1c" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">SAFETY/RISK RULES</text>
+              <rect x="15" y="130" width="115" height="26" rx="4" fill="#ffffff"/>
+              <text x="72" y="147" fill="#dc2626" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">RED LIGHT = STOP</text>
+            </g>
+
+            <!-- Arrows to Fusion Core -->
+            <path d="M 175 70 L 220 100" stroke="#7c3aed" stroke-width="2"/>
+            <path d="M 175 135 L 220 110" stroke="#dc2626" stroke-width="2"/>
+
+            <!-- Decision Fusion Core & Final Decision -->
+            <g transform="translate(230, 20)">
+              <rect x="0" y="0" width="270" height="195" rx="10" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+              <text x="135" y="28" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">DECISION FUSION LAYER</text>
+
+              <!-- Final Output -->
+              <rect x="20" y="42" width="230" height="34" rx="6" fill="#ef4444"/>
+              <text x="135" y="64" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="800" text-anchor="middle">FINAL DECISION: STOP</text>
+
+              <rect x="20" y="86" width="110" height="24" rx="4" fill="#1e293b"/>
+              <text x="75" y="102" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Speed: 0 km/h</text>
+
+              <rect x="140" y="86" width="110" height="24" rx="4" fill="#1e293b"/>
+              <text x="195" y="102" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Lane: HOLD LANE</text>
+
+              <!-- Plain English Audit Rationale -->
+              <rect x="20" y="120" width="230" height="60" rx="4" fill="#052e16" stroke="#10b981"/>
+              <text x="30" y="138" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">HUMAN-READABLE EXPLANATION:</text>
+              <text x="30" y="154" fill="#ecfdf5" font-family="'JetBrains Mono', monospace" font-size="7">"Red traffic light signal detected at</text>
+              <text x="30" y="168" fill="#ecfdf5" font-family="'JetBrains Mono', monospace" font-size="7">front camera. Enforced deterministic stop."</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

@@ -574,40 +574,64 @@ html, body {
   background: #f8fafc;
   border: 1.5px dashed rgba(203, 213, 225, 0.9);
   border-radius: 8px;
-  padding: 10px 8px;
+  padding: 8px 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  justify-content: flex-start;
+  text-align: left;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-height: 80px;
+  min-height: 74px;
+  gap: 10px;
+  position: relative;
 }
 
 .camera-dropzone:hover {
   background: #f1f5f9;
   border-color: var(--accent-blue);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.camera-dropzone.drag-active {
+  border-color: #2563eb !important;
+  background: #eff6ff !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+  transform: scale(1.02);
+}
+
+.dz-thumbnail {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1.5px solid rgba(203, 213, 225, 0.9);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: #0f172a;
 }
 
 .dropzone-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  align-items: flex-start;
+  gap: 2px;
   color: var(--text-muted);
+  flex: 1;
+  min-width: 0;
 }
 
-.dropzone-content svg {
-  color: var(--accent-blue);
-  opacity: 0.8;
+.dz-text-group {
+  width: 100%;
 }
 
 .dz-text-group strong {
   display: block;
   font-size: 0.72rem;
   color: var(--text-primary);
-  word-break: break-word;
-  max-width: 170px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
 }
 
 .dz-text-group span {
@@ -617,8 +641,31 @@ html, body {
   margin-top: 1px;
 }
 
+.btn-dz-browse {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  line-height: 1.2;
+}
+
+.btn-dz-browse:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
 .hidden-file-input {
-  display: none;
+  display: none !important;
 }
 
 /* ==============================================================================

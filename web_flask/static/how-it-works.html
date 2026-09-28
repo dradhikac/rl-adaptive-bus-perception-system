@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en" class="standalone-page-html">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoBus AI — How It Works</title>
+  <meta name="description" content="Discover the complete AutoBus AI pipeline: 360° perception, traffic signal recognition, blind-spot intelligence, adaptive sensor fusion, reinforcement learning decisions, and fail-safe decision fusion.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%232563eb%22><path d=%22M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z%22/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ================================================================
+       HOW IT WORKS — SINGLE CONTINUOUS PAGE STYLES
+       ================================================================ */
+
+    /* Sticky navbar on this page */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    /* Section anchors offset for sticky nav */
+    .hiw-section {
+      scroll-margin-top: 72px;
+    }
+
+    /* Page hero / intro */
+    .hiw-hero {
+      text-align: center;
+      padding: 72px 24px 48px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .hiw-hero h1 {
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .hiw-hero h1 .gradient-text {
+      display: inline;
+    }
+    .hiw-hero p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Section Header (reusable) */
+    .section-header {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 40px;
+      padding-top: 64px;
+    }
+    .section-header .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      background: var(--grad-badge);
+      border: 1px solid rgba(191, 219, 254, 0.85);
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+    }
+    .section-header h2 {
+      font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.025em;
+      margin-bottom: 10px;
+    }
+    .section-header p {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* Content wrapper */
+    .hiw-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Divider between major sections */
+    .section-divider {
+      width: 100%;
+      max-width: 120px;
+      height: 3px;
+      margin: 64px auto;
+      background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.25), rgba(99, 102, 241, 0.25), transparent);
+      border-radius: 2px;
+    }
+
+    /* ================================================================
+       TECHNOLOGY MODULE CARDS (2-col grid)
+       ================================================================ */
+    .tech-modules-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+    @media (max-width: 800px) {
+      .tech-modules-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ================================================================
+       FEATURES — Alternating rows
+       ================================================================ */
+    .feature-showcase-row {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      margin-bottom: 28px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 28px 28px;
+      box-shadow: var(--shadow-subtle);
+      transition: all 0.25s ease;
+    }
+    .feature-showcase-row:hover {
+      box-shadow: 0 12px 28px -6px rgba(37, 99, 235, 0.08);
+      border-color: rgba(37, 99, 235, 0.25);
+    }
+    .feature-showcase-row.reverse {
+      flex-direction: row-reverse;
+    }
+    .feature-content-col {
+      flex: 1 1 50%;
+    }
+    .feature-visual-col {
+      flex: 1 1 50%;
+    }
+    .feature-category-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+    .tag-blue { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+    .tag-rose { background: rgba(225, 29, 72, 0.1); color: #e11d48; }
+    .tag-amber { background: rgba(217, 119, 6, 0.1); color: #d97706; }
+    .tag-cyan { background: rgba(8, 145, 178, 0.1); color: #0891b2; }
+    .tag-violet { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
+    .tag-emerald { background: rgba(5, 150, 105, 0.1); color: #059669; }
+
+    .feature-heading {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+    .feature-summary {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .feature-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .feature-metric-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+    .metric-val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+    .metric-lbl {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+    .feature-bullet-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .feature-bullet-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.35;
+    }
+    .feature-bullet-list li svg {
+      width: 14px;
+      height: 14px;
+      color: var(--accent-blue);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .feature-graphic-wrapper {
+      background: #f8fafc;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+    .feature-graphic-wrapper .tech-svg {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    @media (max-width: 900px) {
+      .feature-showcase-row,
+      .feature-showcase-row.reverse {
+        flex-direction: column;
+        gap: 24px;
+        padding: 24px;
+      }
+    }
+
+    /* ================================================================
+       ARCHITECTURE — Pipeline flow
+       ================================================================ */
+    .arch-flow-diagram-wrapper {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-shadow: var(--shadow-subtle);
+      margin-bottom: 48px;
+    }
+    .arch-stage-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .arch-stage-banner-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .arch-legend-bar {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .legend-dot.blue { background: #3b82f6; }
+    .legend-dot.cyan { background: #06b6d4; }
+    .legend-dot.amber { background: #f59e0b; }
+    .legend-dot.violet { background: #8b5cf6; }
+    .legend-dot.emerald { background: #10b981; }
+
+    /* ================================================================
+       DECISION PROCESS — How the system decides
+       ================================================================ */
+    .decision-flow-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 80px 1fr;
+      gap: 0;
+      align-items: center;
+      max-width: 960px;
+      margin: 0 auto 48px;
+    }
+    @media (max-width: 800px) {
+      .decision-flow-wrapper {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .decision-flow-arrow { display: none; }
+    }
+    .decision-input-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: var(--shadow-subtle);
+    }
+    .decision-input-card h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .decision-input-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .decision-input-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      padding: 8px 12px;
+      background: #f8fafc;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+    }
+    .decision-input-list li .input-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .decision-input-list li .input-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+    .decision-flow-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .decision-flow-arrow svg {
+      width: 48px;
+      height: 48px;
+      color: var(--accent-blue);
+    }
+    .decision-output-card {
+      background: #0f172a;
+      border: 2px solid var(--accent-emerald);
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: 0 12px 32px -6px rgba(16, 185, 129, 0.15);
+    }
+    .decision-output-card h3 {
+      color: #34d399;
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .decision-output-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      background: #1e293b;
+      border-radius: 8px;
+    }
+    .decision-output-item .output-label {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #94a3b8;
+      min-width: 70px;
+    }
+    .decision-output-item .output-value {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .decision-output-item.highlight {
+      background: #ef4444;
+    }
+    .decision-output-item.highlight .output-label {
+      color: #fee2e2;
+    }
+    .decision-explanation {
+      margin-top: 12px;
+      padding: 12px;
+      background: #052e16;
+      border: 1px solid #10b981;
+      border-radius: 8px;
+    }
+    .decision-explanation .explanation-title {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #34d399;
+      margin-bottom: 4px;
+    }
+    .decision-explanation p {
+      font-size: 0.8rem;
+      color: #ecfdf5;
+      line-height: 1.45;
+      font-family: var(--font-mono);
+    }
+
+    /* CTA Banner */
+    .hiw-cta-banner {
+      text-align: center;
+      padding: 72px 24px 80px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .hiw-cta-banner h2 {
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+    .hiw-cta-banner p {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+      line-height: 1.55;
+    }
+
+    /* Smooth scroll behavior */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Active nav highlight via JS */
+    .nav-link.section-active {
+      color: var(--accent-blue) !important;
+    }
+    .nav-link.section-active::after {
+      width: 100% !important;
+    }
+  </style>
+</head>
+<body class="standalone-page">
+  <div class="page-background"></div>
+
+  <!-- ====================================================================
+       STICKY NAVBAR
+       ==================================================================== -->
+  <header class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="brand-icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/>
+        </svg>
+      </div>
+      <span class="brand-text">AutoBus <span class="brand-ai-badge">AI</span></span>
+    </a>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link">Overview</a></li>
+        <li><a href="#technology" class="nav-link hiw-nav" data-section="technology">Technology</a></li>
+        <li><a href="#features" class="nav-link hiw-nav" data-section="features">Features</a></li>
+        <li><a href="#architecture" class="nav-link hiw-nav" data-section="architecture">System Architecture</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="/demo" class="btn-nav-demo">
+        <span>View Demo</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       PAGE HERO
+       ==================================================================== -->
+  <div class="hiw-hero">
+    <div class="hero-badge" style="margin: 0 auto 18px;">
+      <span class="pulse-dot"></span>
+      <span class="badge-text">HOW IT WORKS</span>
+    </div>
+    <h1>The Engineering Behind <span class="gradient-text">AutoBus AI</span></h1>
+    <p>From raw camera frames to auditable autonomous driving decisions — explore the complete perception, intelligence, and decision pipeline that powers safer urban transit.</p>
+  </div>
+
+  <!-- ====================================================================
+       SECTION 1: TECHNOLOGY
+       ==================================================================== -->
+  <section id="technology" class="hiw-section">
+    <div class="hiw-content">
+      <div class="section-header">
+        <span class="section-label">
+          <span class="pulse-dot"></span>
+          CORE TECHNICAL PIPELINE
+        </span>
+        <h2>Six Engineered Modules</h2>
+        <p>Each module is a self-contained stage in the AutoBus AI perception-to-action pipeline, running synchronously under 50 ms.</p>
+      </div>
+
+      <!-- 6 Tech Module Cards in 2-col Grid -->
+      <div class="tech-modules-grid">
+
+        <!-- MODULE 01 — 360° MULTI-CAMERA PERCEPTION -->
+        <article class="tech-card">
+          <div class="tech-card-header">
+            <div class="tech-icon-box blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+            </div>
+            <div>
+              <div class="tech-tag">Module 01</div>
+              <h2 class="tech-title">360° Multi-Camera Perception</h2>
+            </div>
+          </div>
+          <p class="tech-desc">
+            YOLOv8-based object detection across five synchronized camera viewpoints: <strong>Front</strong>, <strong>Front-Left</strong>, <strong>Front-Right</strong>, <strong>Rear-Left</strong>, and <strong>Rear-Right</strong>. Combines all five viewpoints to provide continuous 360° environmental perception around the bus.
+          </p>
+          <div class="tech-visual-container">
+            <svg viewBox="0 0 500 240" class="tech-svg">
+              <rect width="100%" height="100%" fill="#f8fafc" rx="8"/>
+              <polygon points="250,90 150,15 350,15" fill="rgba(37,99,235,0.22)" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4,3"/>
+              <polygon points="220,95 70,30 85,120" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="4,3"/>
+              <polygon points="280,95 430,30 415,120" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="4,3"/>
+              <polygon points="220,165 70,200 100,140" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="4,3"/>
+              <polygon points="280,165 430,200 400,140" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="4,3"/>
+              <rect x="220" y="85" width="60" height="95" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+              <path d="M 226 96 Q 250 90 274 96 L 274 112 Q 250 108 226 112 Z" fill="#38bdf8" opacity="0.85"/>
+              <text x="250" y="142" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">AUTOBUS</text>
+              <circle cx="250" cy="85" r="4.5" fill="#38bdf8"/>
+              <text x="250" y="75" fill="#0284c7" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">FRONT</text>
+              <circle cx="220" cy="95" r="4" fill="#6366f1"/>
+              <text x="175" y="92" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">FRONT_LEFT</text>
+              <circle cx="280" cy="95" r="4" fill="#6366f1"/>
+              <text x="288" y="92" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">FRONT_RIGHT</text>
+              <circle cx="220" cy="165" r="4" fill="#6366f1"/>
+              <text x="175" y="172" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">REAR_LEFT</text>
+              <circle cx="280" cy="165" r="4" fill="#6366f1"/>
+              <text x="288" y="172" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">REAR_RIGHT</text>
+            </svg>
+          </div>
+          <div class="tech-spec-bar">
+            <span class="spec-pill">YOLOv8 Detection</span>
+            <span class="spec-pill">5 Calibrated Perspectives</span>
+            <span class="spec-pill">Sub-50ms Latency</span>
+          </div>
+        </article>
+
+        <!-- MODULE 02 — TRAFFIC SIGNAL RECOGNITION -->
+        <article class="tech-card">
+          <div class="tech-card-header">
+            <div class="tech-icon-box red">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="7" y="2" width="10" height="20" rx="3" ry="3"></rect>
+                <circle cx="12" cy="7" r="2"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+                <circle cx="12" cy="17" r="2"></circle>
+              </svg>
+            </div>
+            <div>
+              <div class="tech-tag">Module 02</div>
+              <h2 class="tech-title">Traffic Signal Recognition</h2>
+            </div>
+          </div>
+          <p class="tech-desc">
+            HSV-based color classification from detected traffic lights. Detected traffic-light regions are analyzed using HSV color information to classify red, yellow, and green signal states.
+          </p>
+          <div class="tech-visual-container">
+            <svg viewBox="0 0 500 240" class="tech-svg">
+              <rect width="100%" height="100%" fill="#f8fafc" rx="8"/>
+              <g transform="translate(40, 30)">
+                <rect x="0" y="0" width="55" height="150" rx="10" fill="#0f172a"/>
+                <circle cx="27" cy="30" r="15" fill="#ef4444"/>
+                <circle cx="27" cy="75" r="13" fill="#78350f" opacity="0.4"/>
+                <circle cx="27" cy="120" r="13" fill="#064e3b" opacity="0.4"/>
+                <rect x="-6" y="-6" width="67" height="162" rx="4" fill="none" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="4,3"/>
+                <text x="27" y="176" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">Traffic Light</text>
+              </g>
+              <path d="M 125 105 L 155 105" stroke="#94a3b8" stroke-width="2"/>
+              <g transform="translate(165, 55)">
+                <rect x="0" y="0" width="70" height="70" rx="8" fill="#fee2e2" stroke="#fca5a5" stroke-width="1.5"/>
+                <circle cx="35" cy="35" r="22" fill="#ef4444"/>
+                <text x="35" y="95" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">Color Region</text>
+              </g>
+              <path d="M 245 105 L 275 105" stroke="#94a3b8" stroke-width="2"/>
+              <g transform="translate(285, 45)">
+                <rect x="0" y="0" width="90" height="90" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="45" y="24" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">HSV RANGES</text>
+                <rect x="10" y="32" width="70" height="10" rx="2" fill="#ef4444"/>
+                <text x="45" y="58" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="7" text-anchor="middle">Hue: 0-10, 160-180</text>
+                <text x="45" y="72" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="7" text-anchor="middle">Sat: &gt;100 | Val: &gt;100</text>
+                <text x="45" y="105" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">HSV Classify</text>
+              </g>
+              <path d="M 385 105 L 415 105" stroke="#94a3b8" stroke-width="2"/>
+              <g transform="translate(420, 55)">
+                <rect x="0" y="0" width="65" height="70" rx="8" fill="#ef4444"/>
+                <text x="32" y="34" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="800" text-anchor="middle">RED</text>
+                <text x="32" y="52" fill="#fee2e2" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">STOP 0km/h</text>
+                <text x="32" y="95" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">Signal State</text>
+              </g>
+            </svg>
+          </div>
+          <div class="tech-spec-bar">
+            <span class="spec-pill">HSV Color Segmentation</span>
+            <span class="spec-pill">Deterministic Safety Interlock</span>
+          </div>
+        </article>
+
+        <!-- MODULE 03 — BLIND SPOT INTELLIGENCE -->
+        <article class="tech-card">
+          <div class="tech-card-header">
+            <div class="tech-icon-box amber">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <div>
+              <div class="tech-tag">Module 03</div>
+              <h2 class="tech-title">Blind Spot Intelligence</h2>
+            </div>
+          </div>
+          <p class="tech-desc">
+            Lane occupancy and collision-risk scoring for safer lane changes. Evaluates proximity, relative velocity, and Time-To-Collision (TTC) to determine safe clearance buffers.
+          </p>
+          <div class="tech-visual-container">
+            <svg viewBox="0 0 500 240" class="tech-svg">
+              <rect width="100%" height="100%" fill="#1e293b" rx="8"/>
+              <line x1="170" y1="0" x2="170" y2="240" stroke="#f8fafc" stroke-width="2" stroke-dasharray="12,12" opacity="0.6"/>
+              <line x1="330" y1="0" x2="330" y2="240" stroke="#f8fafc" stroke-width="2" stroke-dasharray="12,12" opacity="0.6"/>
+              <rect x="220" y="65" width="60" height="110" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+              <text x="250" y="125" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">BUS</text>
+              <polygon points="220,110 80,95 60,195 220,175" fill="rgba(239, 68, 68, 0.35)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3"/>
+              <rect x="100" y="130" width="30" height="45" rx="5" fill="#f59e0b"/>
+              <text x="115" y="156" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="700" text-anchor="middle">CAR</text>
+              <polygon points="280,110 420,95 440,195 280,175" fill="rgba(245, 158, 11, 0.25)" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3"/>
+              <rect x="360" y="145" width="16" height="28" rx="3" fill="#38bdf8"/>
+              <text x="368" y="162" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="6" font-weight="800" text-anchor="middle">MOTO</text>
+              <rect x="20" y="15" width="135" height="22" rx="4" fill="rgba(254, 226, 226, 0.95)"/>
+              <text x="28" y="30" fill="#b91c1c" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">LEFT: OCCUPIED (TTC 1.3s)</text>
+              <rect x="345" y="15" width="135" height="22" rx="4" fill="rgba(254, 243, 199, 0.95)"/>
+              <text x="353" y="30" fill="#92400e" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">RIGHT: CAUTION (MOTO)</text>
+            </svg>
+          </div>
+          <div class="tech-spec-bar">
+            <span class="spec-pill">Time-to-Collision (TTC)</span>
+            <span class="spec-pill">Lane Occupancy Flag</span>
+            <span class="spec-pill">0-100 Risk Scoring</span>
+          </div>
+        </article>
+
+        <!-- MODULE 04 — ADAPTIVE SENSOR FUSION -->
+        <article class="tech-card">
+          <div class="tech-card-header">
+            <div class="tech-icon-box cyan">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="M9 12l2 2 4-4"></path>
+              </svg>
+            </div>
+            <div>
+              <div class="tech-tag">Module 04</div>
+              <h2 class="tech-title">Adaptive Sensor Fusion</h2>
+            </div>
+          </div>
+          <p class="tech-desc">
+            Brightness, contrast and blur-based camera reliability estimation dynamically weights camera inputs into a fusion confidence score. Unreliable feeds receive lower trust while reliable feeds contribute more strongly.
+          </p>
+          <div class="tech-visual-container">
+            <svg viewBox="0 0 500 240" class="tech-svg">
+              <rect width="100%" height="100%" fill="#f8fafc" rx="8"/>
+              <g transform="translate(25, 20)">
+                <rect x="0" y="0" width="85" height="24" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+                <text x="42" y="16" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Camera 1 (Front)</text>
+                <rect x="0" y="32" width="85" height="24" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+                <text x="42" y="48" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Camera 2 (FL)</text>
+                <rect x="0" y="64" width="85" height="24" rx="4" fill="#fef2f2" stroke="#fca5a5"/>
+                <text x="42" y="80" fill="#b91c1c" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Camera 3 (FR-Rain)</text>
+                <rect x="0" y="96" width="85" height="24" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+                <text x="42" y="112" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Camera 4 (RL)</text>
+                <rect x="0" y="128" width="85" height="24" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+                <text x="42" y="144" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Camera 5 (RR)</text>
+              </g>
+              <path d="M 115 90 L 145 90" stroke="#94a3b8" stroke-width="2"/>
+              <g transform="translate(150, 35)">
+                <rect x="0" y="0" width="170" height="125" rx="8" fill="#0f172a" stroke="#06b6d4" stroke-width="1.8"/>
+                <text x="85" y="24" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">IMAGE QUALITY ANALYSIS</text>
+                <text x="85" y="44" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7.5" text-anchor="middle">• Blur (Laplacian Variance)</text>
+                <text x="85" y="60" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7.5" text-anchor="middle">• Contrast (Standard Dev)</text>
+                <text x="85" y="76" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7.5" text-anchor="middle">• Brightness (Luminance)</text>
+                <rect x="15" y="88" width="140" height="24" rx="4" fill="#0284c7"/>
+                <text x="85" y="104" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">ADAPTIVE WEIGHTING</text>
+              </g>
+              <path d="M 325 95 L 360 95" stroke="#06b6d4" stroke-width="2.5"/>
+              <g transform="translate(365, 45)">
+                <rect x="0" y="0" width="115" height="105" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="57" y="26" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">FUSION CONFIDENCE</text>
+                <text x="57" y="62" fill="#0284c7" font-family="'JetBrains Mono', monospace" font-size="22" font-weight="800" text-anchor="middle">92.4%</text>
+                <text x="57" y="86" fill="#16a34a" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">FR Down-Weighted</text>
+              </g>
+            </svg>
+          </div>
+          <div class="tech-spec-bar">
+            <span class="spec-pill">Blur / Contrast / Brightness</span>
+            <span class="spec-pill">Dynamic Sensor Trust</span>
+            <span class="spec-pill">Self-Healing Reliability</span>
+          </div>
+        </article>
+
+        <!-- MODULE 05 — RL DECISION ENGINE -->
+        <article class="tech-card">
+          <div class="tech-card-header">
+            <div class="tech-icon-box violet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              </svg>
+            </div>
+            <div>
+              <div class="tech-tag">Module 05</div>
+              <h2 class="tech-title">RL Decision Engine</h2>
+            </div>
+          </div>
+          <p class="tech-desc">
+            A policy-driven decision engine that selects actions based on the current scene and safety state. Supported actions: <strong>MOVE</strong>, <strong>SLOW_DOWN</strong>, <strong>STOP</strong>, <strong>CHANGE_LEFT</strong>, and <strong>CHANGE_RIGHT</strong>.
+          </p>
+          <div class="tech-visual-container">
+            <svg viewBox="0 0 500 240" class="tech-svg">
+              <rect width="100%" height="100%" fill="#f8fafc" rx="8"/>
+              <g transform="translate(25, 45)">
+                <rect x="0" y="0" width="85" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                <text x="42" y="24" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">ENVIRONMENT</text>
+                <text x="10" y="48" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="7">• Obstacles</text>
+                <text x="10" y="66" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="7">• Signals</text>
+                <text x="10" y="84" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="7">• TTC & Lanes</text>
+              </g>
+              <path d="M 115 100 L 140 100" stroke="#94a3b8" stroke-width="2"/>
+              <g transform="translate(145, 45)">
+                <rect x="0" y="0" width="95" height="110" rx="6" fill="#f5f3ff" stroke="#c4b5fd"/>
+                <text x="47" y="24" fill="#6d28d9" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">STATE TENSOR S_t</text>
+                <text x="47" y="55" fill="#7c3aed" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">RL POLICY</text>
+                <text x="47" y="75" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="7.5" text-anchor="middle">Q-Evaluation</text>
+                <text x="47" y="95" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="7.5" text-anchor="middle">Action Select</text>
+              </g>
+              <path d="M 245 100 L 270 100" stroke="#94a3b8" stroke-width="2"/>
+              <g transform="translate(275, 25)">
+                <text x="0" y="16" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700">5 SUPPORTED ACTIONS</text>
+                <rect x="0" y="26" width="195" height="20" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+                <text x="10" y="40" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">MOVE</text>
+                <rect x="0" y="52" width="195" height="20" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+                <text x="10" y="66" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">SLOW_DOWN</text>
+                <rect x="0" y="78" width="195" height="24" rx="4" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+                <text x="10" y="94" fill="#dc2626" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="800">STOP ★ SELECTED</text>
+                <rect x="0" y="108" width="195" height="20" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+                <text x="10" y="122" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">CHANGE_LEFT</text>
+                <rect x="0" y="134" width="195" height="20" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+                <text x="10" y="148" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">CHANGE_RIGHT</text>
+              </g>
+            </svg>
+          </div>
+          <div class="tech-spec-bar">
+            <span class="spec-pill">Scenario-Based Policy</span>
+            <span class="spec-pill">5 Discrete Output States</span>
+            <span class="spec-pill">Safety Reward Metrics</span>
+          </div>
+        </article>
+
+        <!-- MODULE 06 — DECISION FUSION LAYER -->
+        <article class="tech-card">
+          <div class="tech-card-header">
+            <div class="tech-icon-box emerald">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+            </div>
+            <div>
+              <div class="tech-tag">Module 06</div>
+              <h2 class="tech-title">Decision Fusion Layer</h2>
+            </div>
+          </div>
+          <p class="tech-desc">
+            Arbitrates between reinforcement-learning output and risk-based safety rules to produce a single final decision, speed recommendation and lane action, together with a human-readable explanation.
+          </p>
+          <div class="tech-visual-container">
+            <svg viewBox="0 0 500 240" class="tech-svg">
+              <rect width="100%" height="100%" fill="#f8fafc" rx="8"/>
+              <g transform="translate(25, 25)">
+                <rect x="0" y="0" width="130" height="45" rx="6" fill="#f5f3ff" stroke="#c4b5fd"/>
+                <text x="65" y="20" fill="#6d28d9" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">RL Policy Output</text>
+                <text x="65" y="34" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="7" text-anchor="middle">Candidate: SLOW_DOWN</text>
+                <text x="65" y="65" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="800" text-anchor="middle">+</text>
+                <rect x="0" y="75" width="130" height="55" rx="6" fill="#fef2f2" stroke="#fca5a5"/>
+                <text x="65" y="95" fill="#b91c1c" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Safety Rules</text>
+                <text x="65" y="112" fill="#991b1b" font-family="'JetBrains Mono', monospace" font-size="6.8" font-weight="600" text-anchor="middle">Rule: Red Light = STOP</text>
+              </g>
+              <path d="M 160 85 L 195 85" stroke="#94a3b8" stroke-width="2"/>
+              <g transform="translate(200, 38)">
+                <rect x="0" y="0" width="95" height="95" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+                <text x="47" y="38" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">DECISION</text>
+                <text x="47" y="52" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">FUSION</text>
+                <text x="47" y="75" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="6.8" text-anchor="middle">Rule Override</text>
+              </g>
+              <path d="M 300 85 L 330 85" stroke="#10b981" stroke-width="2"/>
+              <g transform="translate(335, 18)">
+                <rect x="0" y="0" width="145" height="145" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+                <rect x="10" y="10" width="125" height="24" rx="4" fill="#ef4444"/>
+                <text x="72" y="26" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="800" text-anchor="middle">Final Decision: STOP</text>
+                <rect x="10" y="40" width="125" height="20" rx="3" fill="#f8fafc" stroke="#e2e8f0"/>
+                <text x="72" y="54" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Speed: 0 km/h</text>
+                <rect x="10" y="65" width="125" height="20" rx="3" fill="#f8fafc" stroke="#e2e8f0"/>
+                <text x="72" y="79" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Lane: HOLD LANE</text>
+                <rect x="10" y="90" width="125" height="45" rx="3" fill="#f1f5f9"/>
+                <text x="14" y="104" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="6.5" font-weight="700">Explanation:</text>
+                <text x="14" y="117" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="6.2">"Red signal override;</text>
+                <text x="14" y="127" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="6.2">braking to 0 km/h"</text>
+              </g>
+            </svg>
+          </div>
+          <div class="tech-spec-bar">
+            <span class="spec-pill">Deterministic Safety Interlock</span>
+            <span class="spec-pill">Speed & Lane Recommendations</span>
+            <span class="spec-pill">Human-Readable Auditing</span>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Pipeline Summary Banner -->
+      <div class="tech-summary-banner" style="margin-top: 32px;">
+        <div class="summary-banner-left">
+          <div class="tech-icon-box blue" style="width: 32px; height: 32px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          </div>
+          <div>
+            <div class="summary-banner-title">End-to-End Autonomous Pipeline Flow</div>
+            <div class="summary-banner-sub">Sub-50ms synchronized loop from raw camera frames to vehicle actuation</div>
+          </div>
+        </div>
+        <div class="summary-steps-flow">
+          <span class="flow-step-pill active">01 360° Vision</span>
+          <span class="flow-arrow-sep">→</span>
+          <span class="flow-step-pill active">02 Signal HSV</span>
+          <span class="flow-arrow-sep">→</span>
+          <span class="flow-step-pill active">03 Blind Spot TTC</span>
+          <span class="flow-arrow-sep">→</span>
+          <span class="flow-step-pill active">04 Sensor Fusion</span>
+          <span class="flow-arrow-sep">→</span>
+          <span class="flow-step-pill active">05 Tactical RL</span>
+          <span class="flow-arrow-sep">→</span>
+          <span class="flow-step-pill active">06 Decision Fusion</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ====================================================================
+       SECTION 2: FEATURES
+       ==================================================================== -->
+  <section id="features" class="hiw-section">
+    <div class="hiw-content">
+      <div class="section-header">
+        <span class="section-label">
+          <span class="pulse-dot"></span>
+          AUTONOMOUS CAPABILITIES
+        </span>
+        <h2>What AutoBus AI Provides</h2>
+        <p>Deployable capabilities engineered to protect passengers, detect blind-spot hazards, respect traffic signals, and make auditable driving decisions.</p>
+      </div>
+
+      <!-- FEATURE 1 -->
+      <section class="feature-showcase-row">
+        <div class="feature-content-col">
+          <span class="feature-category-tag tag-blue">Capability 01 • Surround Vision</span>
+          <h2 class="feature-heading">360° Multi-Camera Perception</h2>
+          <p class="feature-summary">Provides real-time spatial awareness across five synchronized hardware camera streams. Combines front-facing long-range optics with peripheral and rear views to ensure zero blind spots around the entire bus chassis.</p>
+          <div class="feature-metrics-grid">
+            <div class="feature-metric-card">
+              <div class="metric-val" style="color: #2563eb;">5 Synced</div>
+              <div class="metric-lbl">Viewpoints (Front, FL, FR, RL, RR)</div>
+            </div>
+            <div class="feature-metric-card">
+              <div class="metric-val" style="color: #2563eb;">360°</div>
+              <div class="metric-lbl">Surround Detection Sphere</div>
+            </div>
+          </div>
+          <ul class="feature-bullet-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Simultaneous multi-stream inference identifying buses, auto-rickshaws, pedestrians, and cyclists
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Eliminates high-risk blind zones during turns and curbside bus-stop maneuvers
+            </li>
+          </ul>
+        </div>
+        <div class="feature-visual-col">
+          <div class="feature-graphic-wrapper">
+            <svg viewBox="0 0 520 260" class="tech-svg">
+              <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
+              <g transform="translate(40, 95)">
+                <rect x="0" y="0" width="440" height="145" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                <rect x="190" y="25" width="60" height="95" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-width="1.8"/>
+                <text x="220" y="76" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">AUTOBUS</text>
+                <circle cx="220" cy="25" r="4" fill="#38bdf8"/>
+                <path d="M 220 25 L 140 10 L 300 10 Z" fill="rgba(56, 189, 248, 0.15)"/>
+                <text x="220" y="20" fill="#0284c7" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="700" text-anchor="middle">FRONT CONE</text>
+                <path d="M 190 40 L 70 20 L 70 80 Z" fill="rgba(99, 102, 241, 0.15)"/>
+                <text x="60" y="55" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="600">FL</text>
+                <path d="M 250 40 L 370 20 L 370 80 Z" fill="rgba(99, 102, 241, 0.15)"/>
+                <text x="380" y="55" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="600">FR</text>
+                <path d="M 190 100 L 70 85 L 70 140 Z" fill="rgba(99, 102, 241, 0.15)"/>
+                <text x="60" y="115" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="600">RL</text>
+                <path d="M 250 100 L 370 85 L 370 140 Z" fill="rgba(99, 102, 241, 0.15)"/>
+                <text x="380" y="115" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="600">RR</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURE 2 -->
+      <section class="feature-showcase-row reverse">
+        <div class="feature-content-col">
+          <span class="feature-category-tag tag-rose">Capability 02 • Signal Compliance</span>
+          <h2 class="feature-heading">Traffic Signal Recognition</h2>
+          <p class="feature-summary">Recognizes and classifies traffic-light states in real time using visual color classification in HSV space. Enforces strict zero-violation intersection interlocks to guarantee compliance with municipal signals.</p>
+          <div class="feature-metrics-grid">
+            <div class="feature-metric-card">
+              <div class="metric-val" style="color: #e11d48;">HSV Space</div>
+              <div class="metric-lbl">Illumination & Glare Invariance</div>
+            </div>
+            <div class="feature-metric-card">
+              <div class="metric-val" style="color: #e11d48;">0 km/h</div>
+              <div class="metric-lbl">Mandatory Red Light Interlock</div>
+            </div>
+          </div>
+          <ul class="feature-bullet-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Robust signal segmentation across bright sunlight, heavy rain, and night glares
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Deterministic emergency braking override preventing intersection collisions
+            </li>
+          </ul>
+        </div>
+        <div class="feature-visual-col">
+          <div class="feature-graphic-wrapper">
+            <svg viewBox="0 0 520 260" class="tech-svg">
+              <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
+              <g transform="translate(40, 30)">
+                <rect x="0" y="0" width="70" height="190" rx="14" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+                <circle cx="35" cy="40" r="22" fill="#ef4444" stroke="#f87171" stroke-width="3"/>
+                <circle cx="35" cy="95" r="20" fill="#334155"/>
+                <circle cx="35" cy="150" r="20" fill="#334155"/>
+              </g>
+              <path d="M 125 125 L 175 125" stroke="#ef4444" stroke-width="2"/>
+              <g transform="translate(185, 30)">
+                <rect x="0" y="0" width="300" height="190" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="20" y="30" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">SIGNAL ANALYSIS PIPELINE</text>
+                <rect x="20" y="45" width="260" height="32" rx="5" fill="#ffffff" stroke="#e2e8f0"/>
+                <text x="35" y="65" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8">1. YOLOv8 Traffic Light Crop</text>
+                <rect x="20" y="85" width="260" height="32" rx="5" fill="#ffffff" stroke="#e2e8f0"/>
+                <text x="35" y="105" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8">2. HSV Hue Mask: H ∈ [0, 10] ∪ [160, 180]</text>
+                <rect x="20" y="125" width="260" height="45" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+                <text x="35" y="145" fill="#b91c1c" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700">SIGNAL STATE: RED (CONF: 99.4%)</text>
+                <text x="35" y="160" fill="#dc2626" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="800">AUTOMATIC INTERLOCK: SPEED LIMIT = 0 KM/H</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURE 3 -->
+      <section class="feature-showcase-row">
+        <div class="feature-content-col">
+          <span class="feature-category-tag tag-amber">Capability 03 • Spatial Safety</span>
+          <h2 class="feature-heading">Blind Spot Intelligence</h2>
+          <p class="feature-summary">Continuously evaluates lane occupancy, approaching vehicle velocity, and collision risk during planned turns or lane changes. Dynamically calculates Time-To-Collision (TTC) to inhibit dangerous side impacts.</p>
+          <div class="feature-metrics-grid">
+            <div class="feature-metric-card">
+              <div class="metric-val" style="color: #d97706;">0 - 100</div>
+              <div class="metric-lbl">Collision Threat Index</div>
+            </div>
+            <div class="feature-metric-card">
+              <div class="metric-val" style="color: #d97706;">Dynamic TTC</div>
+              <div class="metric-lbl">Time-to-Collision Tracking</div>
+            </div>
+          </div>
+          <ul class="feature-bullet-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Specialized tracking for filtering high-speed motorcycles and lane-splitting vehicles
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Inhibits lane changes until clear spatial buffer is mathematically guaranteed
+            </li>
+          </ul>
+        </div>
+        <div class="feature-visual-col">
+          <div class="feature-graphic-wrapper">
+            <svg viewBox="0 0 520 260" class="tech-svg">
+              <rect width="100%" height="100%" fill="#1e293b" rx="8"/>
+              <line x1="160" y1="0" x2="160" y2="260" stroke="#64748b" stroke-width="2" stroke-dasharray="10,10"/>
+              <line x1="340" y1="0" x2="340" y2="260" stroke="#64748b" stroke-width="2" stroke-dasharray="10,10"/>
+              <g transform="translate(215, 60)">
+                <rect x="0" y="0" width="70" height="135" rx="14" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+                <text x="35" y="75" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">AUTOBUS</text>
+              </g>
+              <polygon points="215,100 80,90 60,210 215,185" fill="rgba(239, 68, 68, 0.35)" stroke="#ef4444" stroke-width="1.5"/>
+              <g transform="translate(90, 130)">
+                <rect x="0" y="0" width="36" height="55" rx="6" fill="#f59e0b" stroke="#ffffff"/>
+                <text x="18" y="32" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="700" text-anchor="middle">CAR</text>
+              </g>
+              <polygon points="285,100 420,90 440,210 285,185" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="1.5"/>
+              <text x="360" y="150" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700">RIGHT: CLEAR</text>
+              <g transform="translate(15, 20)">
+                <rect x="0" y="0" width="130" height="55" rx="6" fill="#0f172a" stroke="#ef4444"/>
+                <text x="10" y="20" fill="#f87171" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700">LEFT RISK: 86/100</text>
+                <text x="10" y="35" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7">TTC: 1.4s (CRITICAL)</text>
+                <text x="10" y="47" fill="#ef4444" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="700">LANE CHANGE INHIBITED</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURE 4 -->
+      <section class="feature-showcase-row reverse">
+        <div class="feature-content-col">
+          <span class="feature-category-tag tag-cyan">Capability 04 • Self-Healing Vision</span>
+          <h2 class="feature-heading">Adaptive Sensor Fusion</h2>
+          <p class="feature-summary">Measures real-time lens degradation across all cameras using blur variance, contrast spread, and brightness distribution. Obscured or rain-splattered lenses are down-weighted dynamically while pristine camera streams receive boosted trust.</p>
+          <div class="feature-metrics-grid">
+            <div class="feature-metric-card">
+              <div class="metric-val" style="color: #0891b2;">Dynamic</div>
+              <div class="metric-lbl">Laplacian Quality Scoring</div>
+            </div>
+            <div class="feature-metric-card">
+              <div class="metric-val" style="color: #0891b2;">Zero Pause</div>
+              <div class="metric-lbl">Graceful Sensor Degradation</div>
+            </div>
+          </div>
+          <ul class="feature-bullet-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Prevents false alerts caused by muddy lenses, headlight glare, or sudden raindrops
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Continuously recalibrates weights as the bus exits adverse weather or tunnels
+            </li>
+          </ul>
+        </div>
+        <div class="feature-visual-col">
+          <div class="feature-graphic-wrapper">
+            <svg viewBox="0 0 520 260" class="tech-svg">
+              <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
+              <g transform="translate(25, 25)">
+                <rect x="0" y="0" width="110" height="28" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+                <text x="10" y="18" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">CAM 1: Trust 98%</text>
+                <rect x="0" y="38" width="110" height="28" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+                <text x="10" y="56" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">CAM 2: Trust 94%</text>
+                <rect x="0" y="76" width="110" height="28" rx="4" fill="#fef2f2" stroke="#fca5a5"/>
+                <text x="10" y="94" fill="#b91c1c" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">CAM 3: Trust 38% (RAIN)</text>
+                <rect x="0" y="114" width="110" height="28" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+                <text x="10" y="132" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">CAM 4: Trust 96%</text>
+                <rect x="0" y="152" width="110" height="28" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+                <text x="10" y="170" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">CAM 5: Trust 97%</text>
+              </g>
+              <path d="M 145 105 L 210 110" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="3,3"/>
+              <path d="M 145 35 L 210 100" stroke="#16a34a" stroke-width="2"/>
+              <path d="M 145 70 L 210 105" stroke="#16a34a" stroke-width="2"/>
+              <path d="M 145 140 L 210 115" stroke="#16a34a" stroke-width="2"/>
+              <path d="M 145 175 L 210 120" stroke="#16a34a" stroke-width="2"/>
+              <g transform="translate(215, 45)">
+                <rect x="0" y="0" width="135" height="135" rx="12" fill="#0f172a" stroke="#06b6d4" stroke-width="2"/>
+                <text x="67" y="32" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">ADAPTIVE WEIGHT</text>
+                <text x="67" y="50" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7.5" text-anchor="middle">FUSION CORE</text>
+                <rect x="15" y="65" width="105" height="24" rx="4" fill="#0284c7"/>
+                <text x="67" y="80" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Re-Normalized</text>
+              </g>
+              <path d="M 360 112 L 395 112" stroke="#06b6d4" stroke-width="2.5"/>
+              <g transform="translate(400, 50)">
+                <rect x="0" y="0" width="105" height="125" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="52" y="28" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="700" text-anchor="middle">FUSED TRUST</text>
+                <text x="52" y="66" fill="#0284c7" font-family="'JetBrains Mono', monospace" font-size="24" font-weight="800" text-anchor="middle">92%</text>
+                <text x="52" y="94" fill="#16a34a" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">OPERATIONAL</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURE 5 -->
+      <section class="feature-showcase-row">
+        <div class="feature-content-col">
+          <span class="feature-category-tag tag-violet">Capability 05 • Autonomous Policy</span>
+          <h2 class="feature-heading">RL Decision Engine</h2>
+          <p class="feature-summary">Trained on complex real-world urban transit scenarios to output tactical decisions based on the current scene and safety state. Discrete action space provides stable, passenger-comfortable transitions between five supported states.</p>
+          <div class="feature-metrics-grid">
+            <div class="feature-metric-card">
+              <div class="metric-val" style="color: #7c3aed;">5 Actions</div>
+              <div class="metric-lbl">MOVE, SLOW_DOWN, STOP, CH_L, CH_R</div>
+            </div>
+            <div class="feature-metric-card">
+              <div class="metric-val" style="color: #7c3aed;">Comfort Score</div>
+              <div class="metric-lbl">Optimized Jerk & Deceleration</div>
+            </div>
+          </div>
+          <ul class="feature-bullet-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Trained with reward functions balancing pedestrian clearance and schedule adherence
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Selects driving maneuvers smoothly to maintain standing passenger stability
+            </li>
+          </ul>
+        </div>
+        <div class="feature-visual-col">
+          <div class="feature-graphic-wrapper">
+            <svg viewBox="0 0 520 260" class="tech-svg">
+              <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
+              <g transform="translate(205, 20)">
+                <rect x="0" y="0" width="295" height="205" rx="10" fill="#0f172a" stroke="#7c3aed" stroke-width="1.8"/>
+                <text x="147" y="24" fill="#c4b5fd" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">5 SUPPORTED DRIVING ACTIONS</text>
+                <rect x="20" y="36" width="255" height="26" rx="4" fill="#1e293b"/>
+                <text x="35" y="53" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">ACTION 1: MOVE (Target: 32 km/h)</text>
+                <rect x="20" y="68" width="255" height="26" rx="4" fill="#1e293b"/>
+                <text x="35" y="85" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">ACTION 2: SLOW_DOWN (Target: 15 km/h)</text>
+                <rect x="20" y="100" width="255" height="32" rx="4" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+                <text x="35" y="120" fill="#dc2626" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="800">ACTION 3: STOP ★ SELECTED (0 km/h)</text>
+                <rect x="20" y="138" width="255" height="26" rx="4" fill="#1e293b"/>
+                <text x="35" y="155" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">ACTION 4: CHANGE_LEFT (Lane Offset -1)</text>
+                <rect x="20" y="170" width="255" height="26" rx="4" fill="#1e293b"/>
+                <text x="35" y="187" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">ACTION 5: CHANGE_RIGHT (Lane Offset +1)</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURE 6 -->
+      <section class="feature-showcase-row reverse">
+        <div class="feature-content-col">
+          <span class="feature-category-tag tag-emerald">Capability 06 • Fail-Safe Fusion</span>
+          <h2 class="feature-heading">Decision Fusion</h2>
+          <p class="feature-summary">Combines learned policy recommendations with deterministic, risk-based safety rules to produce the final decision. Hardcoded safety envelopes guarantee that machine learning recommendations can never violate critical physical safety rules.</p>
+          <div class="feature-metrics-grid">
+            <div class="feature-metric-card">
+              <div class="metric-val" style="color: #059669;">Arbitration</div>
+              <div class="metric-lbl">RL Recommendation ∩ Safety Envelope</div>
+            </div>
+            <div class="feature-metric-card">
+              <div class="metric-val" style="color: #059669;">Auditable</div>
+              <div class="metric-lbl">Plain English Rationale Output</div>
+            </div>
+          </div>
+          <ul class="feature-bullet-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Safety rules strictly override RL policy when red lights or proximity hazards are present
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Generates synchronized speed recommendations, lane actions, and human-readable diagnostic logs
+            </li>
+          </ul>
+        </div>
+        <div class="feature-visual-col">
+          <div class="feature-graphic-wrapper">
+            <svg viewBox="0 0 520 260" class="tech-svg">
+              <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
+              <g transform="translate(230, 20)">
+                <rect x="0" y="0" width="270" height="195" rx="10" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+                <text x="135" y="28" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">DECISION FUSION LAYER</text>
+                <rect x="20" y="42" width="230" height="34" rx="6" fill="#ef4444"/>
+                <text x="135" y="64" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="800" text-anchor="middle">FINAL DECISION: STOP</text>
+                <rect x="20" y="86" width="110" height="24" rx="4" fill="#1e293b"/>
+                <text x="75" y="102" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Speed: 0 km/h</text>
+                <rect x="140" y="86" width="110" height="24" rx="4" fill="#1e293b"/>
+                <text x="195" y="102" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Lane: HOLD LANE</text>
+                <rect x="20" y="120" width="230" height="60" rx="4" fill="#052e16" stroke="#10b981"/>
+                <text x="30" y="138" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">HUMAN-READABLE EXPLANATION:</text>
+                <text x="30" y="154" fill="#ecfdf5" font-family="'JetBrains Mono', monospace" font-size="7">"Red traffic light signal detected at</text>
+                <text x="30" y="168" fill="#ecfdf5" font-family="'JetBrains Mono', monospace" font-size="7">front camera. Enforced deterministic stop."</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ====================================================================
+       SECTION 3: SYSTEM ARCHITECTURE
+       ==================================================================== -->
+  <section id="architecture" class="hiw-section">
+    <div class="hiw-content">
+      <div class="section-header">
+        <span class="section-label">
+          <span class="pulse-dot"></span>
+          ENGINEERING PIPELINE
+        </span>
+        <h2>End-to-End System Architecture</h2>
+        <p>Complete real-time execution pipeline spanning five synchronized camera streams, sensor reliability estimation, blind-spot threat scoring, reinforcement learning action selection, and deterministic decision arbitration.</p>
+      </div>
+
+      <!-- Pipeline Diagram -->
+      <div class="arch-flow-diagram-wrapper">
+        <div class="arch-stage-banner">
+          <div class="arch-stage-banner-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" color="#2563eb">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+            5-Stage Synchronous Dataflow Pipeline
+          </div>
+          <div class="arch-legend-bar">
+            <span class="legend-item"><span class="legend-dot blue"></span> Perception</span>
+            <span class="legend-item"><span class="legend-dot cyan"></span> Sensor Intel</span>
+            <span class="legend-item"><span class="legend-dot amber"></span> Risk & Safety</span>
+            <span class="legend-item"><span class="legend-dot violet"></span> Decision</span>
+            <span class="legend-item"><span class="legend-dot emerald"></span> Action</span>
+          </div>
+        </div>
+
+        <!-- 5 Major Groups Pipeline -->
+        <div class="arch-pipeline-container" style="display: flex; gap: 8px;">
+
+          <!-- 1. PERCEPTION -->
+          <div class="arch-stage-card">
+            <div class="arch-stage-header">
+              <span class="stage-pill">STAGE 01</span>
+              <h4 class="stage-title">PERCEPTION</h4>
+              <span class="stage-caption">Multi-View Sensing</span>
+            </div>
+            <div class="arch-nodes-group">
+              <div class="arch-node">
+                <div class="node-icon blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path></svg>
+                </div>
+                <div class="node-details">
+                  <span class="node-name">5 Camera Feeds</span>
+                  <span class="node-sub">Front, FL, FR, RL, RR</span>
+                </div>
+              </div>
+              <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+              <div class="arch-node">
+                <div class="node-icon blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                </div>
+                <div class="node-details">
+                  <span class="node-name">Object Detection</span>
+                  <span class="node-sub">YOLOv8 Inference</span>
+                </div>
+              </div>
+              <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+              <div class="arch-node">
+                <div class="node-icon blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                </div>
+                <div class="node-details">
+                  <span class="node-name">Object Tracking</span>
+                  <span class="node-sub">ByteTrack Association</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Connector -->
+          <div class="stage-pipeline-arrow">
+            <svg viewBox="0 0 60 40" class="flow-svg-line">
+              <line x1="5" y1="20" x2="55" y2="20" stroke="#3b82f6" stroke-width="3" stroke-dasharray="5,4" class="anim-flow"/>
+              <polygon points="52,14 60,20 52,26" fill="#3b82f6"/>
+            </svg>
+          </div>
+
+          <!-- 2. SENSOR INTELLIGENCE -->
+          <div class="arch-stage-card">
+            <div class="arch-stage-header">
+              <span class="stage-pill">STAGE 02</span>
+              <h4 class="stage-title">SENSOR INTELLIGENCE</h4>
+              <span class="stage-caption">Health & Fusion</span>
+            </div>
+            <div class="arch-nodes-group">
+              <div class="arch-node">
+                <div class="node-icon cyan">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                </div>
+                <div class="node-details">
+                  <span class="node-name">Reliability Estimation</span>
+                  <span class="node-sub">Blur, Contrast, Luminance</span>
+                </div>
+              </div>
+              <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+              <div class="arch-node">
+                <div class="node-icon cyan">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle></svg>
+                </div>
+                <div class="node-details">
+                  <span class="node-name">Sensor Trust / Fusion</span>
+                  <span class="node-sub">Dynamic Weight Matrix</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Connector -->
+          <div class="stage-pipeline-arrow">
+            <svg viewBox="0 0 60 40" class="flow-svg-line">
+              <line x1="5" y1="20" x2="55" y2="20" stroke="#06b6d4" stroke-width="3" stroke-dasharray="5,4" class="anim-flow"/>
+              <polygon points="52,14 60,20 52,26" fill="#06b6d4"/>
+            </svg>
+          </div>
+
+          <!-- 3. RISK & SAFETY -->
+          <div class="arch-stage-card">
+            <div class="arch-stage-header">
+              <span class="stage-pill">STAGE 03</span>
+              <h4 class="stage-title">RISK & SAFETY</h4>
+              <span class="stage-caption">Threat Quantification</span>
+            </div>
+            <div class="arch-nodes-group">
+              <div class="arch-node">
+                <div class="node-icon amber">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line></svg>
+                </div>
+                <div class="node-details">
+                  <span class="node-name">Blind Spot Analysis</span>
+                  <span class="node-sub">Lane Occupancy & TTC</span>
+                </div>
+              </div>
+              <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+              <div class="arch-node">
+                <div class="node-icon amber">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </div>
+                <div class="node-details">
+                  <span class="node-name">Risk Assessment</span>
+                  <span class="node-sub">Collision Hazard Index</span>
+                </div>
+              </div>
+              <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+              <div class="arch-node">
+                <div class="node-icon amber">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"></rect><line x1="6" y1="12" x2="18" y2="12"></line></svg>
+                </div>
+                <div class="node-details">
+                  <span class="node-name">Safety Margin Gen</span>
+                  <span class="node-sub">Braking & Clearance Buffer</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Connector -->
+          <div class="stage-pipeline-arrow">
+            <svg viewBox="0 0 60 40" class="flow-svg-line">
+              <line x1="5" y1="20" x2="55" y2="20" stroke="#f59e0b" stroke-width="3" stroke-dasharray="5,4" class="anim-flow"/>
+              <polygon points="52,14 60,20 52,26" fill="#f59e0b"/>
+            </svg>
+          </div>
+
+          <!-- 4. DECISION -->
+          <div class="arch-stage-card">
+            <div class="arch-stage-header">
+              <span class="stage-pill">STAGE 04</span>
+              <h4 class="stage-title">DECISION</h4>
+              <span class="stage-caption">Policy & Arbitration</span>
+            </div>
+            <div class="arch-nodes-group">
+              <div class="arch-node">
+                <div class="node-icon violet">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect></svg>
+                </div>
+                <div class="node-details">
+                  <span class="node-name">RL Policy Engine</span>
+                  <span class="node-sub">MOVE, SLOW, STOP, CH_L/R</span>
+                </div>
+              </div>
+              <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+              <div class="arch-node">
+                <div class="node-icon violet">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline></svg>
+                </div>
+                <div class="node-details">
+                  <span class="node-name">Decision Fusion</span>
+                  <span class="node-sub">Deterministic Safety Gate</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Connector -->
+          <div class="stage-pipeline-arrow">
+            <svg viewBox="0 0 60 40" class="flow-svg-line">
+              <line x1="5" y1="20" x2="55" y2="20" stroke="#6366f1" stroke-width="3" stroke-dasharray="5,4" class="anim-flow"/>
+              <polygon points="52,14 60,20 52,26" fill="#6366f1"/>
+            </svg>
+          </div>
+
+          <!-- 5. ACTION -->
+          <div class="arch-stage-card">
+            <div class="arch-stage-header">
+              <span class="stage-pill">STAGE 05</span>
+              <h4 class="stage-title">ACTION</h4>
+              <span class="stage-caption">Actuation & Output</span>
+            </div>
+            <div class="arch-nodes-group">
+              <div class="arch-node">
+                <div class="node-icon emerald">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                </div>
+                <div class="node-details">
+                  <span class="node-name">Explainable Decision</span>
+                  <span class="node-sub">Telemetry Audit Log</span>
+                </div>
+              </div>
+              <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+              <div class="arch-node highlight-action">
+                <div class="node-icon emerald">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                </div>
+                <div class="node-details">
+                  <span class="node-name">Vehicle Action</span>
+                  <span class="node-sub">Speed, Lane & Braking</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ====================================================================
+       SECTION 4: HOW THE SYSTEM MAKES A DECISION
+       ==================================================================== -->
+  <section id="decision-process" class="hiw-section">
+    <div class="hiw-content">
+      <div class="section-header">
+        <span class="section-label">
+          <span class="pulse-dot"></span>
+          DECISION WALKTHROUGH
+        </span>
+        <h2>How the System Makes a Decision</h2>
+        <p>A real-time scenario showing how all pipeline stages converge into a single, safe, auditable driving command.</p>
+      </div>
+
+      <div class="decision-flow-wrapper">
+        <!-- Left: Inputs -->
+        <div class="decision-input-card">
+          <h3>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+            <span style="color: var(--accent-blue);">Pipeline Inputs</span>
+          </h3>
+          <ul class="decision-input-list">
+            <li>
+              <span class="input-icon" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>
+              </span>
+              <span>5 camera feeds: 3 clear, 1 rain-degraded, 1 night</span>
+            </li>
+            <li>
+              <span class="input-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="17" r="2"/></svg>
+              </span>
+              <span>Traffic signal: <strong style="color: #ef4444;">RED</strong> detected at front camera</span>
+            </li>
+            <li>
+              <span class="input-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+              </span>
+              <span>Left blind spot: car approaching (TTC 1.3s)</span>
+            </li>
+            <li>
+              <span class="input-icon" style="background: rgba(6, 182, 212, 0.1); color: #06b6d4;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </span>
+              <span>Fusion confidence: 92.4% (rain cam down-weighted)</span>
+            </li>
+            <li>
+              <span class="input-icon" style="background: rgba(124, 58, 237, 0.1); color: #7c3aed;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+              </span>
+              <span>RL policy recommends: SLOW_DOWN (15 km/h)</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Center: Arrow -->
+        <div class="decision-flow-arrow">
+          <svg viewBox="0 0 48 48" fill="none">
+            <path d="M8 24h28" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <path d="M30 16l8 8-8 8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Right: Output -->
+        <div class="decision-output-card">
+          <h3>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>
+            Final Decision
+          </h3>
+          <div class="decision-output-item highlight">
+            <span class="output-label">ACTION</span>
+            <span class="output-value">STOP</span>
+          </div>
+          <div class="decision-output-item">
+            <span class="output-label">SPEED</span>
+            <span class="output-value">0 km/h</span>
+          </div>
+          <div class="decision-output-item">
+            <span class="output-label">LANE</span>
+            <span class="output-value">HOLD LANE</span>
+          </div>
+          <div class="decision-output-item">
+            <span class="output-label">OVERRIDE</span>
+            <span class="output-value" style="color: #f87171;">Safety Rule Override</span>
+          </div>
+          <div class="decision-explanation">
+            <div class="explanation-title">HUMAN-READABLE EXPLANATION</div>
+            <p>"Red traffic signal detected at front camera. Safety interlock overrides RL SLOW_DOWN recommendation. Enforced deterministic full stop at 0 km/h. Left lane change inhibited — vehicle in blind spot (TTC 1.3s)."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       CTA BANNER
+       ==================================================================== -->
+  <div class="hiw-cta-banner">
+    <h2>See It in Action</h2>
+    <p>Watch AutoBus AI process real camera feeds, detect objects, evaluate risks, and produce auditable driving decisions in real time.</p>
+    <a href="/demo" class="btn-primary" style="margin: 0 auto;">
+      <span>View Live Demo</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </a>
+  </div>
+
+  <!-- ====================================================================
+       SCROLL-SPY SCRIPT
+       ==================================================================== -->
+  <script>
+    // Scroll-spy: highlight active nav link based on scroll position
+    document.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('.hiw-section');
+      const navLinks = document.querySelectorAll('.hiw-nav');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            navLinks.forEach(link => link.classList.remove('section-active'));
+            const activeLink = document.querySelector(`.hiw-nav[data-section="${entry.target.id}"]`);
+            if (activeLink) activeLink.classList.add('section-active');
+          }
+        });
+      }, { rootMargin: '-20% 0px -60% 0px' });
+
+      sections.forEach(section => observer.observe(section));
+    });
+  </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 /**
  * AutoBus AI - Autonomous Urban Bus Perception & Decision System
- * Frontend Interactions and Video Controls
+ * Landing Page Controls & Navigation
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -9,13 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const videoToggleBtn = document.getElementById("video-media-toggle");
   const videoToggleIcon = document.getElementById("video-toggle-icon");
   const videoToggleText = document.getElementById("video-toggle-text");
-  
-  const modalOverlay = document.getElementById("arch-modal-overlay");
-  const modalCloseBtn = document.getElementById("modal-close-btn");
-  const navLinks = document.querySelectorAll(".nav-link");
-  const btnExplore = document.getElementById("btn-explore-system");
-  const btnDemoNav = document.getElementById("btn-nav-demo");
-  const btnDemoHero = document.getElementById("btn-hero-demo");
 
   // 1. Video Autoplay & Controls Handling
   if (video) {
@@ -28,71 +21,23 @@ document.addEventListener("DOMContentLoaded", () => {
       videoToggleBtn.addEventListener("click", () => {
         if (video.paused) {
           video.play();
-          videoToggleText.textContent = "Pause";
-          videoToggleIcon.innerHTML = `<path d="M6 4h4v16H6zm8 0h4v16h-4z" fill="currentColor"/>`;
+          if (videoToggleText) videoToggleText.textContent = "Pause";
+          if (videoToggleIcon) {
+            videoToggleIcon.innerHTML = `<path d="M6 4h4v16H6zm8 0h4v16h-4z" fill="currentColor"/>`;
+          }
         } else {
           video.pause();
-          videoToggleText.textContent = "Play";
-          videoToggleIcon.innerHTML = `<path d="M8 5v14l11-7z" fill="currentColor"/>`;
+          if (videoToggleText) videoToggleText.textContent = "Play";
+          if (videoToggleIcon) {
+            videoToggleIcon.innerHTML = `<path d="M8 5v14l11-7z" fill="currentColor"/>`;
+          }
         }
       });
     }
   }
 
-  // 2. Modals & Navigation Handling
-  function openModal() {
-    if (modalOverlay) {
-      modalOverlay.classList.add("active");
-    }
-  }
-
-  function closeModal() {
-    if (modalOverlay) {
-      modalOverlay.classList.remove("active");
-    }
-  }
-
-  if (modalCloseBtn) {
-    modalCloseBtn.addEventListener("click", closeModal);
-  }
-
-  if (modalOverlay) {
-    modalOverlay.addEventListener("click", (e) => {
-      if (e.target === modalOverlay) closeModal();
-    });
-  }
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeModal();
-  });
-
-  if (btnExplore) {
-    btnExplore.addEventListener("click", (e) => {
-      e.preventDefault();
-      openModal();
-    });
-  }
-
-  navLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      navLinks.forEach(l => l.classList.remove("active"));
-      link.classList.add("active");
-      openModal();
-    });
-  });
-
-  if (btnDemoNav) {
-    btnDemoNav.addEventListener("click", (e) => {
-      e.preventDefault();
-      openModal();
-    });
-  }
-
-  if (btnHeroDemo) {
-    btnHeroDemo.addEventListener("click", (e) => {
-      e.preventDefault();
-      openModal();
-    });
-  }
+  // 2. Global helper for feature cards onclick in hero: navigate to how-it-works page
+  window.openArchModal = function(phase) {
+    window.location.href = "/static/how-it-works.html#technology";
+  };
 });

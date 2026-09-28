@@ -14,8 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="/static/css/demo.css">
+  <link rel="stylesheet" href="/static/css/demo.css?v=2.2">
 </head>
 <body>
 
@@ -38,7 +37,6 @@
         <li><a href="/" class="nav-link">Overview</a></li>
         <li><a href="/#technology" class="nav-link">Technology</a></li>
         <li><a href="/#features" class="nav-link">Features</a></li>
-        <li><a href="/demo" class="nav-link active">Live Demo</a></li>
         <li><a href="/#architecture" class="nav-link">System Architecture</a></li>
       </ul>
     </nav>
@@ -174,19 +172,16 @@
             <span class="camera-status-pill pill-loaded" id="status-front">Loaded (Preset)</span>
           </div>
           <div class="camera-dropzone" id="dropzone-front">
+            <img id="dz-thumb-front" class="dz-thumbnail" src="/data/red_light_sample.jpg" alt="Preview">
             <div class="dropzone-content" id="dz-content-front">
-              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
               <div class="dz-text-group">
                 <strong id="dz-name-front">red_light_sample.jpg</strong>
-                <span id="dz-meta-front">Ready for Analysis • Drop Image or Video to replace</span>
+                <span id="dz-meta-front">Drop image/video or click</span>
               </div>
+              <button type="button" class="btn-dz-browse" id="btn-browse-front">📁 Browse</button>
             </div>
-            <input type="file" id="input-front" class="hidden-file-input" accept="image/*,video/*">
           </div>
+          <input type="file" id="input-front" class="hidden-file-input" accept="image/*,video/*">
         </div>
 
         <!-- Slot 2: Front Left (Optional) -->
@@ -199,19 +194,16 @@
             <span class="camera-status-pill pill-empty" id="status-front_left">Auto-Degraded</span>
           </div>
           <div class="camera-dropzone" id="dropzone-front_left">
+            <img id="dz-thumb-front_left" class="dz-thumbnail" style="display:none;" alt="Preview">
             <div class="dropzone-content" id="dz-content-front_left">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="17 8 12 3 7 8"/>
-                <line x1="12" y1="3" x2="12" y2="15"/>
-              </svg>
               <div class="dz-text-group">
-                <strong id="dz-name-front_left">Drop Image / Video or Click</strong>
-                <span id="dz-meta-front_left">If omitted, treated as dead sensor (0.0 rel)</span>
+                <strong id="dz-name-front_left">Drop Image / Video</strong>
+                <span id="dz-meta-front_left">Optional (0.0 rel if omitted)</span>
               </div>
+              <button type="button" class="btn-dz-browse" id="btn-browse-front_left">📁 Browse</button>
             </div>
-            <input type="file" id="input-front_left" class="hidden-file-input" accept="image/*,video/*">
           </div>
+          <input type="file" id="input-front_left" class="hidden-file-input" accept="image/*,video/*">
         </div>
 
         <!-- Slot 3: Front Right (Optional) -->
@@ -224,19 +216,16 @@
             <span class="camera-status-pill pill-empty" id="status-front_right">Auto-Degraded</span>
           </div>
           <div class="camera-dropzone" id="dropzone-front_right">
+            <img id="dz-thumb-front_right" class="dz-thumbnail" style="display:none;" alt="Preview">
             <div class="dropzone-content" id="dz-content-front_right">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="17 8 12 3 7 8"/>
-                <line x1="12" y1="3" x2="12" y2="15"/>
-              </svg>
               <div class="dz-text-group">
-                <strong id="dz-name-front_right">Drop Image / Video or Click</strong>
-                <span id="dz-meta-front_right">If omitted, treated as dead sensor (0.0 rel)</span>
+                <strong id="dz-name-front_right">Drop Image / Video</strong>
+                <span id="dz-meta-front_right">Optional (0.0 rel if omitted)</span>
               </div>
+              <button type="button" class="btn-dz-browse" id="btn-browse-front_right">📁 Browse</button>
             </div>
-            <input type="file" id="input-front_right" class="hidden-file-input" accept="image/*,video/*">
           </div>
+          <input type="file" id="input-front_right" class="hidden-file-input" accept="image/*,video/*">
         </div>
 
         <!-- Slot 4: Back Left (Optional) -->
@@ -249,19 +238,16 @@
             <span class="camera-status-pill pill-empty" id="status-rear_left">Auto-Degraded</span>
           </div>
           <div class="camera-dropzone" id="dropzone-rear_left">
+            <img id="dz-thumb-rear_left" class="dz-thumbnail" style="display:none;" alt="Preview">
             <div class="dropzone-content" id="dz-content-rear_left">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="17 8 12 3 7 8"/>
-                <line x1="12" y1="3" x2="12" y2="15"/>
-              </svg>
               <div class="dz-text-group">
-                <strong id="dz-name-rear_left">Drop Image / Video or Click</strong>
-                <span id="dz-meta-rear_left">If omitted, treated as dead sensor (0.0 rel)</span>
+                <strong id="dz-name-rear_left">Drop Image / Video</strong>
+                <span id="dz-meta-rear_left">Optional (0.0 rel if omitted)</span>
               </div>
+              <button type="button" class="btn-dz-browse" id="btn-browse-rear_left">📁 Browse</button>
             </div>
-            <input type="file" id="input-rear_left" class="hidden-file-input" accept="image/*,video/*">
           </div>
+          <input type="file" id="input-rear_left" class="hidden-file-input" accept="image/*,video/*">
         </div>
 
         <!-- Slot 5: Back Right (Optional) -->
@@ -274,19 +260,16 @@
             <span class="camera-status-pill pill-empty" id="status-rear_right">Auto-Degraded</span>
           </div>
           <div class="camera-dropzone" id="dropzone-rear_right">
+            <img id="dz-thumb-rear_right" class="dz-thumbnail" style="display:none;" alt="Preview">
             <div class="dropzone-content" id="dz-content-rear_right">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="17 8 12 3 7 8"/>
-                <line x1="12" y1="3" x2="12" y2="15"/>
-              </svg>
               <div class="dz-text-group">
-                <strong id="dz-name-rear_right">Drop Image / Video or Click</strong>
-                <span id="dz-meta-rear_right">If omitted, treated as dead sensor (0.0 rel)</span>
+                <strong id="dz-name-rear_right">Drop Image / Video</strong>
+                <span id="dz-meta-rear_right">Optional (0.0 rel if omitted)</span>
               </div>
+              <button type="button" class="btn-dz-browse" id="btn-browse-rear_right">📁 Browse</button>
             </div>
-            <input type="file" id="input-rear_right" class="hidden-file-input" accept="image/*,video/*">
           </div>
+          <input type="file" id="input-rear_right" class="hidden-file-input" accept="image/*,video/*">
         </div>
 
       </div>
@@ -614,6 +597,6 @@
   </main>
 
   <!-- Scripts -->
-  <script src="/static/js/demo.js"></script>
+  <script src="/static/js/demo.js?v=2.2"></script>
 </body>
 </html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en" class="standalone-page-html">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoBus AI — End-to-End System Architecture</title>
+  <meta name="description" content="End-to-end engineering architecture pipeline for AutoBus AI: 5 camera feeds, YOLOv8 detection, ByteTrack tracking, sensor reliability estimation, trust fusion, blind spot risk, RL policy, decision fusion, and vehicle actuation.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%232563eb%22><path d=%22M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z%22/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Dedicated Architecture Page Enhancements */
+    .arch-flow-diagram-wrapper {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-shadow: var(--shadow-subtle);
+      margin-bottom: 48px;
+    }
+    .arch-stage-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .arch-stage-banner-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .arch-legend-bar {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .legend-dot.blue { background: #3b82f6; }
+    .legend-dot.cyan { background: #06b6d4; }
+    .legend-dot.amber { background: #f59e0b; }
+    .legend-dot.violet { background: #8b5cf6; }
+    .legend-dot.emerald { background: #10b981; }
+
+    /* Extended Stage Cards for Standalone Architecture */
+    .arch-full-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      align-items: stretch;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 1024px) {
+      .arch-full-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="standalone-page">
+  <div class="page-background"></div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="brand-icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/>
+        </svg>
+      </div>
+      <span class="brand-text">AutoBus <span class="brand-ai-badge">AI</span></span>
+    </a>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link">Overview</a></li>
+        <li><a href="/static/technology.html" class="nav-link">Technology</a></li>
+        <li><a href="/static/features.html" class="nav-link">Features</a></li>
+        <li><a href="/static/architecture.html" class="nav-link active">System Architecture</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="/demo" class="btn-nav-demo">
+        <span>View Demo</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="standalone-container">
+    <div class="standalone-header">
+      <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        <span class="badge-text">ENGINEERING PIPELINE</span>
+      </div>
+      <h1 class="standalone-title">End-to-End System Architecture</h1>
+      <p class="standalone-subtitle">
+        Complete real-time execution pipeline spanning five synchronized camera streams, sensor reliability estimation, blind-spot threat scoring, reinforcement learning action selection, and deterministic decision arbitration.
+      </p>
+    </div>
+
+    <!-- Complete Visual 5-Group Pipeline Container -->
+    <div class="arch-flow-diagram-wrapper">
+      <div class="arch-stage-banner">
+        <div class="arch-stage-banner-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" color="#2563eb">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          5-Stage Synchronous Dataflow Pipeline
+        </div>
+        <div class="arch-legend-bar">
+          <span class="legend-item"><span class="legend-dot blue"></span> Perception</span>
+          <span class="legend-item"><span class="legend-dot cyan"></span> Sensor Intel</span>
+          <span class="legend-item"><span class="legend-dot amber"></span> Risk & Safety</span>
+          <span class="legend-item"><span class="legend-dot violet"></span> Decision</span>
+          <span class="legend-item"><span class="legend-dot emerald"></span> Action</span>
+        </div>
+      </div>
+
+      <!-- 5 Major Groups Grid -->
+      <div class="arch-pipeline-container" style="display: flex; gap: 8px;">
+
+        <!-- 1. PERCEPTION -->
+        <div class="arch-stage-card">
+          <div class="arch-stage-header">
+            <span class="stage-pill">STAGE 01</span>
+            <h4 class="stage-title">PERCEPTION</h4>
+            <span class="stage-caption">Multi-View Sensing</span>
+          </div>
+          <div class="arch-nodes-group">
+            <!-- 5 Camera Feeds -->
+            <div class="arch-node">
+              <div class="node-icon blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                </svg>
+              </div>
+              <div class="node-details">
+                <span class="node-name">5 Camera Feeds</span>
+                <span class="node-sub">Front, FL, FR, RL, RR</span>
+              </div>
+            </div>
+            <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+            <!-- Object Detection -->
+            <div class="arch-node">
+              <div class="node-icon blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+              </div>
+              <div class="node-details">
+                <span class="node-name">Object Detection</span>
+                <span class="node-sub">YOLOv8 Inference</span>
+              </div>
+            </div>
+            <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+            <!-- Object Tracking -->
+            <div class="arch-node">
+              <div class="node-icon blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+              </div>
+              <div class="node-details">
+                <span class="node-name">Object Tracking</span>
+                <span class="node-sub">ByteTrack Association</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector 1 -> 2 -->
+        <div class="stage-pipeline-arrow">
+          <svg viewBox="0 0 60 40" class="flow-svg-line">
+            <line x1="5" y1="20" x2="55" y2="20" stroke="#3b82f6" stroke-width="3" stroke-dasharray="5,4" class="anim-flow"/>
+            <polygon points="52,14 60,20 52,26" fill="#3b82f6"/>
+          </svg>
+        </div>
+
+        <!-- 2. SENSOR INTELLIGENCE -->
+        <div class="arch-stage-card">
+          <div class="arch-stage-header">
+            <span class="stage-pill">STAGE 02</span>
+            <h4 class="stage-title">SENSOR INTELLIGENCE</h4>
+            <span class="stage-caption">Health & Fusion</span>
+          </div>
+          <div class="arch-nodes-group">
+            <!-- Sensor Reliability Estimation -->
+            <div class="arch-node">
+              <div class="node-icon cyan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+              </div>
+              <div class="node-details">
+                <span class="node-name">Reliability Estimation</span>
+                <span class="node-sub">Blur, Contrast, Luminance</span>
+              </div>
+            </div>
+            <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+            <!-- Sensor Trust / Fusion -->
+            <div class="arch-node">
+              <div class="node-icon cyan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <circle cx="12" cy="12" r="6"></circle>
+                </svg>
+              </div>
+              <div class="node-details">
+                <span class="node-name">Sensor Trust / Fusion</span>
+                <span class="node-sub">Dynamic Weight Matrix</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector 2 -> 3 -->
+        <div class="stage-pipeline-arrow">
+          <svg viewBox="0 0 60 40" class="flow-svg-line">
+            <line x1="5" y1="20" x2="55" y2="20" stroke="#06b6d4" stroke-width="3" stroke-dasharray="5,4" class="anim-flow"/>
+            <polygon points="52,14 60,20 52,26" fill="#06b6d4"/>
+          </svg>
+        </div>
+
+        <!-- 3. RISK & SAFETY -->
+        <div class="arch-stage-card">
+          <div class="arch-stage-header">
+            <span class="stage-pill">STAGE 03</span>
+            <h4 class="stage-title">RISK & SAFETY</h4>
+            <span class="stage-caption">Threat Quantification</span>
+          </div>
+          <div class="arch-nodes-group">
+            <!-- Blind Spot Analysis -->
+            <div class="arch-node">
+              <div class="node-icon amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                </svg>
+              </div>
+              <div class="node-details">
+                <span class="node-name">Blind Spot Analysis</span>
+                <span class="node-sub">Lane Occupancy & TTC</span>
+              </div>
+            </div>
+            <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+            <!-- Risk Assessment -->
+            <div class="arch-node">
+              <div class="node-icon amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+              <div class="node-details">
+                <span class="node-name">Risk Assessment</span>
+                <span class="node-sub">Collision Hazard Index</span>
+              </div>
+            </div>
+            <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+            <!-- Safety Margin Generation -->
+            <div class="arch-node">
+              <div class="node-icon amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                  <line x1="6" y1="12" x2="18" y2="12"></line>
+                </svg>
+              </div>
+              <div class="node-details">
+                <span class="node-name">Safety Margin Gen</span>
+                <span class="node-sub">Braking & Clearance Buffer</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector 3 -> 4 -->
+        <div class="stage-pipeline-arrow">
+          <svg viewBox="0 0 60 40" class="flow-svg-line">
+            <line x1="5" y1="20" x2="55" y2="20" stroke="#f59e0b" stroke-width="3" stroke-dasharray="5,4" class="anim-flow"/>
+            <polygon points="52,14 60,20 52,26" fill="#f59e0b"/>
+          </svg>
+        </div>
+
+        <!-- 4. DECISION -->
+        <div class="arch-stage-card">
+          <div class="arch-stage-header">
+            <span class="stage-pill">STAGE 04</span>
+            <h4 class="stage-title">DECISION</h4>
+            <span class="stage-caption">Policy & Arbitration</span>
+          </div>
+          <div class="arch-nodes-group">
+            <!-- Reinforcement Learning Policy -->
+            <div class="arch-node">
+              <div class="node-icon violet">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                  <rect x="9" y="9" width="6" height="6"></rect>
+                </svg>
+              </div>
+              <div class="node-details">
+                <span class="node-name">RL Policy Engine</span>
+                <span class="node-sub">MOVE, SLOW, STOP, CH_L/R</span>
+              </div>
+            </div>
+            <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+            <!-- Decision Fusion -->
+            <div class="arch-node">
+              <div class="node-icon violet">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                </svg>
+              </div>
+              <div class="node-details">
+                <span class="node-name">Decision Fusion</span>
+                <span class="node-sub">Deterministic Safety Gate</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector 4 -> 5 -->
+        <div class="stage-pipeline-arrow">
+          <svg viewBox="0 0 60 40" class="flow-svg-line">
+            <line x1="5" y1="20" x2="55" y2="20" stroke="#6366f1" stroke-width="3" stroke-dasharray="5,4" class="anim-flow"/>
+            <polygon points="52,14 60,20 52,26" fill="#6366f1"/>
+          </svg>
+        </div>
+
+        <!-- 5. ACTION -->
+        <div class="arch-stage-card">
+          <div class="arch-stage-header">
+            <span class="stage-pill">STAGE 05</span>
+            <h4 class="stage-title">ACTION</h4>
+            <span class="stage-caption">Actuation & Output</span>
+          </div>
+          <div class="arch-nodes-group">
+            <!-- Explainable Decision -->
+            <div class="arch-node">
+              <div class="node-icon emerald">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </div>
+              <div class="node-details">
+                <span class="node-name">Explainable Decision</span>
+                <span class="node-sub">Telemetry Audit Log</span>
+              </div>
+            </div>
+            <div class="arch-flow-arrow"><svg viewBox="0 0 24 24"><path d="M12 4v16m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+            <!-- Vehicle Action -->
+            <div class="arch-node highlight-action">
+              <div class="node-icon emerald">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                </svg>
+              </div>
+              <div class="node-details">
+                <span class="node-name">Vehicle Action</span>
+                <span class="node-sub">Speed, Lane & Braking</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>

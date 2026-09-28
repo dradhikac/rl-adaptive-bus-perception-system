@@ -94,7 +94,24 @@ def decode_image_input(raw_input: Any) -> Optional[np.ndarray]:
                 raw_input.seek(0)
             nparr = np.frombuffer(data, np.uint8)
             img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            return img
+            if img is not None:
+                return img
+            # Video file fallback
+            import tempfile
+            with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
+                tmp.write(data)
+                tmp_path = tmp.name
+            try:
+                cap = cv2.VideoCapture(tmp_path)
+                ret, frame = cap.read()
+                cap.release()
+                if ret and frame is not None:
+                    return frame
+            finally:
+                try:
+                    os.remove(tmp_path)
+                except Exception:
+                    pass
 
         # Raw bytes
         if isinstance(raw_input, bytes):

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en" class="standalone-page-html">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoBus AI — Core Technology Pipeline</title>
+  <meta name="description" content="The engineering behind AutoBus AI: 360° perception, HSV traffic signal recognition, blind-spot intelligence, adaptive sensor fusion, reinforcement learning and decision fusion.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%232563eb%22><path d=%22M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z%22/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="standalone-page">
+  <div class="page-background"></div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="brand-icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/>
+        </svg>
+      </div>
+      <span class="brand-text">AutoBus <span class="brand-ai-badge">AI</span></span>
+    </a>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link">Overview</a></li>
+        <li><a href="/static/technology.html" class="nav-link active">Technology</a></li>
+        <li><a href="/static/features.html" class="nav-link">Features</a></li>
+        <li><a href="/static/architecture.html" class="nav-link">System Architecture</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="/demo" class="btn-nav-demo">
+        <span>View Demo</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="standalone-container">
+    <div class="standalone-header">
+      <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        <span class="badge-text">CORE TECHNICAL PIPELINE</span>
+      </div>
+      <h1 class="standalone-title">THE ENGINEERING BEHIND AUTOBUS AI</h1>
+      <p class="standalone-subtitle">
+        Explore the perception, sensor-reliability, safety and decision systems that power the AutoBus platform.
+      </p>
+    </div>
+
+    <!-- 6 Modules Grid -->
+    <div class="tech-showcase-grid">
+
+      <!-- MODULE 01 — 360° MULTI-CAMERA PERCEPTION -->
+      <article class="tech-card">
+        <div class="tech-card-header">
+          <div class="tech-icon-box blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="tech-tag">Module 01</div>
+            <h2 class="tech-title">360° Multi-Camera Perception</h2>
+          </div>
+        </div>
+        <p class="tech-desc">
+          YOLOv8-based object detection across five synchronized camera viewpoints: <strong>Front</strong>, <strong>Front-Left</strong>, <strong>Front-Right</strong>, <strong>Rear-Left</strong>, and <strong>Rear-Right</strong>. Combines all five viewpoints to provide continuous 360° environmental perception around the bus.
+        </p>
+        <div class="tech-visual-container">
+          <svg viewBox="0 0 500 240" class="tech-svg">
+            <rect width="100%" height="100%" fill="#f8fafc" rx="8"/>
+            <polygon points="250,90 150,15 350,15" fill="rgba(37,99,235,0.22)" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4,3"/>
+            <polygon points="220,95 70,30 85,120" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="4,3"/>
+            <polygon points="280,95 430,30 415,120" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="4,3"/>
+            <polygon points="220,165 70,200 100,140" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="4,3"/>
+            <polygon points="280,165 430,200 400,140" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="4,3"/>
+            <rect x="220" y="85" width="60" height="95" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+            <path d="M 226 96 Q 250 90 274 96 L 274 112 Q 250 108 226 112 Z" fill="#38bdf8" opacity="0.85"/>
+            <text x="250" y="142" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">AUTOBUS</text>
+            <circle cx="250" cy="85" r="4.5" fill="#38bdf8"/>
+            <text x="250" y="75" fill="#0284c7" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">FRONT</text>
+            <circle cx="220" cy="95" r="4" fill="#6366f1"/>
+            <text x="175" y="92" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">FRONT_LEFT</text>
+            <circle cx="280" cy="95" r="4" fill="#6366f1"/>
+            <text x="288" y="92" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">FRONT_RIGHT</text>
+            <circle cx="220" cy="165" r="4" fill="#6366f1"/>
+            <text x="175" y="172" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">REAR_LEFT</text>
+            <circle cx="280" cy="165" r="4" fill="#6366f1"/>
+            <text x="288" y="172" fill="#4f46e5" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">REAR_RIGHT</text>
+          </svg>
+        </div>
+        <div class="tech-spec-bar">
+          <span class="spec-pill">YOLOv8 Detection</span>
+          <span class="spec-pill">5 Calibrated Perspectives</span>
+          <span class="spec-pill">Sub-50ms Latency</span>
+        </div>
+      </article>
+
+      <!-- MODULE 02 — TRAFFIC SIGNAL RECOGNITION -->
+      <article class="tech-card">
+        <div class="tech-card-header">
+          <div class="tech-icon-box red">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="7" y="2" width="10" height="20" rx="3" ry="3"></rect>
+              <circle cx="12" cy="7" r="2"></circle>
+              <circle cx="12" cy="12" r="2"></circle>
+              <circle cx="12" cy="17" r="2"></circle>
+            </svg>
+          </div>
+          <div>
+            <div class="tech-tag">Module 02</div>
+            <h2 class="tech-title">Traffic Signal Recognition</h2>
+          </div>
+        </div>
+        <p class="tech-desc">
+          HSV-based color classification from detected traffic lights. Detected traffic-light regions are analyzed using HSV color information to classify red, yellow, and green signal states.
+        </p>
+        <div class="tech-visual-container">
+          <svg viewBox="0 0 500 240" class="tech-svg">
+            <rect width="100%" height="100%" fill="#f8fafc" rx="8"/>
+            <g transform="translate(40, 30)">
+              <rect x="0" y="0" width="55" height="150" rx="10" fill="#0f172a"/>
+              <circle cx="27" cy="30" r="15" fill="#ef4444"/>
+              <circle cx="27" cy="75" r="13" fill="#78350f" opacity="0.4"/>
+              <circle cx="27" cy="120" r="13" fill="#064e3b" opacity="0.4"/>
+              <rect x="-6" y="-6" width="67" height="162" rx="4" fill="none" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="4,3"/>
+              <text x="27" y="176" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">Traffic Light</text>
+            </g>
+            <path d="M 125 105 L 155 105" stroke="#94a3b8" stroke-width="2"/>
+            <g transform="translate(165, 55)">
+              <rect x="0" y="0" width="70" height="70" rx="8" fill="#fee2e2" stroke="#fca5a5" stroke-width="1.5"/>
+              <circle cx="35" cy="35" r="22" fill="#ef4444"/>
+              <text x="35" y="95" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">Color Region</text>
+            </g>
+            <path d="M 245 105 L 275 105" stroke="#94a3b8" stroke-width="2"/>
+            <g transform="translate(285, 45)">
+              <rect x="0" y="0" width="90" height="90" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+              <text x="45" y="24" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">HSV RANGES</text>
+              <rect x="10" y="32" width="70" height="10" rx="2" fill="#ef4444"/>
+              <text x="45" y="58" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="7" text-anchor="middle">Hue: 0-10, 160-180</text>
+              <text x="45" y="72" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="7" text-anchor="middle">Sat: &gt;100 | Val: &gt;100</text>
+              <text x="45" y="105" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">HSV Classify</text>
+            </g>
+            <path d="M 385 105 L 415 105" stroke="#94a3b8" stroke-width="2"/>
+            <g transform="translate(420, 55)">
+              <rect x="0" y="0" width="65" height="70" rx="8" fill="#ef4444"/>
+              <text x="32" y="34" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="800" text-anchor="middle">RED</text>
+              <text x="32" y="52" fill="#fee2e2" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">STOP 0km/h</text>
+              <text x="32" y="95" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">Signal State</text>
+            </g>
+          </svg>
+        </div>
+        <div class="tech-spec-bar">
+          <span class="spec-pill">HSV Color Segmentation</span>
+          <span class="spec-pill">Deterministic Safety Interlock</span>
+        </div>
+      </article>
+
+      <!-- MODULE 03 — BLIND SPOT INTELLIGENCE -->
+      <article class="tech-card">
+        <div class="tech-card-header">
+          <div class="tech-icon-box amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div>
+            <div class="tech-tag">Module 03</div>
+            <h2 class="tech-title">Blind Spot Intelligence</h2>
+          </div>
+        </div>
+        <p class="tech-desc">
+          Lane occupancy and collision-risk scoring for safer lane changes. Evaluates proximity, relative velocity, and Time-To-Collision (TTC) to determine safe clearance buffers.
+        </p>
+        <div class="tech-visual-container">
+          <svg viewBox="0 0 500 240" class="tech-svg">
+            <rect width="100%" height="100%" fill="#1e293b" rx="8"/>
+            <line x1="170" y1="0" x2="170" y2="240" stroke="#f8fafc" stroke-width="2" stroke-dasharray="12,12" opacity="0.6"/>
+            <line x1="330" y1="0" x2="330" y2="240" stroke="#f8fafc" stroke-width="2" stroke-dasharray="12,12" opacity="0.6"/>
+            <rect x="220" y="65" width="60" height="110" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+            <text x="250" y="125" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">BUS</text>
+            <polygon points="220,110 80,95 60,195 220,175" fill="rgba(239, 68, 68, 0.35)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <rect x="100" y="130" width="30" height="45" rx="5" fill="#f59e0b"/>
+            <text x="115" y="156" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7" font-weight="700" text-anchor="middle">CAR</text>
+            <polygon points="280,110 420,95 440,195 280,175" fill="rgba(245, 158, 11, 0.25)" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <rect x="360" y="145" width="16" height="28" rx="3" fill="#38bdf8"/>
+            <text x="368" y="162" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="6" font-weight="800" text-anchor="middle">MOTO</text>
+            <rect x="20" y="15" width="135" height="22" rx="4" fill="rgba(254, 226, 226, 0.95)"/>
+            <text x="28" y="30" fill="#b91c1c" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">LEFT: OCCUPIED (TTC 1.3s)</text>
+            <rect x="345" y="15" width="135" height="22" rx="4" fill="rgba(254, 243, 199, 0.95)"/>
+            <text x="353" y="30" fill="#92400e" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700">RIGHT: CAUTION (MOTO)</text>
+          </svg>
+        </div>
+        <div class="tech-spec-bar">
+          <span class="spec-pill">Time-to-Collision (TTC)</span>
+          <span class="spec-pill">Lane Occupancy Flag</span>
+          <span class="spec-pill">0-100 Risk Scoring</span>
+        </div>
+      </article>
+
+      <!-- MODULE 04 — ADAPTIVE SENSOR FUSION -->
+      <article class="tech-card">
+        <div class="tech-card-header">
+          <div class="tech-icon-box cyan">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <path d="M9 12l2 2 4-4"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="tech-tag">Module 04</div>
+            <h2 class="tech-title">Adaptive Sensor Fusion</h2>
+          </div>
+        </div>
+        <p class="tech-desc">
+          Brightness, contrast and blur-based camera reliability estimation dynamically weights camera inputs into a fusion confidence score. Unreliable feeds receive lower trust while reliable feeds contribute more strongly.
+        </p>
+        <div class="tech-visual-container">
+          <svg viewBox="0 0 500 240" class="tech-svg">
+            <rect width="100%" height="100%" fill="#f8fafc" rx="8"/>
+            <g transform="translate(25, 20)">
+              <rect x="0" y="0" width="85" height="24" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+              <text x="42" y="16" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Camera 1 (Front)</text>
+              <rect x="0" y="32" width="85" height="24" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+              <text x="42" y="48" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Camera 2 (FL)</text>
+              <rect x="0" y="64" width="85" height="24" rx="4" fill="#fef2f2" stroke="#fca5a5"/>
+              <text x="42" y="80" fill="#b91c1c" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Camera 3 (FR-Rain)</text>
+              <rect x="0" y="96" width="85" height="24" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+              <text x="42" y="112" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Camera 4 (RL)</text>
+              <rect x="0" y="128" width="85" height="24" rx="4" fill="#f0fdf4" stroke="#86efac"/>
+              <text x="42" y="144" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Camera 5 (RR)</text>
+            </g>
+            <path d="M 115 90 L 145 90" stroke="#94a3b8" stroke-width="2"/>
+            <g transform="translate(150, 35)">
+              <rect x="0" y="0" width="170" height="125" rx="8" fill="#0f172a" stroke="#06b6d4" stroke-width="1.8"/>
+              <text x="85" y="24" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">IMAGE QUALITY ANALYSIS</text>
+              <text x="85" y="44" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7.5" text-anchor="middle">• Blur (Laplacian Variance)</text>
+              <text x="85" y="60" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7.5" text-anchor="middle">• Contrast (Standard Dev)</text>
+              <text x="85" y="76" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="7.5" text-anchor="middle">• Brightness (Luminance)</text>
+              <rect x="15" y="88" width="140" height="24" rx="4" fill="#0284c7"/>
+              <text x="85" y="104" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">ADAPTIVE WEIGHTING</text>
+            </g>
+            <path d="M 325 95 L 360 95" stroke="#06b6d4" stroke-width="2.5"/>
+            <g transform="translate(365, 45)">
+              <rect x="0" y="0" width="115" height="105" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+              <text x="57" y="26" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">FUSION CONFIDENCE</text>
+              <text x="57" y="62" fill="#0284c7" font-family="'JetBrains Mono', monospace" font-size="22" font-weight="800" text-anchor="middle">92.4%</text>
+              <text x="57" y="86" fill="#16a34a" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">FR Down-Weighted</text>
+            </g>
+          </svg>
+        </div>
+        <div class="tech-spec-bar">
+          <span class="spec-pill">Blur / Contrast / Brightness</span>
+          <span class="spec-pill">Dynamic Sensor Trust</span>
+          <span class="spec-pill">Self-Healing Reliability</span>
+        </div>
+      </article>
+
+      <!-- MODULE 05 — REINFORCEMENT LEARNING DECISION ENGINE -->
+      <article class="tech-card">
+        <div class="tech-card-header">
+          <div class="tech-icon-box violet">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            </svg>
+          </div>
+          <div>
+            <div class="tech-tag">Module 05</div>
+            <h2 class="tech-title">RL Decision Engine</h2>
+          </div>
+        </div>
+        <p class="tech-desc">
+          A policy-driven decision engine that selects actions based on the current scene and safety state. Supported actions: <strong>MOVE</strong>, <strong>SLOW_DOWN</strong>, <strong>STOP</strong>, <strong>CHANGE_LEFT</strong>, and <strong>CHANGE_RIGHT</strong>.
+        </p>
+        <div class="tech-visual-container">
+          <svg viewBox="0 0 500 240" class="tech-svg">
+            <rect width="100%" height="100%" fill="#f8fafc" rx="8"/>
+            <g transform="translate(25, 45)">
+              <rect x="0" y="0" width="85" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+              <text x="42" y="24" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">ENVIRONMENT</text>
+              <text x="10" y="48" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="7">• Obstacles</text>
+              <text x="10" y="66" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="7">• Signals</text>
+              <text x="10" y="84" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="7">• TTC & Lanes</text>
+            </g>
+            <path d="M 115 100 L 140 100" stroke="#94a3b8" stroke-width="2"/>
+            <g transform="translate(145, 45)">
+              <rect x="0" y="0" width="95" height="110" rx="6" fill="#f5f3ff" stroke="#c4b5fd"/>
+              <text x="47" y="24" fill="#6d28d9" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">STATE TENSOR S_t</text>
+              <text x="47" y="55" fill="#7c3aed" font-family="'JetBrains Mono', monospace" font-size="8" text-anchor="middle">RL POLICY</text>
+              <text x="47" y="75" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="7.5" text-anchor="middle">Q-Evaluation</text>
+              <text x="47" y="95" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="7.5" text-anchor="middle">Action Select</text>
+            </g>
+            <path d="M 245 100 L 270 100" stroke="#94a3b8" stroke-width="2"/>
+            <g transform="translate(275, 25)">
+              <text x="0" y="16" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700">5 SUPPORTED ACTIONS</text>
+              <rect x="0" y="26" width="195" height="20" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+              <text x="10" y="40" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">MOVE</text>
+              <rect x="0" y="52" width="195" height="20" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+              <text x="10" y="66" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">SLOW_DOWN</text>
+              <rect x="0" y="78" width="195" height="24" rx="4" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+              <text x="10" y="94" fill="#dc2626" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="800">STOP ★ SELECTED</text>
+              <rect x="0" y="108" width="195" height="20" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+              <text x="10" y="122" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">CHANGE_LEFT</text>
+              <rect x="0" y="134" width="195" height="20" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+              <text x="10" y="148" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600">CHANGE_RIGHT</text>
+            </g>
+          </svg>
+        </div>
+        <div class="tech-spec-bar">
+          <span class="spec-pill">Scenario-Based Policy</span>
+          <span class="spec-pill">5 Discrete Output States</span>
+          <span class="spec-pill">Safety Reward Metrics</span>
+        </div>
+      </article>
+
+      <!-- MODULE 06 — DECISION FUSION LAYER -->
+      <article class="tech-card">
+        <div class="tech-card-header">
+          <div class="tech-icon-box emerald">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <div>
+            <div class="tech-tag">Module 06</div>
+            <h2 class="tech-title">Decision Fusion Layer</h2>
+          </div>
+        </div>
+        <p class="tech-desc">
+          Arbitrates between reinforcement-learning output and risk-based safety rules to produce a single final decision, speed recommendation and lane action, together with a human-readable explanation.
+        </p>
+        <div class="tech-visual-container">
+          <svg viewBox="0 0 500 240" class="tech-svg">
+            <rect width="100%" height="100%" fill="#f8fafc" rx="8"/>
+            <g transform="translate(25, 25)">
+              <rect x="0" y="0" width="130" height="45" rx="6" fill="#f5f3ff" stroke="#c4b5fd"/>
+              <text x="65" y="20" fill="#6d28d9" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">RL Policy Output</text>
+              <text x="65" y="34" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="7" text-anchor="middle">Candidate: SLOW_DOWN</text>
+              <text x="65" y="65" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="800" text-anchor="middle">+</text>
+              <rect x="0" y="75" width="130" height="55" rx="6" fill="#fef2f2" stroke="#fca5a5"/>
+              <text x="65" y="95" fill="#b91c1c" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Safety Rules</text>
+              <text x="65" y="112" fill="#991b1b" font-family="'JetBrains Mono', monospace" font-size="6.8" font-weight="600" text-anchor="middle">Rule: Red Light = STOP</text>
+            </g>
+            <path d="M 160 85 L 195 85" stroke="#94a3b8" stroke-width="2"/>
+            <g transform="translate(200, 38)">
+              <rect x="0" y="0" width="95" height="95" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+              <text x="47" y="38" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">DECISION</text>
+              <text x="47" y="52" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle">FUSION</text>
+              <text x="47" y="75" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="6.8" text-anchor="middle">Rule Override</text>
+            </g>
+            <path d="M 300 85 L 330 85" stroke="#10b981" stroke-width="2"/>
+            <g transform="translate(335, 18)">
+              <rect x="0" y="0" width="145" height="145" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+              <rect x="10" y="10" width="125" height="24" rx="4" fill="#ef4444"/>
+              <text x="72" y="26" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="800" text-anchor="middle">Final Decision: STOP</text>
+              <rect x="10" y="40" width="125" height="20" rx="3" fill="#f8fafc" stroke="#e2e8f0"/>
+              <text x="72" y="54" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Speed: 0 km/h</text>
+              <rect x="10" y="65" width="125" height="20" rx="3" fill="#f8fafc" stroke="#e2e8f0"/>
+              <text x="72" y="79" fill="#0f172a" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" text-anchor="middle">Lane: HOLD LANE</text>
+              <rect x="10" y="90" width="125" height="45" rx="3" fill="#f1f5f9"/>
+              <text x="14" y="104" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="6.5" font-weight="700">Explanation:</text>
+              <text x="14" y="117" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="6.2">"Red signal override;</text>
+              <text x="14" y="127" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="6.2">braking to 0 km/h"</text>
+            </g>
+          </svg>
+        </div>
+        <div class="tech-spec-bar">
+          <span class="spec-pill">Deterministic Safety Interlock</span>
+          <span class="spec-pill">Speed & Lane Recommendations</span>
+          <span class="spec-pill">Human-Readable Auditing</span>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Compact Technical Summary / Pipeline -->
+    <div class="tech-summary-banner">
+      <div class="summary-banner-left">
+        <div class="tech-icon-box blue" style="width: 32px; height: 32px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        </div>
+        <div>
+          <div class="summary-banner-title">End-to-End Autonomous Pipeline Flow</div>
+          <div class="summary-banner-sub">Sub-50ms synchronized loop from raw camera frames to vehicle actuation</div>
+        </div>
+      </div>
+      <div class="summary-steps-flow">
+        <span class="flow-step-pill active">01 360° Vision</span>
+        <span class="flow-arrow-sep">→</span>
+        <span class="flow-step-pill active">02 Signal HSV</span>
+        <span class="flow-arrow-sep">→</span>
+        <span class="flow-step-pill active">03 Blind Spot TTC</span>
+        <span class="flow-arrow-sep">→</span>
+        <span class="flow-step-pill active">04 Sensor Fusion</span>
+        <span class="flow-arrow-sep">→</span>
+        <span class="flow-step-pill active">05 Tactical RL</span>
+        <span class="flow-arrow-sep">→</span>
+        <span class="flow-step-pill active">06 Decision Fusion</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

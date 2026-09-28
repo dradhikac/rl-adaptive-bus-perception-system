@@ -300,12 +300,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const nameEl = document.getElementById(`dz-name-${slot}`);
     const metaEl = document.getElementById(`dz-meta-${slot}`);
     const statusPill = document.getElementById(`status-${slot}`);
+    const thumbEl = document.getElementById(`dz-thumb-${slot}`);
 
     if (nameEl) nameEl.textContent = fileName;
-    if (metaEl) metaEl.textContent = "Preset Loaded • Ready for Analysis";
+    if (metaEl) metaEl.textContent = "Preset Loaded • Ready";
     if (statusPill) {
       statusPill.textContent = "Loaded (Preset)";
       statusPill.className = "camera-status-pill pill-loaded";
+    }
+
+    if (thumbEl) {
+      if (typeof url === "string" && (url.endsWith(".jpg") || url.endsWith(".png") || url.endsWith(".jpeg") || url.includes("/data/"))) {
+        thumbEl.src = url;
+        thumbEl.style.display = "block";
+      } else {
+        thumbEl.style.display = "none";
+      }
+    }
   }
 
   // Initialize in Image Analysis Mode by default for instant sub-second verification
@@ -317,11 +328,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const nameEl = document.getElementById(`dz-name-${slot}`);
       const metaEl = document.getElementById(`dz-meta-${slot}`);
       const statusPill = document.getElementById(`status-${slot}`);
-      if (nameEl) nameEl.textContent = "Drop Image / Video or Click";
-      if (metaEl) metaEl.textContent = slot === "front" ? "Front Camera (Required)" : "If omitted, treated as dead sensor (0.0 rel)";
+      const thumbEl = document.getElementById(`dz-thumb-${slot}`);
+
+      if (nameEl) nameEl.textContent = "Drop Image / Video";
+      if (metaEl) metaEl.textContent = slot === "front" ? "Front Camera (Required)" : "Optional (0.0 rel if omitted)";
       if (statusPill) {
         statusPill.textContent = slot === "front" ? "Pending Feed" : "Auto-Degraded";
         statusPill.className = "camera-status-pill pill-empty";
+      }
+      if (thumbEl) {
+        thumbEl.style.display = "none";
+        thumbEl.src = "";
       }
     });
   }
@@ -337,38 +354,66 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Prevent browser window from opening dragged files on accidental miss
+  window.addEventListener("dragover", (e) => e.preventDefault());
+  window.addEventListener("drop", (e) => e.preventDefault());
+
   // ----------------------------------------------------------------------------
   // 3. FILE DROPZONE & BROWSER UPLOAD LISTENERS
   // ----------------------------------------------------------------------------
   CAMERA_SLOTS.forEach(slot => {
     const dropzone = document.getElementById(`dropzone-${slot}`);
     const fileInput = document.getElementById(`input-${slot}`);
+    const btnBrowse = document.getElementById(`btn-browse-${slot}`);
 
-    if (!dropzone || !fileInput) return;
+    if (!fileInput) return;
 
-    dropzone.addEventListener("click", () => fileInput.click());
-
-    dropzone.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      dropzone.style.borderColor = "var(--accent-blue)";
-      dropzone.style.background = "#f1f5f9";
-    });
-
-    dropzone.addEventListener("dragleave", () => {
-      dropzone.style.borderColor = "rgba(203, 213, 225, 0.9)";
-      dropzone.style.background = "#f8fafc";
-    });
-
-    dropzone.addEventListener("drop", (e) => {
-      e.preventDefault();
-      dropzone.style.borderColor = "rgba(203, 213, 225, 0.9)";
-      dropzone.style.background = "#f8fafc";
-
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        handleFileSelection(slot, e.dataTransfer.files[0]);
+    function triggerFileInput(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
       }
-    });
+      fileInput.value = ""; // clear so selecting identical file triggers change
+      fileInput.click();
+    }
 
+    if (dropzone) {
+      dropzone.addEventListener("click", triggerFileInput);
+
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add("drag-active");
+      });
+
+      dropzone.addEventListener("dragenter", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add("drag-active");
+      });
+
+      dropzone.addEventListener("dragleave", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove("drag-active");
+      });
+
+      dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove("drag-active");
+
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          handleFileSelection(slot, e.dataTransfer.files[0]);
+        }
+      });
+    }
+
+    if (btnBrowse) {
+      btnBrowse.addEventListener("click", triggerFileInput);
+    }
+
+    fileInput.addEventListener("click", (e) => e.stopPropagation());
     fileInput.addEventListener("change", (e) => {
       if (e.target.files && e.target.files.length > 0) {
         handleFileSelection(slot, e.target.files[0]);
@@ -377,17 +422,98 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function handleFileSelection(slot, file) {
+    if (!file) return;
     cameraState[slot] = file;
+
     const nameEl = document.getElementById(`dz-name-${slot}`);
     const metaEl = document.getElementById(`dz-meta-${slot}`);
     const statusPill = document.getElementById(`status-${slot}`);
+    const thumbEl = document.getElementById(`dz-thumb-${slot}`);
 
+    const isVideo = file.type.startsWith("video/") || /\.(mp4|mov|avi|webm|mkv)$/i.test(file.name);
+    const isImage = file.type.startsWith("image/") || /\.(jpe?g|png|webp|bmp|gif)$/i.test(file.name);
     const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+
     if (nameEl) nameEl.textContent = file.name;
-    if (metaEl) metaEl.textContent = `Custom Upload • ${sizeMb} MB`;
+    if (metaEl) metaEl.textContent = `${isVideo ? "Video" : "Image"} • ${sizeMb} MB`;
     if (statusPill) {
       statusPill.textContent = "Loaded (File)";
       statusPill.className = "camera-status-pill pill-loaded";
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+
+    // Update thumbnail in dropzone
+    if (thumbEl) {
+      if (isImage) {
+        thumbEl.src = objectUrl;
+        thumbEl.style.display = "block";
+      } else {
+        thumbEl.style.display = "none";
+      }
+    }
+
+    // If uploading the primary front feed, update the main viewport immediately!
+    if (slot === "front") {
+      if (isVideo) {
+        // Automatically switch mode tab to Video Stream
+        if (currentMode !== "videos") {
+          currentMode = "videos";
+          if (tabModeVideos) tabModeVideos.classList.add("active");
+          if (tabModeImages) tabModeImages.classList.remove("active");
+          if (presetsGroupVideos) presetsGroupVideos.style.display = "flex";
+          if (presetsGroupImages) presetsGroupImages.style.display = "none";
+          if (fpsSelectorWrapper) fpsSelectorWrapper.style.display = "flex";
+          if (runBtnText) runBtnText.textContent = "⚡ Run Fast Video Pipeline (~2-3s)";
+          if (modeSummaryText) modeSummaryText.textContent = "⚡ Temporal Video Ingestion & Synchronized Arbitration Stream (~2-3s)";
+        }
+
+        if (frontImagePlayer) frontImagePlayer.style.display = "none";
+        if (videoPlayer) {
+          videoPlayer.style.display = "block";
+          videoPlayer.src = objectUrl;
+          videoPlayer.load();
+        }
+        if (videoControlsBar) videoControlsBar.style.display = "flex";
+        if (timelineStripContainer) timelineStripContainer.style.display = "none";
+        if (camFeedLabel) camFeedLabel.textContent = "CAM 1: FRONT (VIDEO LOADED)";
+        if (liveDetCount) liveDetCount.textContent = "Ready for Analysis";
+        if (overlayDecisionPill) {
+          overlayDecisionPill.textContent = "READY";
+          overlayDecisionPill.className = "overlay-decision-pill pill-move";
+        }
+      } else {
+        // Automatically switch mode tab to Image Analysis
+        if (currentMode !== "images") {
+          currentMode = "images";
+          if (tabModeImages) tabModeImages.classList.add("active");
+          if (tabModeVideos) tabModeVideos.classList.remove("active");
+          if (presetsGroupImages) presetsGroupImages.style.display = "flex";
+          if (presetsGroupVideos) presetsGroupVideos.style.display = "none";
+          if (fpsSelectorWrapper) fpsSelectorWrapper.style.display = "none";
+          if (runBtnText) runBtnText.textContent = "⚡ Run Instant Image Perception (< 1s)";
+          if (modeSummaryText) modeSummaryText.textContent = "⚡ Instant Static Multi-Camera Inference • Immediate Sub-Second Arbitration";
+        }
+
+        if (videoPlayer) videoPlayer.style.display = "none";
+        if (frontImagePlayer) {
+          frontImagePlayer.style.display = "block";
+          frontImagePlayer.src = objectUrl;
+        }
+        if (videoControlsBar) videoControlsBar.style.display = "none";
+        if (timelineStripContainer) timelineStripContainer.style.display = "none";
+        if (camFeedLabel) camFeedLabel.textContent = "CAM 1: FRONT (IMAGE LOADED)";
+        if (liveDetCount) liveDetCount.textContent = "Ready for Analysis";
+        if (overlayDecisionPill) {
+          overlayDecisionPill.textContent = "READY";
+          overlayDecisionPill.className = "overlay-decision-pill pill-move";
+        }
+      }
+
+      // Smoothly bring viewport into view so user gets immediate visual confirmation
+      if (resultsSection) {
+        resultsSection.style.display = "block";
+      }
     }
   }
 
