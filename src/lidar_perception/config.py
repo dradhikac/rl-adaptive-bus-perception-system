@@ -36,6 +36,10 @@ class LidarConfig:
     target_classes: List[str] = field(default_factory=lambda: ["CAR", "PEDESTRIAN"])
     min_lidar_points_per_box: int = 3 # Filter unobservable annotations (<3 points)
     
+    @property
+    def num_classes(self) -> int:
+        return len(self.target_classes)
+    
     # Derived grid dimensions
     @property
     def grid_size_x(self) -> int:

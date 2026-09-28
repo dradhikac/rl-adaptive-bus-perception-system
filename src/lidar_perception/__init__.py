@@ -18,6 +18,7 @@ from .point_cloud_ops import (
     validate_and_filter_points,
     generate_bev_pseudo_image
 )
+from .detector import AutoBusLidar3DDetector
 
 __all__ = [
     "LidarConfig",
@@ -33,5 +34,6 @@ __all__ = [
     "sensor_to_bev_grid_coords",
     "load_point_cloud",
     "validate_and_filter_points",
-    "generate_bev_pseudo_image"
+    "generate_bev_pseudo_image",
+    "AutoBusLidar3DDetector"
 ]
