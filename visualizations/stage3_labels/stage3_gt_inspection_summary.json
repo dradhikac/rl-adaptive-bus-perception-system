@@ -1,0 +1,37 @@
+{
+  "coordinate_conventions": {
+    "annotation_raw_frame": "Global World Coordinates (UTM)",
+    "sensor_frame": "LIDAR_TOP (Right-handed: +X Right, +Y Forward, +Z Upward)",
+    "transformation": "p_sensor = R_sensor.T @ (R_ego.T @ (p_global - t_ego) - t_sensor)"
+  },
+  "samples_evaluated": [
+    {
+      "scene": "scene-0061",
+      "sample_token": "b26e791522294bec90f86fd72226e35c",
+      "total_annotations": 156,
+      "observable_in_45m": 93,
+      "image_file": "gt_alignment_scene-0061.png"
+    },
+    {
+      "scene": "scene-0103",
+      "sample_token": "5b03af7a953245b5a3b23191ed4da62a",
+      "total_annotations": 61,
+      "observable_in_45m": 36,
+      "image_file": "gt_alignment_scene-0103.png"
+    },
+    {
+      "scene": "scene-0553",
+      "sample_token": "ecd49e3c38624c77b8aac8df445d49ba",
+      "total_annotations": 51,
+      "observable_in_45m": 28,
+      "image_file": "gt_alignment_scene-0553.png"
+    },
+    {
+      "scene": "scene-0655",
+      "sample_token": "0d7263a5b8264cad996582d6219ef1f2",
+      "total_annotations": 60,
+      "observable_in_45m": 32,
+      "image_file": "gt_alignment_scene-0655.png"
+    }
+  ]
+}

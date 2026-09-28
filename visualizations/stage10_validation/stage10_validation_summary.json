@@ -1,0 +1,25 @@
+{
+  "total_test_samples": 80,
+  "total_ground_truths": 1343,
+  "total_predictions": 2611,
+  "true_positives": 609,
+  "false_positives": 2002,
+  "false_negatives": 734,
+  "recall": 0.45346239761727475,
+  "precision": 0.23324396782841822,
+  "f1_score": 0.30804248861911987,
+  "failure_modes_analyzed": [
+    "Good Predictions (True Positives: tight 3D bounding box wrapping)",
+    "Missed Objects (False Negatives: sparse returns under severe rain/darkness)",
+    "False Positives (Ghost bounding boxes on high-intensity curbs/sidewalk clutter)",
+    "Incorrect Class Predictions (Confusion between small cars and dense pedestrian groups)",
+    "Incorrect Box Sizes (Volume underestimation on distant partially occluded vehicles)",
+    "Incorrect Orientations (180-degree heading ambiguity on symmetrical vehicle bumpers)",
+    "Distant-Object Failures (Drop-off in point density beyond 25-30m)"
+  ],
+  "visualizations_generated": [
+    "stage10_prediction_val_Case1_HighAccuracy_and_PedestrianDetections.png",
+    "stage10_prediction_val_Case2_FalsePositives_and_OrientationErrors.png",
+    "stage10_prediction_val_Case3_DistantSparsity_and_SizeEstimationErrors.png"
+  ]
+}

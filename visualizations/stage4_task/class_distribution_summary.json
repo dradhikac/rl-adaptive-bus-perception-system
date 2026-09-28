@@ -1,0 +1,233 @@
+{
+  "total_samples": 404,
+  "train_samples": 363,
+  "val_samples": 41,
+  "raw_categories": {
+    "vehicle.car": {
+      "total": 7619,
+      "train": 6978,
+      "val": 641,
+      "frame_presence_pct": 100.0,
+      "trainable_roi_pts3": 3973
+    },
+    "human.pedestrian.adult": {
+      "total": 4765,
+      "train": 4301,
+      "val": 464,
+      "frame_presence_pct": 80.19801980198021,
+      "trainable_roi_pts3": 2750
+    },
+    "movable_object.barrier": {
+      "total": 2323,
+      "train": 1689,
+      "val": 634,
+      "frame_presence_pct": 26.980198019801982,
+      "trainable_roi_pts3": 1335
+    },
+    "movable_object.trafficcone": {
+      "total": 1378,
+      "train": 1378,
+      "val": 0,
+      "frame_presence_pct": 33.415841584158414,
+      "trainable_roi_pts3": 405
+    },
+    "vehicle.truck": {
+      "total": 649,
+      "train": 573,
+      "val": 76,
+      "frame_presence_pct": 65.5940594059406,
+      "trainable_roi_pts3": 385
+    },
+    "vehicle.motorcycle": {
+      "total": 471,
+      "train": 471,
+      "val": 0,
+      "frame_presence_pct": 47.77227722772277,
+      "trainable_roi_pts3": 278
+    },
+    "vehicle.bus.rigid": {
+      "total": 353,
+      "train": 287,
+      "val": 66,
+      "frame_presence_pct": 70.04950495049505,
+      "trainable_roi_pts3": 165
+    },
+    "vehicle.bicycle": {
+      "total": 243,
+      "train": 215,
+      "val": 28,
+      "frame_presence_pct": 36.633663366336634,
+      "trainable_roi_pts3": 128
+    },
+    "vehicle.construction": {
+      "total": 196,
+      "train": 196,
+      "val": 0,
+      "frame_presence_pct": 32.67326732673268,
+      "trainable_roi_pts3": 119
+    },
+    "human.pedestrian.construction_worker": {
+      "total": 193,
+      "train": 193,
+      "val": 0,
+      "frame_presence_pct": 13.118811881188119,
+      "trainable_roi_pts3": 105
+    },
+    "movable_object.pushable_pullable": {
+      "total": 82,
+      "train": 41,
+      "val": 41,
+      "frame_presence_pct": 20.2970297029703,
+      "trainable_roi_pts3": 64
+    },
+    "vehicle.trailer": {
+      "total": 60,
+      "train": 19,
+      "val": 41,
+      "frame_presence_pct": 14.85148514851485,
+      "trainable_roi_pts3": 50
+    },
+    "vehicle.bus.bendy": {
+      "total": 57,
+      "train": 57,
+      "val": 0,
+      "frame_presence_pct": 9.158415841584159,
+      "trainable_roi_pts3": 34
+    },
+    "static_object.bicycle_rack": {
+      "total": 54,
+      "train": 54,
+      "val": 0,
+      "frame_presence_pct": 13.366336633663368,
+      "trainable_roi_pts3": 30
+    },
+    "human.pedestrian.child": {
+      "total": 46,
+      "train": 46,
+      "val": 0,
+      "frame_presence_pct": 6.435643564356436,
+      "trainable_roi_pts3": 29
+    },
+    "human.pedestrian.personal_mobility": {
+      "total": 25,
+      "train": 25,
+      "val": 0,
+      "frame_presence_pct": 6.188118811881188,
+      "trainable_roi_pts3": 23
+    },
+    "movable_object.debris": {
+      "total": 13,
+      "train": 13,
+      "val": 0,
+      "frame_presence_pct": 3.217821782178218,
+      "trainable_roi_pts3": 8
+    },
+    "human.pedestrian.police_officer": {
+      "total": 11,
+      "train": 11,
+      "val": 0,
+      "frame_presence_pct": 2.722772277227723,
+      "trainable_roi_pts3": 8
+    }
+  },
+  "grouped_classes": {
+    "CAR": {
+      "total": 7619,
+      "train": 6978,
+      "val": 641,
+      "frame_presence_pct": 100.0,
+      "trainable_roi_pts3": 3973
+    },
+    "PEDESTRIAN": {
+      "total": 5015,
+      "train": 4551,
+      "val": 464,
+      "frame_presence_pct": 80.19801980198021,
+      "trainable_roi_pts3": 2892
+    },
+    "BARRIER": {
+      "total": 2323,
+      "train": 1689,
+      "val": 634,
+      "frame_presence_pct": 26.980198019801982,
+      "trainable_roi_pts3": 1335
+    },
+    "TRAFFIC_CONE": {
+      "total": 1378,
+      "train": 1378,
+      "val": 0,
+      "frame_presence_pct": 33.415841584158414,
+      "trainable_roi_pts3": 405
+    },
+    "TRUCK": {
+      "total": 649,
+      "train": 573,
+      "val": 76,
+      "frame_presence_pct": 65.5940594059406,
+      "trainable_roi_pts3": 385
+    },
+    "MOTORCYCLE": {
+      "total": 471,
+      "train": 471,
+      "val": 0,
+      "frame_presence_pct": 47.77227722772277,
+      "trainable_roi_pts3": 278
+    },
+    "BUS": {
+      "total": 410,
+      "train": 344,
+      "val": 66,
+      "frame_presence_pct": 79.20792079207921,
+      "trainable_roi_pts3": 199
+    },
+    "BICYCLE": {
+      "total": 243,
+      "train": 215,
+      "val": 28,
+      "frame_presence_pct": 36.633663366336634,
+      "trainable_roi_pts3": 128
+    },
+    "CONSTRUCTION_VEHICLE": {
+      "total": 196,
+      "train": 196,
+      "val": 0,
+      "frame_presence_pct": 32.67326732673268,
+      "trainable_roi_pts3": 119
+    },
+    "PUSHABLE_PULLABLE": {
+      "total": 82,
+      "train": 41,
+      "val": 41,
+      "frame_presence_pct": 20.2970297029703,
+      "trainable_roi_pts3": 64
+    },
+    "TRAILER": {
+      "total": 60,
+      "train": 19,
+      "val": 41,
+      "frame_presence_pct": 14.85148514851485,
+      "trainable_roi_pts3": 50
+    },
+    "BICYCLE_RACK": {
+      "total": 54,
+      "train": 54,
+      "val": 0,
+      "frame_presence_pct": 13.366336633663368,
+      "trainable_roi_pts3": 30
+    },
+    "PERSONAL_MOBILITY": {
+      "total": 25,
+      "train": 25,
+      "val": 0,
+      "frame_presence_pct": 6.188118811881188,
+      "trainable_roi_pts3": 23
+    },
+    "DEBRIS": {
+      "total": 13,
+      "train": 13,
+      "val": 0,
+      "frame_presence_pct": 3.217821782178218,
+      "trainable_roi_pts3": 8
+    }
+  }
+}

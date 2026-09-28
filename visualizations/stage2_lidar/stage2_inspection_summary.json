@@ -1,0 +1,50 @@
+{
+  "total_samples_verified": 404,
+  "corrupted_files_count": 0,
+  "nan_files_count": 0,
+  "inf_files_count": 0,
+  "empty_files_count": 0,
+  "point_count_stats": {
+    "min": 34368,
+    "max": 34816,
+    "mean": 34718.33663366337,
+    "median": 34720.0,
+    "std": 43.24745221768842
+  },
+  "coordinate_bounds": {
+    "x": [
+      -103.01799011230469,
+      105.0553207397461
+    ],
+    "y": [
+      -104.99467468261719,
+      104.52837371826172
+    ],
+    "z": [
+      -41.96949005126953,
+      19.4195499420166
+    ]
+  },
+  "lidar_extrinsics": {
+    "translation": [
+      0.943713,
+      0.0,
+      1.84023
+    ],
+    "rotation": [
+      0.7077955119163518,
+      -0.006492242056004365,
+      0.010646214713995808,
+      -0.7063073142877817
+    ]
+  },
+  "visualizations_generated": [
+    "raw_lidar_sample_1_scene-0061.png",
+    "raw_lidar_sample_2_scene-0103.png",
+    "raw_lidar_sample_3_scene-0553.png",
+    "raw_lidar_sample_4_scene-0655.png",
+    "raw_lidar_sample_5_scene-0757.png",
+    "raw_lidar_sample_6_scene-0796.png",
+    "raw_lidar_3d_perspective.png"
+  ]
+}

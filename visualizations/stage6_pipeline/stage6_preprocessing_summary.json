@@ -1,0 +1,128 @@
+{
+  "bev_dimensions": [
+    6,
+    256,
+    256
+  ],
+  "voxel_resolution_meters": [
+    0.25,
+    0.25
+  ],
+  "roi_bounds_meters": {
+    "x": [
+      -32.0,
+      32.0
+    ],
+    "y": [
+      -16.0,
+      48.0
+    ],
+    "z": [
+      -2.8,
+      1.2
+    ]
+  },
+  "tested_samples": [
+    {
+      "sample_token": "ca9a282c9e77460f8360f564131a8af5",
+      "scene_name": "scene-0061",
+      "split": "TRAIN",
+      "cold_ms": 113.51930000819266,
+      "cached_ms": 19.085499981883913,
+      "raw_points": 34688,
+      "roi_points": 20606,
+      "num_boxes": 14,
+      "alignment_pct": 78.57142857142857
+    },
+    {
+      "sample_token": "6402fd1ffaf041d0b9162bd92a7ba0a2",
+      "scene_name": "scene-0103",
+      "split": "TRAIN",
+      "cold_ms": 41.636599984485656,
+      "cached_ms": 7.761900022160262,
+      "raw_points": 34688,
+      "roi_points": 20276,
+      "num_boxes": 27,
+      "alignment_pct": 40.74074074074074
+    },
+    {
+      "sample_token": "73e2b7fb98ef41aface277a968d65941",
+      "scene_name": "scene-0757",
+      "split": "TRAIN",
+      "cold_ms": 47.55330001353286,
+      "cached_ms": 7.892399997217581,
+      "raw_points": 34752,
+      "roi_points": 22665,
+      "num_boxes": 2,
+      "alignment_pct": 50.0
+    },
+    {
+      "sample_token": "d8251bbc2105497ab8ec80827d4429aa",
+      "scene_name": "scene-0916",
+      "split": "TRAIN",
+      "cold_ms": 37.63899998739362,
+      "cached_ms": 7.832299976143986,
+      "raw_points": 34720,
+      "roi_points": 20416,
+      "num_boxes": 41,
+      "alignment_pct": 65.85365853658537
+    },
+    {
+      "sample_token": "8687ba92abd3406aa797115b874ebeba",
+      "scene_name": "scene-0553",
+      "split": "VALIDATION",
+      "cold_ms": 34.202300012111664,
+      "cached_ms": 8.076700003584847,
+      "raw_points": 34400,
+      "roi_points": 19603,
+      "num_boxes": 10,
+      "alignment_pct": 90.0
+    },
+    {
+      "sample_token": "ecd49e3c38624c77b8aac8df445d49ba",
+      "scene_name": "scene-0553",
+      "split": "VALIDATION",
+      "cold_ms": 34.347200009506196,
+      "cached_ms": 8.31619999371469,
+      "raw_points": 34688,
+      "roi_points": 19765,
+      "num_boxes": 11,
+      "alignment_pct": 100.0
+    },
+    {
+      "sample_token": "e6b0b282aa174a978272dc2d0a89d560",
+      "scene_name": "scene-1094",
+      "split": "TEST",
+      "cold_ms": 52.551700006006286,
+      "cached_ms": 10.838499991223216,
+      "raw_points": 34400,
+      "roi_points": 18350,
+      "num_boxes": 35,
+      "alignment_pct": 80.0
+    },
+    {
+      "sample_token": "a480496a5988410fbe3d8ed6c84da996",
+      "scene_name": "scene-1100",
+      "split": "TEST",
+      "cold_ms": 37.815800023963675,
+      "cached_ms": 7.124399999156594,
+      "raw_points": 34464,
+      "roi_points": 19255,
+      "num_boxes": 17,
+      "alignment_pct": 76.47058823529412
+    }
+  ],
+  "mean_cold_latency_ms": 49.90815000564908,
+  "mean_cached_latency_ms": 9.615987495635636,
+  "pytorch_dataset": {
+    "train_samples": 283,
+    "val_samples": 41,
+    "test_samples": 80,
+    "batch_shape": [
+      4,
+      6,
+      256,
+      256
+    ]
+  }
+}
