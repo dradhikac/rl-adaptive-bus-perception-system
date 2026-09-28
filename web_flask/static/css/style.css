@@ -887,16 +887,26 @@ html, body {
 
 .tech-visual-container {
   width: 100%;
-  border-radius: 10px;
+  max-width: 380px;
+  aspect-ratio: 4 / 5;
+  margin: 0 auto 14px auto;
+  border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(226, 232, 240, 0.85);
-  background: #ffffff;
-  margin-bottom: 14px;
+  background-color: #ffffff;
+  background-image: 
+    linear-gradient(rgba(226, 232, 240, 0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(226, 232, 240, 0.6) 1px, transparent 1px);
+  background-size: 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tech-svg {
   width: 100%;
   height: auto;
+  max-height: 100%;
   display: block;
 }
 
@@ -1291,14 +1301,17 @@ body.standalone-page {
 
 .tech-visual-container {
   width: 100%;
-  height: 145px;
-  min-height: 145px;
-  max-height: 145px;
-  border-radius: 8px;
+  max-width: 380px;
+  aspect-ratio: 4 / 5;
+  margin: 0 auto 14px auto;
+  border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(226, 232, 240, 0.85);
-  background: #f8fafc;
-  margin-bottom: 12px;
+  background-color: #ffffff;
+  background-image: 
+    linear-gradient(rgba(226, 232, 240, 0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(226, 232, 240, 0.6) 1px, transparent 1px);
+  background-size: 20px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1306,7 +1319,8 @@ body.standalone-page {
 
 .tech-svg {
   width: 100%;
-  height: 100%;
+  height: auto;
+  max-height: 100%;
   display: block;
 }
 
