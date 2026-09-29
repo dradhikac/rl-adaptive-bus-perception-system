@@ -1,0 +1,101 @@
+{
+  "step": "Step 6 - Traffic Signal Recognition",
+  "dataset_audit": {
+    "idd_fgvd_status": "UNSUPPORTED",
+    "idd_fgvd_traffic_light_boxes": 0,
+    "idd_fgvd_state_labels": 0,
+    "additional_labeling_required": [
+      "Bounding box annotation of traffic signal fixtures on Indian roadways",
+      "Attribute labeling for lamp states: Red, Yellow/Amber, Green, Off/Unlit",
+      "Spatial orientation metadata: Vertical 3-lamp columns vs Horizontal overhead gantries",
+      "Sunlight & glare tagging for washed-out illumination compensation"
+    ]
+  },
+  "trained_classifier_evaluation": {
+    "source": "BDD100K Verified Traffic Light Crops",
+    "total_crops": 557,
+    "crops_distribution": {
+      "green": 360,
+      "red": 187,
+      "yellow": 10
+    },
+    "train_samples": 417,
+    "test_samples": 140,
+    "accuracy": 0.9286,
+    "per_class": {
+      "red": {
+        "precision": 0.9111,
+        "recall": 0.8723,
+        "f1": 0.8913
+      },
+      "yellow": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "green": {
+        "precision": 0.9368,
+        "recall": 0.9889,
+        "f1": 0.9622
+      }
+    },
+    "confusion_matrix": [
+      [
+        41,
+        0,
+        6
+      ],
+      [
+        3,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        89
+      ]
+    ],
+    "small_signals_accuracy": 0.9394,
+    "large_signals_accuracy": 0.9024,
+    "occluded_signals_accuracy": 1.0,
+    "clean_signals_accuracy": 0.9281
+  },
+  "existing_hsv_comparison": {
+    "accuracy": 0.8071,
+    "per_class": {
+      "red": {
+        "precision": 0.7885,
+        "recall": 0.8723,
+        "f1": 0.8283
+      },
+      "yellow": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "green": {
+        "precision": 0.973,
+        "recall": 0.8,
+        "f1": 0.878
+      }
+    },
+    "confusion_matrix": [
+      [
+        41,
+        4,
+        2
+      ],
+      [
+        3,
+        0,
+        0
+      ],
+      [
+        8,
+        10,
+        72
+      ]
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "model": "best.pt",
+  "resolution": "640x640",
+  "device": "CPU",
+  "test_images_count": 50,
+  "mean_latency_ms": 80.78,
+  "median_latency_ms": 78.01,
+  "p95_latency_ms": 89.35,
+  "throughput_fps": 12.38,
+  "speed_breakdown_ms": {
+    "preprocess": 3.77,
+    "inference": 74.58,
+    "postprocess": 1.4
+  },
+  "memory_mb": {
+    "baseline": 309.4,
+    "after_load": 326.6,
+    "peak_rss": 377.8,
+    "model_runtime_footprint": 68.4
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "baseline_step3": {
+    "overall_precision": 0.8109,
+    "overall_recall": 0.5828,
+    "mAP50": 0.6948,
+    "mAP50_95": 0.5287,
+    "per_class": {
+      "car": {
+        "class_id": 0,
+        "precision": 0.8613838436893794,
+        "recall": 0.7090114324527543,
+        "ap50": 0.8351434657313944,
+        "ap50_95": 0.6769059314185907
+      },
+      "motorcycle": {
+        "class_id": 1,
+        "precision": 0.8203455576162557,
+        "recall": 0.7167630057803468,
+        "ap50": 0.8046784475969946,
+        "ap50_95": 0.48839405563505905
+      },
+      "autorickshaw": {
+        "class_id": 2,
+        "precision": 0.8009485223441414,
+        "recall": 0.6268656716417911,
+        "ap50": 0.7188837520509016,
+        "ap50_95": 0.5706481802703635
+      },
+      "bus": {
+        "class_id": 3,
+        "precision": 0.8824449645022052,
+        "recall": 0.5,
+        "ap50": 0.6004041775118538,
+        "ap50_95": 0.5095446660052689
+      },
+      "truck": {
+        "class_id": 4,
+        "precision": 0.6891957435385522,
+        "recall": 0.3611111111111111,
+        "ap50": 0.5149694621623959,
+        "ap50_95": 0.39810387409977993
+      }
+    }
+  },
+  "experiments": {
+    "exp1_res640_coslr": {
+      "id": "exp1_res640_coslr",
+      "name": "idd_fgvd_exp1_res640_coslr",
+      "description": "Resolution scaling (512 -> 640x640) + Cosine LR Schedule (7 epochs, lrf=0.01, seed=42)",
+      "hyperparameters": {
+        "model": "yolov8n.pt",
+        "imgsz": 640,
+        "epochs": 7,
+        "batch": 8,
+        "workers": 0,
+        "seed": 42,
+        "cos_lr": true,
+        "lrf": 0.01
+      },
+      "duration_minutes": 21.44,
+      "overall_precision": 0.7903,
+      "overall_recall": 0.6647,
+      "mAP50": 0.7431,
+      "mAP50_95": 0.5781,
+      "per_class": {
+        "car": {
+          "precision": 0.8148,
+          "recall": 0.8456,
+          "ap50": 0.8703,
+          "ap50_95": 0.7354
+        },
+        "motorcycle": {
+          "precision": 0.848,
+          "recall": 0.7977,
+          "ap50": 0.8761,
+          "ap50_95": 0.5522
+        },
+        "autorickshaw": {
+          "precision": 0.7427,
+          "recall": 0.6418,
+          "ap50": 0.7553,
+          "ap50_95": 0.6186
+        },
+        "bus": {
+          "precision": 0.8485,
+          "recall": 0.5938,
+          "ap50": 0.6383,
+          "ap50_95": 0.5294
+        },
+        "truck": {
+          "precision": 0.6976,
+          "recall": 0.4444,
+          "ap50": 0.5754,
+          "ap50_95": 0.455
+        }
+      },
+      "best_checkpoint": "r:\\RL_Adaptive_Bus_Perception_System\\runs\\detect\\idd_fgvd_exp1_res640_coslr\\weights\\best.pt"
+    }
+  }
+}

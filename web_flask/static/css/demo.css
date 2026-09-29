@@ -1674,3 +1674,140 @@ html, body {
     align-items: stretch;
   }
 }
+
+/* ==============================================================================
+   MULTI-CAMERA 360° SURROUND PERCEPTION FEED STYLES
+   ============================================================================== */
+
+.camera-feed-switcher-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 8px 12px;
+  box-shadow: var(--shadow-subtle);
+}
+
+.camera-feed-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cam-feed-pill {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cam-feed-pill:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.cam-feed-pill.active {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+  color: #ffffff;
+  border-color: #1d4ed8;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+/* 5-Camera Surround Grid Container */
+.surround-5cam-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.surround-sub-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .surround-sub-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cam-grid-card {
+  background: #0b132b;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.cam-grid-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-blue);
+}
+
+.cam-grid-card.hero-cam {
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
+.cam-grid-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.cam-grid-card-img-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #070b14;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cam-grid-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.cam-grid-det-pill {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.cam-grid-det-pill.empty {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+  border-color: rgba(148, 163, 184, 0.3);
+}
+

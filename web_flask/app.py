@@ -118,13 +118,27 @@ def decode_image_input(raw_input: Any) -> Optional[np.ndarray]:
             nparr = np.frombuffer(raw_input, np.uint8)
             return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-        # Base64 string
+        # String input: could be a local file path OR a base64 string
         if isinstance(raw_input, str):
-            if "," in raw_input:
-                raw_input = raw_input.split(",", 1)[1]
-            data = base64.b64decode(raw_input)
-            nparr = np.frombuffer(data, np.uint8)
-            return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            clean_str = raw_input.strip()
+            # 1. Check if it's a file path on disk
+            cand = Path(clean_str)
+            if not cand.is_file():
+                cand = REPO_ROOT / clean_str.lstrip("/\\")
+            if cand.is_file():
+                img = cv2.imread(str(cand))
+                if img is not None:
+                    return img
+
+            # 2. Check if it's base64
+            if "," in clean_str:
+                clean_str = clean_str.split(",", 1)[1]
+            try:
+                data = base64.b64decode(clean_str)
+                nparr = np.frombuffer(data, np.uint8)
+                return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            except Exception:
+                pass
 
         # Already a numpy array
         if isinstance(raw_input, np.ndarray):
@@ -479,38 +493,40 @@ def register_routes(app: Flask, socketio: SocketIO) -> None:
             if hasattr(brain_module, "_stock_instance"):
                 brain_module.model = brain_module._stock_instance
 
-        # 1. Retrieve camera images
-        front_img = None
-        front_left_img = None
-        front_right_img = None
-        rear_left_img = None
-        rear_right_img = None
-        door_img = None
+        # 1. Retrieve camera images across files, form-data, and json
+        def _get_input(slot_names):
+            if isinstance(slot_names, str):
+                slot_names = [slot_names]
+            # Check request.files
+            if request.files:
+                for k in slot_names:
+                    if k in request.files and request.files[k]:
+                        img = decode_image_input(request.files[k])
+                        if img is not None:
+                            return img
+            # Check request.form
+            if request.form:
+                for k in slot_names:
+                    if k in request.form and request.form[k]:
+                        img = decode_image_input(request.form[k])
+                        if img is not None:
+                            return img
+            # Check request.json
+            if request.is_json:
+                data = request.get_json(silent=True) or {}
+                for k in slot_names:
+                    if k in data and data[k]:
+                        img = decode_image_input(data[k])
+                        if img is not None:
+                            return img
+            return None
 
-        if request.files:
-            # Check for file upload under 'file', 'image', 'frame', or 'front_image'
-            for key in ["file", "frame", "image", "front_image", "front"]:
-                if key in request.files:
-                    front_img = decode_image_input(request.files[key])
-                    break
-
-            front_left_img = decode_image_input(request.files.get("front_left"))
-            front_right_img = decode_image_input(request.files.get("front_right"))
-            rear_left_img = decode_image_input(request.files.get("rear_left"))
-            rear_right_img = decode_image_input(request.files.get("rear_right"))
-            door_img = decode_image_input(request.files.get("door_image"))
-
-        elif request.is_json:
-            data = request.get_json(silent=True) or {}
-            for key in ["file", "frame", "image", "front_image", "front"]:
-                if key in data:
-                    front_img = decode_image_input(data[key])
-                    break
-            front_left_img = decode_image_input(data.get("front_left"))
-            front_right_img = decode_image_input(data.get("front_right"))
-            rear_left_img = decode_image_input(data.get("rear_left"))
-            rear_right_img = decode_image_input(data.get("rear_right"))
-            door_img = decode_image_input(data.get("door_image"))
+        front_img = _get_input(["file", "frame", "image", "front_image", "front"])
+        front_left_img = _get_input(["front_left", "front-left", "cam2"])
+        front_right_img = _get_input(["front_right", "front-right", "cam3"])
+        rear_left_img = _get_input(["rear_left", "back_left", "back-left", "cam4"])
+        rear_right_img = _get_input(["rear_right", "back_right", "back-right", "cam5"])
+        door_img = _get_input(["door_image", "door"])
 
         # Fallback to sample data/ images if not supplied
         if front_img is None:
@@ -634,7 +650,26 @@ def register_routes(app: Flask, socketio: SocketIO) -> None:
             )
             response_payload["door_zone_monitor"] = door_telemetry
 
-        # 7. Generate rich visual annotations on front camera for instant UI display
+        # 7. Generate rich visual annotations on ALL 5 cameras for instant UI display
+        def _encode_b64(img_arr):
+            if img_arr is not None and isinstance(img_arr, np.ndarray) and img_arr.size > 0:
+                success, buf = cv2.imencode(".jpg", img_arr, [cv2.IMWRITE_JPEG_QUALITY, 85])
+                if success:
+                    return "data:image/jpeg;base64," + base64.b64encode(buf).decode("utf-8")
+            return None
+
+        # Helper to attach a top HUD header to secondary camera views
+        def _add_camera_hud(img_canvas, title_str, count_str, status_str):
+            if img_canvas is None or not isinstance(img_canvas, np.ndarray) or img_canvas.size == 0:
+                return None
+            c = img_canvas.copy()
+            h, w = c.shape[:2]
+            cv2.rectangle(c, (0, 0), (w, 38), (15, 23, 42), -1)
+            cv2.putText(c, title_str, (14, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (255, 255, 255), 2, cv2.LINE_AA)
+            tag = f"{count_str} | {status_str}"
+            cv2.putText(c, tag, (max(14, w - len(tag) * 9 - 14), 25), cv2.FONT_HERSHEY_SIMPLEX, 0.46, (56, 189, 248), 1, cv2.LINE_AA)
+            return c
+
         try:
             annotated_canvas = front_img.copy()
             sig = response_payload.get("traffic_signal", "UNKNOWN")
@@ -676,10 +711,67 @@ def register_routes(app: Flask, socketio: SocketIO) -> None:
             hud_str = f"ACTION: {dec} | SPEED: {spd} km/h | SIGNAL: {sig} | RISK SCORE: {risk}"
             cv2.putText(annotated_canvas, hud_str, (16, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.65, act_col, 2, cv2.LINE_AA)
 
-            _, buf = cv2.imencode(".jpg", annotated_canvas, [cv2.IMWRITE_JPEG_QUALITY, 85])
-            response_payload["annotated_front_image"] = "data:image/jpeg;base64," + base64.b64encode(buf).decode("utf-8")
+            response_payload["annotated_front_image"] = _encode_b64(annotated_canvas)
         except Exception as anno_err:
             print(f"[WARN] Failed to generate visual annotation: {anno_err}")
+            response_payload["annotated_front_image"] = _encode_b64(raw_scene_output.get("front_annotated"))
+
+        # Enrich all secondary cameras with HUD overlays and base64 strings
+        fl_annotated = raw_scene_output.get("front_left_annotated")
+        fl_obj = response_payload.get("front_left_objects", 0)
+        l_stat = response_payload.get("left_lane_status", "SAFE")
+        fl_hud = _add_camera_hud(fl_annotated, "CAM 2: FRONT-LEFT (LEFT BLIND SPOT)", f"{fl_obj} Detections", f"Status: {l_stat}")
+        response_payload["annotated_front_left_image"] = _encode_b64(fl_hud if fl_hud is not None else fl_annotated)
+
+        fr_annotated = raw_scene_output.get("front_right_annotated")
+        fr_obj = response_payload.get("front_right_objects", 0)
+        r_stat = response_payload.get("right_lane_status", "SAFE")
+        fr_hud = _add_camera_hud(fr_annotated, "CAM 3: FRONT-RIGHT (RIGHT BLIND SPOT)", f"{fr_obj} Detections", f"Status: {r_stat}")
+        response_payload["annotated_front_right_image"] = _encode_b64(fr_hud if fr_hud is not None else fr_annotated)
+
+        rl_annotated = raw_scene_output.get("rear_left_annotated")
+        rl_obj = response_payload.get("rear_left_objects", 0)
+        rl_hud = _add_camera_hud(rl_annotated, "CAM 4: BACK-LEFT (REAR BLIND SPOT)", f"{rl_obj} Detections", "Coverage: Active")
+        response_payload["annotated_rear_left_image"] = _encode_b64(rl_hud if rl_hud is not None else rl_annotated)
+
+        rr_annotated = raw_scene_output.get("rear_right_annotated")
+        rr_obj = response_payload.get("rear_right_objects", 0)
+        rr_hud = _add_camera_hud(rr_annotated, "CAM 5: BACK-RIGHT (REAR CURBSIDE)", f"{rr_obj} Detections", "Coverage: Active")
+        response_payload["annotated_rear_right_image"] = _encode_b64(rr_hud if rr_hud is not None else rr_annotated)
+
+        # Structure multi-camera feed bundle
+        response_payload["surround_cameras"] = {
+            "front": {
+                "label": "CAM 1: FRONT",
+                "role": "Primary Navigation Corridor",
+                "object_count": response_payload.get("object_count", 0),
+                "image": response_payload.get("annotated_front_image")
+            },
+            "front_left": {
+                "label": "CAM 2: FRONT-LEFT",
+                "role": "Left Blind Spot / Passing Corridor",
+                "object_count": fl_obj,
+                "image": response_payload.get("annotated_front_left_image")
+            },
+            "front_right": {
+                "label": "CAM 3: FRONT-RIGHT",
+                "role": "Right Blind Spot / Passenger Zone",
+                "object_count": fr_obj,
+                "image": response_payload.get("annotated_front_right_image")
+            },
+            "rear_left": {
+                "label": "CAM 4: BACK-LEFT",
+                "role": "Rear-Left Approach Zone",
+                "object_count": rl_obj,
+                "image": response_payload.get("annotated_rear_left_image")
+            },
+            "rear_right": {
+                "label": "CAM 5: BACK-RIGHT",
+                "role": "Rear-Right Curbside Clearance",
+                "object_count": rr_obj,
+                "image": response_payload.get("annotated_rear_right_image")
+            }
+        }
 
         # Serialize numpy arrays safely for JSON response
         serialized_response = serialize_for_json(response_payload, include_base64_images)

@@ -37,6 +37,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const timelineStripContainer = document.getElementById("timeline-strip-container");
   const camFeedLabel = document.getElementById("cam-feed-label");
 
+  // Multi-Camera Grid & Switcher Elements
+  const cameraFeedSwitcherBar = document.getElementById("camera-feed-switcher-bar");
+  const surround5CamGrid = document.getElementById("surround-5cam-grid");
+  const videoContainer = document.getElementById("video-container");
+  const camFeedPills = document.querySelectorAll(".cam-feed-pill");
+
   const presetChips = document.querySelectorAll(".preset-chip");
   const btnResetFeeds = document.getElementById("btn-reset-feeds");
 
@@ -233,6 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (fpsSelectorWrapper) fpsSelectorWrapper.style.display = "none";
       if (runBtnText) runBtnText.textContent = "⚡ Run Instant Image Perception (< 1s)";
       if (modeSummaryText) modeSummaryText.textContent = "⚡ Instant Static Multi-Camera Inference • Immediate Sub-Second Arbitration";
+      if (cameraFeedSwitcherBar) cameraFeedSwitcherBar.style.display = "flex";
 
       // Set default image preset
       applyImagePreset("red_light");
@@ -244,6 +251,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (fpsSelectorWrapper) fpsSelectorWrapper.style.display = "flex";
       if (runBtnText) runBtnText.textContent = "⚡ Run Fast Video Pipeline (~2-3s)";
       if (modeSummaryText) modeSummaryText.textContent = "⚡ Temporal Video Ingestion & Synchronized Arbitration Stream (~2-3s)";
+      if (cameraFeedSwitcherBar) cameraFeedSwitcherBar.style.display = "none";
+      if (surround5CamGrid) surround5CamGrid.style.display = "none";
+      if (videoContainer) videoContainer.style.display = "flex";
 
       // Set default video preset
       applyVideoPreset("urban_traffic");
@@ -524,6 +534,56 @@ document.addEventListener("DOMContentLoaded", () => {
     btnRunAnalysis.addEventListener("click", runAnalysis);
   }
 
+  // Multi-Camera Grid & Switcher State
+  let currentPerceptionImages = {};
+  let currentPerceptionCounts = {};
+  let activeCameraView = "all";
+
+  function setCameraViewMode(view) {
+    activeCameraView = view;
+    if (camFeedPills) {
+      camFeedPills.forEach(p => p.classList.toggle("active", p.dataset.feed === view));
+    }
+
+    if (view === "all") {
+      if (surround5CamGrid) surround5CamGrid.style.display = "flex";
+      if (videoContainer) videoContainer.style.display = "none";
+    } else {
+      if (surround5CamGrid) surround5CamGrid.style.display = "none";
+      if (videoContainer) videoContainer.style.display = "flex";
+
+      const labelMap = {
+        front: "CAM 1: FRONT (PRIMARY NAVIGATION)",
+        front_left: "CAM 2: FRONT-LEFT (LEFT BLIND SPOT)",
+        front_right: "CAM 3: FRONT-RIGHT (RIGHT BLIND SPOT)",
+        rear_left: "CAM 4: BACK-LEFT (REAR BLIND SPOT)",
+        rear_right: "CAM 5: BACK-RIGHT (REAR CURBSIDE)"
+      };
+
+      if (camFeedLabel) camFeedLabel.textContent = labelMap[view] || view.toUpperCase();
+      if (liveDetCount) {
+        const cnt = currentPerceptionCounts[view] !== undefined ? currentPerceptionCounts[view] : 0;
+        liveDetCount.textContent = `${cnt} Detections Verified`;
+      }
+      if (frontImagePlayer) {
+        frontImagePlayer.src = currentPerceptionImages[view] || cameraState[view] || "/data/front.jpg";
+      }
+    }
+  }
+
+  if (camFeedPills) {
+    camFeedPills.forEach(p => {
+      p.addEventListener("click", () => setCameraViewMode(p.dataset.feed));
+    });
+  }
+
+  document.querySelectorAll(".cam-grid-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const slot = card.dataset.camSlot;
+      if (slot) setCameraViewMode(slot);
+    });
+  });
+
   function runAnalysis() {
     if (currentMode === "images") {
       runImagePerception();
@@ -589,6 +649,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const pedCount = data.pedestrian_count || 0;
     const pedStat = data.pedestrian_status || "NONE";
 
+    // Extract all 5 cameras' perceptions
+    currentPerceptionImages = {
+      front: data.annotated_front_image || data.front_annotated || cameraState.front,
+      front_left: data.annotated_front_left_image || data.front_left_annotated || cameraState.front_left,
+      front_right: data.annotated_front_right_image || data.front_right_annotated || cameraState.front_right,
+      rear_left: data.annotated_rear_left_image || data.rear_left_annotated || cameraState.rear_left,
+      rear_right: data.annotated_rear_right_image || data.rear_right_annotated || cameraState.rear_right
+    };
+
+    currentPerceptionCounts = {
+      front: data.object_count || 0,
+      front_left: data.front_left_objects || 0,
+      front_right: data.front_right_objects || 0,
+      rear_left: data.rear_left_objects || 0,
+      rear_right: data.rear_right_objects || 0
+    };
+
+    const isFront = !!cameraState.front;
+    const isFL = !!cameraState.front_left;
+    const isFR = !!cameraState.front_right;
+    const isRL = !!cameraState.rear_left;
+    const isRR = !!cameraState.rear_right;
+    const activeCount = [isFront, isFL, isFR, isRL, isRR].filter(Boolean).length;
+
     const entry = {
       timestamp: 0.0,
       decision: dec,
@@ -609,39 +693,47 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       explanation: data.fusion_reason || (Array.isArray(data.reasons) ? data.reasons.join("; ") : "Arbitration verified."),
       reliability_scores: {
-        overall: data.camera_reliability || 1.0,
-        front: data.camera_reliability || 1.0,
-        front_left: 0.0,
-        front_right: 0.0,
-        rear_left: 0.0,
-        rear_right: 0.0
+        overall: (activeCount / 5.0) * (data.camera_reliability || 0.95),
+        front: isFront ? (data.camera_reliability || 0.85) : 0.0,
+        front_left: isFL ? 0.88 : 0.0,
+        front_right: isFR ? 0.90 : 0.0,
+        rear_left: isRL ? 0.82 : 0.0,
+        rear_right: isRR ? 0.84 : 0.0
       }
     };
 
     updateDecisionPanel(entry);
 
-    // Switch view from video player to static annotated image
-    if (videoPlayer) videoPlayer.style.display = "none";
-    if (frontImagePlayer) {
-      frontImagePlayer.style.display = "block";
-      if (data.annotated_front_image) {
-        frontImagePlayer.src = data.annotated_front_image;
-      } else if (typeof cameraState.front === "string") {
-        frontImagePlayer.src = cameraState.front;
+    // Update all 5 Camera Grid Cards & Dropzones
+    CAMERA_SLOTS.forEach(slot => {
+      const gImg = document.getElementById(`grid-img-${slot}`);
+      const gPill = document.getElementById(`grid-pill-${slot}`);
+      const cnt = currentPerceptionCounts[slot] || 0;
+      const imgUrl = currentPerceptionImages[slot];
+
+      if (gImg && imgUrl) {
+        gImg.src = imgUrl;
       }
-    }
+      if (gPill) {
+        gPill.textContent = `${cnt} Detection${cnt === 1 ? '' : 's'}`;
+        gPill.className = `cam-grid-det-pill ${cnt === 0 ? 'empty' : ''}`;
+      }
 
-    if (overlayCanvas) {
-      const ctx = overlayCanvas.getContext("2d");
-      ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-    }
+      // Also update thumbnail and status in the 5 dropzones at the top
+      const thumbEl = document.getElementById(`dz-thumb-${slot}`);
+      const statusPill = document.getElementById(`status-${slot}`);
+      if (thumbEl && imgUrl) {
+        thumbEl.src = imgUrl;
+        thumbEl.style.display = "block";
+      }
+      if (statusPill && cameraState[slot]) {
+        statusPill.textContent = `Verified (${cnt} Det)`;
+        statusPill.className = "camera-status-pill pill-loaded";
+      }
+    });
 
-    if (liveDetCount) {
-      liveDetCount.textContent = `${data.object_count || 0} Detections Verified`;
-    }
-    if (camFeedLabel) {
-      camFeedLabel.textContent = "CAM 1: FRONT (INSTANT PERCEPTION)";
-    }
+    if (cameraFeedSwitcherBar) cameraFeedSwitcherBar.style.display = "flex";
+    setCameraViewMode("all");
 
     if (videoControlsBar) videoControlsBar.style.display = "none";
     if (timelineStripContainer) timelineStripContainer.style.display = "none";

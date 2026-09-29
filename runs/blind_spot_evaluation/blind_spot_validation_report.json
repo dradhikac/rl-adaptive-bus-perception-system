@@ -1,0 +1,594 @@
+{
+  "step": "Step 8 - Blind-Spot Perception Validation",
+  "dataset_audit": {
+    "idd_fgvd_status": "UNSUPPORTED",
+    "idd_fgvd_cameras": "Monocular front-facing only",
+    "side_cameras_available": 0,
+    "rear_cameras_available": 0,
+    "blind_spot_labels": 0,
+    "supervision_requirement": "Dedicated surround multi-camera dataset (e.g. NuScenes 6-cam rig) or derived lane-change surrogate labels."
+  },
+  "available_camera_signals": [
+    "2D Bounding Box [x1, y1, x2, y2]",
+    "Class Category (car, motorcycle, bus, truck, pedestrian)",
+    "Detection Confidence",
+    "Vertical Road-Contact Coordinate (y_bottom in [0, 1])",
+    "Apparent Box Area Ratio (A_rel in [0, 1])",
+    "Camera Viewpoint Geometry (CAM_FRONT_LEFT, CAM_BACK_LEFT, CAM_FRONT_RIGHT, CAM_BACK_RIGHT)",
+    "Temporal Track Persistence (frame confirmation >= 2)"
+  ],
+  "unsupported_signals": [
+    "Monocular 3D Metric Depth (cannot reliably measure exact physical distance without LiDAR/stereo)"
+  ],
+  "benchmark_metrics": {
+    "total_evaluations": 24,
+    "agreement_rate": 0.8333,
+    "false_alarm_rate": 0.0417,
+    "missed_hazard_rate": 0.125
+  },
+  "records": [
+    {
+      "scene": "scene-0796",
+      "sample_idx": 0,
+      "side": "LEFT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0796",
+      "sample_idx": 0,
+      "side": "RIGHT",
+      "num_detections": 2,
+      "detected_classes": [
+        "car",
+        "bus"
+      ],
+      "existing_decision": "UNSAFE",
+      "existing_score": 60,
+      "grounded_decision": "UNSAFE",
+      "grounded_reasons": [
+        "Major lane intrusion: bus occupying 13.9% of frame"
+      ],
+      "detections": [
+        {
+          "cam_name": "CAM_FRONT_RIGHT",
+          "cam_role": "FRONT",
+          "class_name": "car",
+          "conf": 0.968,
+          "y_bottom": 0.67,
+          "x_center": 0.198,
+          "area_ratio": 0.01889999955892563,
+          "box_xyxy": [
+            185.3,
+            499.5,
+            447.6,
+            603.2
+          ]
+        },
+        {
+          "cam_name": "CAM_FRONT_RIGHT",
+          "cam_role": "FRONT",
+          "class_name": "bus",
+          "conf": 0.728,
+          "y_bottom": 0.673,
+          "x_center": 0.424,
+          "area_ratio": 0.13910000026226044,
+          "box_xyxy": [
+            342.9,
+            306.9,
+            1012.7,
+            606.0
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene-0796",
+      "sample_idx": 5,
+      "side": "LEFT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0796",
+      "sample_idx": 5,
+      "side": "RIGHT",
+      "num_detections": 3,
+      "detected_classes": [
+        "truck",
+        "car",
+        "bus"
+      ],
+      "existing_decision": "UNSAFE",
+      "existing_score": 90,
+      "grounded_decision": "UNSAFE",
+      "grounded_reasons": [
+        "Immediate flank proximity: truck in REAR view (y_bot=0.70 >= 0.48)",
+        "Immediate flank proximity: car in REAR view (y_bot=0.64 >= 0.48)",
+        "Immediate flank proximity: bus in REAR view (y_bot=0.69 >= 0.48)"
+      ],
+      "detections": [
+        {
+          "cam_name": "CAM_BACK_RIGHT",
+          "cam_role": "REAR",
+          "class_name": "truck",
+          "conf": 0.943,
+          "y_bottom": 0.698,
+          "x_center": 0.567,
+          "area_ratio": 0.05169999971985817,
+          "box_xyxy": [
+            700.2,
+            447.6,
+            1112.9,
+            628.0
+          ]
+        },
+        {
+          "cam_name": "CAM_BACK_RIGHT",
+          "cam_role": "REAR",
+          "class_name": "car",
+          "conf": 0.329,
+          "y_bottom": 0.637,
+          "x_center": 0.899,
+          "area_ratio": 0.013199999928474426,
+          "box_xyxy": [
+            1326.8,
+            487.5,
+            1549.4,
+            573.0
+          ]
+        },
+        {
+          "cam_name": "CAM_BACK_RIGHT",
+          "cam_role": "REAR",
+          "class_name": "bus",
+          "conf": 0.288,
+          "y_bottom": 0.694,
+          "x_center": 0.566,
+          "area_ratio": 0.05050000175833702,
+          "box_xyxy": [
+            694.6,
+            452.1,
+            1116.6,
+            624.3
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene-0796",
+      "sample_idx": 10,
+      "side": "LEFT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0796",
+      "sample_idx": 10,
+      "side": "RIGHT",
+      "num_detections": 2,
+      "detected_classes": [
+        "car",
+        "car"
+      ],
+      "existing_decision": "UNSAFE",
+      "existing_score": 60,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": [
+        {
+          "cam_name": "CAM_FRONT_RIGHT",
+          "cam_role": "FRONT",
+          "class_name": "car",
+          "conf": 0.956,
+          "y_bottom": 0.69,
+          "x_center": 0.323,
+          "area_ratio": 0.02319999970495701,
+          "box_xyxy": [
+            369.3,
+            507.9,
+            665.5,
+            620.8
+          ]
+        },
+        {
+          "cam_name": "CAM_FRONT_RIGHT",
+          "cam_role": "FRONT",
+          "class_name": "car",
+          "conf": 0.828,
+          "y_bottom": 0.671,
+          "x_center": 0.103,
+          "area_ratio": 0.018400000408291817,
+          "box_xyxy": [
+            41.8,
+            497.0,
+            289.3,
+            603.9
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene-0757",
+      "sample_idx": 0,
+      "side": "LEFT",
+      "num_detections": 2,
+      "detected_classes": [
+        "car",
+        "car"
+      ],
+      "existing_decision": "UNSAFE",
+      "existing_score": 60,
+      "grounded_decision": "UNSAFE",
+      "grounded_reasons": [
+        "Immediate flank proximity: car in REAR view (y_bot=0.60 >= 0.48)",
+        "Immediate flank proximity: car in REAR view (y_bot=0.65 >= 0.48)"
+      ],
+      "detections": [
+        {
+          "cam_name": "CAM_BACK_LEFT",
+          "cam_role": "REAR",
+          "class_name": "car",
+          "conf": 0.986,
+          "y_bottom": 0.603,
+          "x_center": 0.072,
+          "area_ratio": 0.013700000010430813,
+          "box_xyxy": [
+            0.0,
+            456.6,
+            229.9,
+            542.6
+          ]
+        },
+        {
+          "cam_name": "CAM_BACK_LEFT",
+          "cam_role": "REAR",
+          "class_name": "car",
+          "conf": 0.793,
+          "y_bottom": 0.653,
+          "x_center": 0.678,
+          "area_ratio": 0.03189999982714653,
+          "box_xyxy": [
+            919.0,
+            449.5,
+            1251.2,
+            587.9
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene-0757",
+      "sample_idx": 0,
+      "side": "RIGHT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0757",
+      "sample_idx": 5,
+      "side": "LEFT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0757",
+      "sample_idx": 5,
+      "side": "RIGHT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0757",
+      "sample_idx": 10,
+      "side": "LEFT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0757",
+      "sample_idx": 10,
+      "side": "RIGHT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0103",
+      "sample_idx": 0,
+      "side": "LEFT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0103",
+      "sample_idx": 0,
+      "side": "RIGHT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0103",
+      "sample_idx": 5,
+      "side": "LEFT",
+      "num_detections": 1,
+      "detected_classes": [
+        "car"
+      ],
+      "existing_decision": "SAFE",
+      "existing_score": 30,
+      "grounded_decision": "UNSAFE",
+      "grounded_reasons": [
+        "Major lane intrusion: car occupying 28.2% of frame"
+      ],
+      "detections": [
+        {
+          "cam_name": "CAM_FRONT_LEFT",
+          "cam_role": "FRONT",
+          "class_name": "car",
+          "conf": 0.374,
+          "y_bottom": 1.0,
+          "x_center": 0.742,
+          "area_ratio": 0.2815000116825104,
+          "box_xyxy": [
+            774.4,
+            409.0,
+            1600.0,
+            900.0
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene-0103",
+      "sample_idx": 5,
+      "side": "RIGHT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0103",
+      "sample_idx": 10,
+      "side": "LEFT",
+      "num_detections": 2,
+      "detected_classes": [
+        "car",
+        "car"
+      ],
+      "existing_decision": "UNSAFE",
+      "existing_score": 60,
+      "grounded_decision": "UNSAFE",
+      "grounded_reasons": [
+        "Major lane intrusion: car occupying 7.9% of frame"
+      ],
+      "detections": [
+        {
+          "cam_name": "CAM_FRONT_LEFT",
+          "cam_role": "FRONT",
+          "class_name": "car",
+          "conf": 0.951,
+          "y_bottom": 0.78,
+          "x_center": 0.679,
+          "area_ratio": 0.07859999686479568,
+          "box_xyxy": [
+            822.1,
+            487.7,
+            1349.4,
+            702.4
+          ]
+        },
+        {
+          "cam_name": "CAM_FRONT_LEFT",
+          "cam_role": "FRONT",
+          "class_name": "car",
+          "conf": 0.445,
+          "y_bottom": 0.642,
+          "x_center": 0.858,
+          "area_ratio": 0.017400000244379044,
+          "box_xyxy": [
+            1258.6,
+            468.5,
+            1487.5,
+            577.9
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene-0103",
+      "sample_idx": 10,
+      "side": "RIGHT",
+      "num_detections": 1,
+      "detected_classes": [
+        "car"
+      ],
+      "existing_decision": "SAFE",
+      "existing_score": 30,
+      "grounded_decision": "UNSAFE",
+      "grounded_reasons": [
+        "Immediate flank proximity: car in REAR view (y_bot=0.61 >= 0.48)"
+      ],
+      "detections": [
+        {
+          "cam_name": "CAM_BACK_RIGHT",
+          "cam_role": "REAR",
+          "class_name": "car",
+          "conf": 0.925,
+          "y_bottom": 0.609,
+          "x_center": 0.548,
+          "area_ratio": 0.010700000450015068,
+          "box_xyxy": [
+            790.4,
+            458.6,
+            964.0,
+            547.8
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene-0061",
+      "sample_idx": 0,
+      "side": "LEFT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0061",
+      "sample_idx": 0,
+      "side": "RIGHT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0061",
+      "sample_idx": 5,
+      "side": "LEFT",
+      "num_detections": 1,
+      "detected_classes": [
+        "bus"
+      ],
+      "existing_decision": "SAFE",
+      "existing_score": 30,
+      "grounded_decision": "UNSAFE",
+      "grounded_reasons": [
+        "Immediate flank proximity: bus in REAR view (y_bot=1.00 >= 0.48)"
+      ],
+      "detections": [
+        {
+          "cam_name": "CAM_BACK_LEFT",
+          "cam_role": "REAR",
+          "class_name": "bus",
+          "conf": 0.394,
+          "y_bottom": 1.0,
+          "x_center": 0.439,
+          "area_ratio": 0.4767000079154968,
+          "box_xyxy": [
+            296.3,
+            53.7,
+            1107.4,
+            900.0
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene-0061",
+      "sample_idx": 5,
+      "side": "RIGHT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0061",
+      "sample_idx": 10,
+      "side": "LEFT",
+      "num_detections": 0,
+      "detected_classes": [],
+      "existing_decision": "SAFE",
+      "existing_score": 0,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": []
+    },
+    {
+      "scene": "scene-0061",
+      "sample_idx": 10,
+      "side": "RIGHT",
+      "num_detections": 1,
+      "detected_classes": [
+        "car"
+      ],
+      "existing_decision": "SAFE",
+      "existing_score": 30,
+      "grounded_decision": "SAFE",
+      "grounded_reasons": [],
+      "detections": [
+        {
+          "cam_name": "CAM_FRONT_RIGHT",
+          "cam_role": "FRONT",
+          "class_name": "car",
+          "conf": 0.965,
+          "y_bottom": 0.655,
+          "x_center": 0.121,
+          "area_ratio": 0.02539999969303608,
+          "box_xyxy": [
+            67.6,
+            444.7,
+            320.1,
+            589.8
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,240 @@
+{
+  "step": "Step 3 - Baseline Model Training",
+  "architecture": "YOLOv8n",
+  "weights_init": "yolov8n.pt",
+  "device": "cpu",
+  "hardware_specs": {
+    "cpu_logical_cores": 8,
+    "ram_start_mb": 308.9,
+    "ram_peak_mb": 1380.9
+  },
+  "hyperparameters": {
+    "epochs": 5,
+    "imgsz": 512,
+    "batch": 8,
+    "workers": 2,
+    "seed": 42
+  },
+  "dataset": {
+    "path": "r:\\RL_Adaptive_Bus_Perception_System\\datasets\\idd_fgvd_prepared\\data.yaml",
+    "train_samples": 350,
+    "val_samples": 100,
+    "test_samples": 50,
+    "classes": [
+      "car",
+      "motorcycle",
+      "autorickshaw",
+      "bus",
+      "truck"
+    ]
+  },
+  "timing": {
+    "training_seconds": 1659.2,
+    "training_minutes": 27.65,
+    "val_seconds": 11.3
+  },
+  "metrics": {
+    "overall_precision": 0.8109,
+    "overall_recall": 0.5828,
+    "mAP50": 0.6948,
+    "mAP50_95": 0.5287,
+    "per_class": {
+      "car": {
+        "class_id": 0,
+        "precision": 0.8613838436893794,
+        "recall": 0.7090114324527543,
+        "ap50": 0.8351434657313944,
+        "ap50_95": 0.6769059314185907
+      },
+      "motorcycle": {
+        "class_id": 1,
+        "precision": 0.8203455576162557,
+        "recall": 0.7167630057803468,
+        "ap50": 0.8046784475969946,
+        "ap50_95": 0.48839405563505905
+      },
+      "autorickshaw": {
+        "class_id": 2,
+        "precision": 0.8009485223441414,
+        "recall": 0.6268656716417911,
+        "ap50": 0.7188837520509016,
+        "ap50_95": 0.5706481802703635
+      },
+      "bus": {
+        "class_id": 3,
+        "precision": 0.8824449645022052,
+        "recall": 0.5,
+        "ap50": 0.6004041775118538,
+        "ap50_95": 0.5095446660052689
+      },
+      "truck": {
+        "class_id": 4,
+        "precision": 0.6891957435385522,
+        "recall": 0.3611111111111111,
+        "ap50": 0.5149694621623959,
+        "ap50_95": 0.39810387409977993
+      }
+    }
+  },
+  "test_inference_samples": [
+    {
+      "image": "4810.jpg",
+      "detections_count": 4,
+      "detections": [
+        {
+          "class": "motorcycle",
+          "conf": 0.837,
+          "box": [
+            844,
+            643,
+            940,
+            820
+          ]
+        },
+        {
+          "class": "motorcycle",
+          "conf": 0.81,
+          "box": [
+            1133,
+            632,
+            1277,
+            848
+          ]
+        },
+        {
+          "class": "motorcycle",
+          "conf": 0.651,
+          "box": [
+            1755,
+            741,
+            1919,
+            1062
+          ]
+        },
+        {
+          "class": "motorcycle",
+          "conf": 0.389,
+          "box": [
+            1561,
+            661,
+            1659,
+            856
+          ]
+        }
+      ]
+    },
+    {
+      "image": "4811.jpg",
+      "detections_count": 4,
+      "detections": [
+        {
+          "class": "truck",
+          "conf": 0.935,
+          "box": [
+            1567,
+            467,
+            1920,
+            865
+          ]
+        },
+        {
+          "class": "motorcycle",
+          "conf": 0.886,
+          "box": [
+            510,
+            655,
+            626,
+            825
+          ]
+        },
+        {
+          "class": "motorcycle",
+          "conf": 0.791,
+          "box": [
+            638,
+            607,
+            718,
+            733
+          ]
+        },
+        {
+          "class": "car",
+          "conf": 0.76,
+          "box": [
+            6,
+            569,
+            435,
+            769
+          ]
+        }
+      ]
+    },
+    {
+      "image": "4812.jpg",
+      "detections_count": 6,
+      "detections": [
+        {
+          "class": "motorcycle",
+          "conf": 0.979,
+          "box": [
+            1043,
+            711,
+            1334,
+            1080
+          ]
+        },
+        {
+          "class": "autorickshaw",
+          "conf": 0.908,
+          "box": [
+            1583,
+            542,
+            1920,
+            1080
+          ]
+        },
+        {
+          "class": "motorcycle",
+          "conf": 0.837,
+          "box": [
+            409,
+            580,
+            601,
+            703
+          ]
+        },
+        {
+          "class": "car",
+          "conf": 0.743,
+          "box": [
+            620,
+            515,
+            1073,
+            912
+          ]
+        },
+        {
+          "class": "motorcycle",
+          "conf": 0.324,
+          "box": [
+            409,
+            589,
+            483,
+            701
+          ]
+        },
+        {
+          "class": "car",
+          "conf": 0.323,
+          "box": [
+            0,
+            593,
+            69,
+            689
+          ]
+        }
+      ]
+    }
+  ],
+  "saved_checkpoint": "r:\\RL_Adaptive_Bus_Perception_System\\runs\\detect\\idd_fgvd_baseline_v1\\weights\\best.pt"
+}

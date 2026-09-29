@@ -380,9 +380,35 @@
       <!-- Main Video Player & Decision Panel Split (55% / 45%) -->
       <div class="video-decision-split">
         
-        <!-- LEFT: Primary Video Player with Bounding-Box Overlay -->
+        <!-- LEFT: Primary Video Player with Bounding-Box Overlay & Multi-Camera Grid -->
         <div class="player-column">
-          <div class="video-container" id="video-container">
+
+          <!-- Multi-Camera Surround Perception View Selector -->
+          <div class="camera-feed-switcher-bar" id="camera-feed-switcher-bar">
+            <div class="camera-feed-pills">
+              <button type="button" class="cam-feed-pill active" data-feed="all" id="pill-feed-all">
+                🌐 360° All 5 Cameras Grid
+              </button>
+              <button type="button" class="cam-feed-pill" data-feed="front" id="pill-feed-front">
+                Cam 1: Front
+              </button>
+              <button type="button" class="cam-feed-pill" data-feed="front_left" id="pill-feed-front_left">
+                Cam 2: Front-Left
+              </button>
+              <button type="button" class="cam-feed-pill" data-feed="front_right" id="pill-feed-front_right">
+                Cam 3: Front-Right
+              </button>
+              <button type="button" class="cam-feed-pill" data-feed="rear_left" id="pill-feed-rear_left">
+                Cam 4: Back-Left
+              </button>
+              <button type="button" class="cam-feed-pill" data-feed="rear_right" id="pill-feed-rear_right">
+                Cam 5: Back-Right
+              </button>
+            </div>
+          </div>
+
+          <!-- Single Feed View Container -->
+          <div class="video-container" id="video-container" style="display: none;">
             <video id="front-video-player" playsinline muted preload="auto" style="display:none;">
               <source id="front-video-source" src="" type="video/mp4">
               Your browser does not support HTML5 video.
@@ -398,6 +424,70 @@
             <!-- Big Action Overlay Pill on top of Video -->
             <div class="video-action-overlay">
               <span class="overlay-decision-pill pill-move" id="overlay-decision-pill">READY</span>
+            </div>
+          </div>
+
+          <!-- 360° All 5 Cameras Surround Perception Grid -->
+          <div class="surround-5cam-grid" id="surround-5cam-grid">
+            
+            <!-- Hero View: Front Camera -->
+            <div class="cam-grid-card hero-cam" data-cam-slot="front">
+              <div class="cam-grid-card-header">
+                <span>CAM 1: FRONT (NAVIGATION CORRIDOR)</span>
+                <span class="cam-grid-det-pill" id="grid-pill-front">Ready for Analysis</span>
+              </div>
+              <div class="cam-grid-card-img-wrap">
+                <img id="grid-img-front" class="cam-grid-card-img" src="/data/front.jpg" alt="Front Camera Perception">
+              </div>
+            </div>
+
+            <!-- 4-Quadrant Surround Feeds -->
+            <div class="surround-sub-grid">
+              
+              <!-- Front-Left Camera -->
+              <div class="cam-grid-card" data-cam-slot="front_left">
+                <div class="cam-grid-card-header">
+                  <span>CAM 2: FRONT-LEFT (LEFT BLIND SPOT)</span>
+                  <span class="cam-grid-det-pill empty" id="grid-pill-front_left">Ready</span>
+                </div>
+                <div class="cam-grid-card-img-wrap">
+                  <img id="grid-img-front_left" class="cam-grid-card-img" src="/data/front_left.jpg" alt="Front-Left Camera Perception">
+                </div>
+              </div>
+
+              <!-- Front-Right Camera -->
+              <div class="cam-grid-card" data-cam-slot="front_right">
+                <div class="cam-grid-card-header">
+                  <span>CAM 3: FRONT-RIGHT (RIGHT BLIND SPOT)</span>
+                  <span class="cam-grid-det-pill empty" id="grid-pill-front_right">Ready</span>
+                </div>
+                <div class="cam-grid-card-img-wrap">
+                  <img id="grid-img-front_right" class="cam-grid-card-img" src="/data/front_right.jpg" alt="Front-Right Camera Perception">
+                </div>
+              </div>
+
+              <!-- Back-Left Camera -->
+              <div class="cam-grid-card" data-cam-slot="rear_left">
+                <div class="cam-grid-card-header">
+                  <span>CAM 4: BACK-LEFT (REAR OVERTAKE)</span>
+                  <span class="cam-grid-det-pill empty" id="grid-pill-rear_left">Ready</span>
+                </div>
+                <div class="cam-grid-card-img-wrap">
+                  <img id="grid-img-rear_left" class="cam-grid-card-img" src="/data/rear_left.jpg" alt="Back-Left Camera Perception">
+                </div>
+              </div>
+
+              <!-- Back-Right Camera -->
+              <div class="cam-grid-card" data-cam-slot="rear_right">
+                <div class="cam-grid-card-header">
+                  <span>CAM 5: BACK-RIGHT (REAR CURBSIDE)</span>
+                  <span class="cam-grid-det-pill empty" id="grid-pill-rear_right">Ready</span>
+                </div>
+                <div class="cam-grid-card-img-wrap">
+                  <img id="grid-img-rear_right" class="cam-grid-card-img" src="/data/rear_right.jpg" alt="Back-Right Camera Perception">
+                </div>
+              </div>
+
             </div>
           </div>
 
