@@ -15,6 +15,11 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="/static/css/demo.css?v=2.2">
+  <link rel="stylesheet" href="/static/css/lidar_demo.css">
+  
+  <!-- Local Vendor Scripts for 3D LiDAR Visualization (Offline Native) -->
+  <script src="/static/js/vendor/three.min.js"></script>
+  <script src="/static/js/vendor/OrbitControls.js"></script>
 </head>
 <body>
 
@@ -54,6 +59,32 @@
 
   <!-- Main Demo Container -->
   <main class="demo-page-wrapper">
+
+    <!-- Perception Modality Switcher Bar -->
+    <section class="perception-modality-bar">
+      <div class="modality-pills">
+        <button class="modality-tab active" id="tab-modality-camera" data-modality="camera">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>📷 360° Camera Perception (YOLOv8)</span>
+        </button>
+        <button class="modality-tab" id="tab-modality-lidar" data-modality="lidar">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-8c0-2.76 2.24-5 5-5s5 2.24 5 5-2.24 5-5 5-5-2.24-5-5zm2 0c0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3-3 1.34-3 3z"/>
+          </svg>
+          <span>📡 3D LiDAR Perception & Decision (CenterNet-Lite 3D)</span>
+        </button>
+      </div>
+      <div class="modality-meta">
+        <span class="modality-badge">⚡ Real-Time Multi-Modal Perception</span>
+      </div>
+    </section>
+
+    <!-- 1. Existing Camera Perception Module (100% Unmodified & Protected) -->
+    <div id="camera-perception-container">
 
     <!-- Compact Live Demo Header (Single-line engineering console bar) -->
     <section class="demo-compact-header">
@@ -593,10 +624,289 @@
       </div>
 
     </section>
+    </div> <!-- /#camera-perception-container (Unmodified) -->
+
+    <!-- 2. Standalone 3D LiDAR Perception & Autonomous Decision Engine -->
+    <div id="lidar-perception-container" style="display: none;">
+      <div class="lidar-demo-wrapper">
+
+        <!-- LiDAR Compact Header -->
+        <section class="lidar-header-bar">
+          <div class="lidar-header-title-group">
+            <h2>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#2563eb">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-8c0-2.76 2.24-5 5-5s5 2.24 5 5-2.24 5-5 5-5-2.24-5-5zm2 0c0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3-3 1.34-3 3z"/>
+              </svg>
+              <span>3D LiDAR Perception & Autonomous Decision Engine</span>
+            </h2>
+            <p>CenterNet-Lite 3D Voxel Detector (CPU Native) • 360° Point Cloud Processing • Real-Time Spatial Risk Arbitration</p>
+          </div>
+          <div class="lidar-model-badge-group">
+            <span class="lidar-status-pill ready" id="lidar-status-pill">
+              <span class="pulse-dot"></span> LiDAR MODEL READY
+            </span>
+            <span class="lidar-tag" id="lidar-model-name-tag">TinyCenterNet3D-Lite (CPU)</span>
+            <span class="lidar-tag">F1: 46.8% (Exp 3 Calibrated)</span>
+          </div>
+        </section>
+
+        <!-- Presets & Upload Grid -->
+        <section class="lidar-input-grid">
+          <!-- Curated Presets Panel -->
+          <div class="lidar-panel">
+            <div class="lidar-panel-header">
+              <div class="lidar-panel-title">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                <span>Curated Dataset Scenarios (nuScenes LiDAR)</span>
+              </div>
+              <span style="font-size: 0.72rem; color: #64748b; font-family: var(--font-mono);">1-Click Real Scans</span>
+            </div>
+            <div class="lidar-presets-list" id="lidar-presets-list">
+              <!-- Dynamically populated from /api/lidar/samples -->
+              <div class="lidar-preset-btn active" data-sample-id="sample_night_rain">
+                <div class="preset-btn-left">
+                  <div class="preset-info-name">🌧️ Singapore Night + Heavy Rain</div>
+                  <div class="preset-info-desc">Wet asphalt reflections with pedestrians and oncoming traffic (Test Split)</div>
+                </div>
+                <span class="preset-scene-badge">scene-1094</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- File Upload Panel -->
+          <div class="lidar-panel">
+            <div class="lidar-panel-header">
+              <div class="lidar-panel-title">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <span>Custom Point Cloud Ingestion</span>
+              </div>
+              <span style="font-size: 0.72rem; color: #64748b; font-family: var(--font-mono);">Binary PCD / BIN</span>
+            </div>
+
+            <div class="lidar-dropzone" id="lidar-dropzone">
+              <svg class="lidar-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>
+                <path d="M12 12v9"/>
+                <path d="m16 16-4-4-4 4"/>
+              </svg>
+              <div class="lidar-drop-title">Drag & Drop LiDAR Scan (.pcd.bin / .bin)</div>
+              <div class="lidar-drop-subtitle">Or click to browse from local filesystem</div>
+              <input type="file" id="lidar-file-input" accept=".bin,.pcd.bin" style="display: none;">
+            </div>
+
+            <div class="lidar-loaded-card" id="lidar-loaded-card" style="display: none;">
+              <div class="lidar-loaded-filename" id="lidar-loaded-filename">point_cloud.pcd.bin</div>
+              <div class="lidar-loaded-pts" id="lidar-loaded-pts">-- pts</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Detection & Filter Controls Bar -->
+        <section class="lidar-controls-bar">
+          <div class="lidar-control-group">
+            <span class="lidar-control-label">Confidence Threshold:</span>
+            <div class="lidar-slider-wrap">
+              <input type="range" id="lidar-conf-slider" min="0.20" max="0.80" step="0.05" value="0.40">
+              <span class="lidar-slider-val" id="lidar-conf-val">0.40</span>
+            </div>
+          </div>
+
+          <div class="lidar-control-group">
+            <span class="lidar-control-label">Class Filter:</span>
+            <div class="lidar-filter-pills">
+              <button class="lidar-filter-pill active" data-filter="ALL">All Objects</button>
+              <button class="lidar-filter-pill" data-filter="CAR">🚗 Cars Only</button>
+              <button class="lidar-filter-pill" data-filter="PEDESTRIAN">🚶 Pedestrians</button>
+            </div>
+          </div>
+
+          <button class="btn-run-lidar" id="btn-run-lidar">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            <span>Run LiDAR 3D Perception & Decision</span>
+          </button>
+        </section>
+
+        <!-- Autonomous Driving Decision Banner (Strictly grounded on LiDAR readings) -->
+        <section class="lidar-decision-card" id="lidar-decision-card">
+          <div class="decision-card-top">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+              <span class="decision-action-badge" id="lidar-decision-badge">
+                <span>🛑</span> <span>EMERGENCY_STOP</span>
+              </span>
+              <span class="lidar-stat-tag critical" id="lidar-risk-level">CRITICAL</span>
+            </div>
+
+            <div class="decision-metrics-row">
+              <div class="decision-metric-item">
+                <span class="decision-metric-label">Spatial Risk Score</span>
+                <span class="decision-metric-val" id="lidar-risk-score" style="color: #ef4444;">9.8 / 10</span>
+              </div>
+              <div class="decision-metric-item">
+                <span class="decision-metric-label">Safe Target Speed</span>
+                <span class="decision-metric-val" id="lidar-safe-speed">0 km/h</span>
+              </div>
+              <div class="decision-metric-item">
+                <span class="decision-metric-label">Closest Threat Distance</span>
+                <span class="decision-metric-val" id="lidar-closest-dist">7.2m (PEDESTRIAN)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rationale Text Box -->
+          <div class="decision-reason-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563eb" stroke-width="2" style="flex-shrink: 0;">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <div id="lidar-decision-reason">
+              Analyzing 3D LiDAR point cloud spatial threats...
+            </div>
+          </div>
+
+          <!-- Spatial Corridors Telemetry Status -->
+          <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; font-size: 0.76rem; border-top: 1px solid #e2e8f0; padding-top: 0.65rem;">
+            <div style="display: flex; align-items: center; gap: 0.4rem;">
+              <span style="color: #64748b; font-weight: 600;">Forward Path Corridor:</span>
+              <span class="zone-status hazard" id="lidar-zone-front">OBSTRUCTED</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.4rem;">
+              <span style="color: #64748b; font-weight: 600;">Left Blind Spot (Over-the-shoulder):</span>
+              <span class="zone-status clear" id="lidar-zone-left">CLEAR</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.4rem;">
+              <span style="color: #64748b; font-weight: 600;">Right Blind Spot (Curbside):</span>
+              <span class="zone-status clear" id="lidar-zone-right">CLEAR</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Visualization Grid: 3D WebGL Point Cloud + 2D Bird's-Eye View (BEV) -->
+        <section class="lidar-viz-grid">
+          <!-- 3D WebGL Perspective Viewport -->
+          <div class="lidar-canvas-card">
+            <div class="lidar-canvas-header">
+              <div class="lidar-canvas-title">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                <span>3D Point Cloud & Oriented Bounding Boxes (Three.js WebGL)</span>
+              </div>
+              <div class="lidar-canvas-tools">
+                <button class="lidar-tool-btn" id="btn-lidar-view-iso" title="Isometric Chase View">Chase</button>
+                <button class="lidar-tool-btn" id="btn-lidar-view-top" title="Top-Down Bird's Eye">Top</button>
+                <button class="lidar-tool-btn" id="btn-lidar-view-driver" title="Driver Perspective">Driver</button>
+                <button class="lidar-tool-btn" id="btn-lidar-toggle-pts" title="Toggle Point Cloud">Pts</button>
+                <button class="lidar-tool-btn" id="btn-lidar-toggle-boxes" title="Toggle 3D Boxes">Boxes</button>
+                <button class="lidar-tool-btn" id="btn-lidar-reset-cam" title="Reset View">Reset</button>
+              </div>
+            </div>
+
+            <div class="lidar-webgl-viewport" id="lidar-three-container"></div>
+
+            <div class="lidar-hud-overlay">
+              <span id="lidar-hud-points">Pts: -- / --</span> • 
+              <span id="lidar-hud-boxes">Detections: --</span> • 
+              <span id="lidar-hud-latency">Latency: -- ms (CPU)</span>
+            </div>
+          </div>
+
+          <!-- 2D Tactical Bird's-Eye View (BEV) Radar Canvas -->
+          <div class="lidar-canvas-card">
+            <div class="lidar-canvas-header">
+              <div class="lidar-canvas-title">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="2" x2="12" y2="22"/>
+                  <line x1="2" y1="12" x2="22" y2="12"/>
+                </svg>
+                <span>2D Tactical BEV Radar</span>
+              </div>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem; color: #94a3b8;">50m Range Rings</span>
+            </div>
+
+            <div class="lidar-bev-viewport">
+              <canvas id="lidar-bev-canvas"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- Stats & Detections List -->
+        <section class="lidar-results-grid">
+          <!-- Summary Metrics -->
+          <div class="lidar-metrics-card">
+            <div class="lidar-panel-header">
+              <div class="lidar-panel-title">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 20V10"/>
+                  <path d="M12 20V4"/>
+                  <path d="M6 20v-6"/>
+                </svg>
+                <span>Perception Telemetry</span>
+              </div>
+            </div>
+
+            <div class="lidar-stats-summary">
+              <div class="lidar-stat-box">
+                <span class="lidar-stat-num" id="lidar-stat-total-det">0</span>
+                <span class="lidar-stat-label">Total Detections</span>
+              </div>
+              <div class="lidar-stat-box">
+                <span class="lidar-stat-num" id="lidar-stat-cars" style="color: #2563eb;">0</span>
+                <span class="lidar-stat-label">Cars (Blue)</span>
+              </div>
+              <div class="lidar-stat-box">
+                <span class="lidar-stat-num" id="lidar-stat-pedestrians" style="color: #ec4899;">0</span>
+                <span class="lidar-stat-label">Pedestrians (Pink)</span>
+              </div>
+              <div class="lidar-stat-box">
+                <span class="lidar-stat-num" id="lidar-stat-latency" style="color: #059669;">-- ms</span>
+                <span class="lidar-stat-label">CPU Inference Latency</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 1rem; padding: 0.75rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.76rem; color: #64748b;">
+              <strong style="color: #0f172a;">Coordinate Grounding:</strong>
+              <div>nuScenes LIDAR_TOP (+X Right, +Y Forward, +Z Up). Bus width ~2.55m, length ~10.5m. Road plane at Z ≈ -1.84m.</div>
+            </div>
+          </div>
+
+          <!-- Detections Explorer List -->
+          <div class="lidar-detections-container">
+            <div class="lidar-panel-header" style="margin-bottom: 0;">
+              <div class="lidar-panel-title">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                <span>3D Bounding Box Catalog</span>
+              </div>
+              <span style="font-size: 0.72rem; color: #64748b;">Hover to Inspect</span>
+            </div>
+
+            <div class="lidar-detections-list" id="lidar-detections-list">
+              <!-- Populated dynamically by lidar_demo.js -->
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
 
   </main>
 
   <!-- Scripts -->
   <script src="/static/js/demo.js?v=2.2"></script>
+  <script src="/static/js/lidar_demo.js"></script>
 </body>
 </html>

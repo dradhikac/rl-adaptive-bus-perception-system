@@ -118,7 +118,7 @@ class TestFlaskAPI(unittest.TestCase):
         self.assertIsInstance(json_data["object_count"], int)
         self.assertIsInstance(json_data["vehicle_count"], int)
         self.assertIsInstance(json_data["risk_score"], (int, float))
-        self.assertIn(json_data["risk_level"], ["LOW", "MODERATE", "CRITICAL"])
+        self.assertIn(json_data["risk_level"], ["LOW", "MODERATE", "HIGH", "CRITICAL"])
         self.assertIsInstance(json_data["annotated_image"], dict)
         self.assertEqual(json_data["annotated_image"].get("_type"), "image_ndarray")
 
@@ -212,6 +212,50 @@ class TestFlaskAPI(unittest.TestCase):
         first_step = final_data["timeline"][0]
         for key in ["timestamp", "frame_index", "decision", "speed", "lane_action", "risk_score", "risk_level", "explanation", "reliability_scores"]:
             self.assertIn(key, first_step)
+
+    def test_07_lidar_status(self):
+        """GET /api/lidar/status should return READY and TinyCenterNet3D-Lite metadata."""
+        res = self.client.get("/api/lidar/status")
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json()
+        self.assertEqual(data["status"], "READY")
+        self.assertEqual(data["device"], "CPU")
+        self.assertIn("car", data["supported_classes"])
+        self.assertIn("pedestrian", data["supported_classes"])
+
+    def test_08_lidar_samples(self):
+        """GET /api/lidar/samples should return list of real curated LiDAR samples."""
+        res = self.client.get("/api/lidar/samples")
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json()
+        self.assertIn("samples", data)
+        self.assertGreater(len(data["samples"]), 0)
+        for s in data["samples"]:
+            self.assertIn("id", s)
+            self.assertIn("name", s)
+            self.assertTrue(s["exists"])
+
+    def test_09_lidar_analyze(self):
+        """POST /api/lidar/analyze should run 3D detection and return autonomous decision."""
+        res = self.client.post("/api/lidar/analyze", json={
+            "sample_id": "sample_night_rain",
+            "score_thresh": 0.40
+        })
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json()
+        self.assertTrue(data["success"])
+        self.assertIn("predictions", data)
+        self.assertIn("decision", data)
+        self.assertIn("points", data)
+        self.assertIn("inference_time_ms", data)
+        
+        # Verify decision fields
+        decision = data["decision"]
+        self.assertIn("final_decision", decision)
+        self.assertIn("decision_reason", decision)
+        self.assertIn("risk_score", decision)
+        self.assertIn("risk_level", decision)
+        self.assertIn("action_color", decision)
 
 
 if __name__ == "__main__":

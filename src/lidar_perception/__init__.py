@@ -19,6 +19,7 @@ from .point_cloud_ops import (
     generate_bev_pseudo_image
 )
 from .detector import AutoBusLidar3DDetector
+from .decision_arbiter import arbitrate_lidar_decision
 
 __all__ = [
     "LidarConfig",
@@ -35,5 +36,6 @@ __all__ = [
     "load_point_cloud",
     "validate_and_filter_points",
     "generate_bev_pseudo_image",
-    "AutoBusLidar3DDetector"
+    "AutoBusLidar3DDetector",
+    "arbitrate_lidar_decision"
 ]

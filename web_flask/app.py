@@ -702,6 +702,223 @@ def register_routes(app: Flask, socketio: SocketIO) -> None:
         return jsonify(serialized_response), 200
 
     # ==========================================================================
+    # STANDALONE 3D LIDAR PERCEPTION & DECISION ENDPOINTS (ISOLATED PATH)
+    # ==========================================================================
+
+    _LIDAR_DETECTOR_CACHE = {}
+
+    def get_lidar_detector(score_thresh=0.40):
+        if "detector" not in _LIDAR_DETECTOR_CACHE:
+            from src.lidar_perception.detector import AutoBusLidar3DDetector
+            ckpt = REPO_ROOT / "models" / "checkpoints_exp3_aug" / "best_model.pth"
+            if not ckpt.is_file():
+                ckpt = REPO_ROOT / "models" / "checkpoints" / "best_model.pth"
+            _LIDAR_DETECTOR_CACHE["detector"] = AutoBusLidar3DDetector(
+                checkpoint_path=str(ckpt),
+                score_thresh=score_thresh
+            )
+        return _LIDAR_DETECTOR_CACHE["detector"]
+
+    @app.route("/api/lidar/status", methods=["GET"])
+    def lidar_status_api():
+        """Returns metadata and health of the standalone trained LiDAR detector."""
+        ckpt_aug = (REPO_ROOT / "models" / "checkpoints_exp3_aug" / "best_model.pth").is_file()
+        ckpt_base = (REPO_ROOT / "models" / "checkpoints" / "best_model.pth").is_file()
+        return jsonify({
+            "status": "READY" if (ckpt_aug or ckpt_base) else "NOT_FOUND",
+            "model_name": "TinyCenterNet3D-Lite (0.49M params)",
+            "checkpoint_loaded": "models/checkpoints_exp3_aug/best_model.pth" if ckpt_aug else "models/checkpoints/best_model.pth",
+            "device": "CPU",
+            "supported_classes": ["car", "pedestrian"],
+            "optimal_threshold": 0.40,
+            "coordinate_system": "LIDAR_TOP (+X Right, +Y Forward, +Z Up, Road at ~ -1.84m)",
+            "validation_metrics": {
+                "test_f1": "46.80%",
+                "test_precision": "49.87%",
+                "false_positive_reduction": "-70.3% vs baseline"
+            }
+        }), 200
+
+    @app.route("/api/lidar/samples", methods=["GET"])
+    def lidar_samples_api():
+        """Returns list of real curated LiDAR point-cloud samples from the dataset for 1-click loading."""
+        samples = [
+            {
+                "id": "sample_night_rain",
+                "name": "Singapore Night + Heavy Rain",
+                "scene": "scene-1094",
+                "condition": "Night & Rain (Adverse Weather Unseen Test)",
+                "rel_path": "datasets/nuscenes/samples/LIDAR_TOP/n015-2018-11-21-19-38-26+0800__LIDAR_TOP__1542800847948119.pcd.bin",
+                "desc": "Wet asphalt specular reflections with crossing pedestrians and oncoming traffic"
+            },
+            {
+                "id": "sample_urban_crossing",
+                "name": "Urban Crosswalk & Intersection",
+                "scene": "scene-0061",
+                "condition": "Daytime Clear Urban Transit",
+                "rel_path": "datasets/nuscenes/samples/LIDAR_TOP/n015-2018-07-24-11-22-45+0800__LIDAR_TOP__1532402927647951.pcd.bin",
+                "desc": "Pedestrians waiting at sidewalk curb with lead car stopped ahead"
+            },
+            {
+                "id": "sample_multi_vehicle",
+                "name": "Multi-Vehicle Traffic Follow",
+                "scene": "scene-0103",
+                "condition": "Daytime Arterial Corridor",
+                "rel_path": "datasets/nuscenes/samples/LIDAR_TOP/n008-2018-08-01-15-16-36-0400__LIDAR_TOP__1533151603547590.pcd.bin",
+                "desc": "Lead car in front path with overtaking vehicle in left blind spot"
+            },
+            {
+                "id": "sample_bus_stop",
+                "name": "Pedestrian Congestion & Bus Stop",
+                "scene": "scene-0553",
+                "condition": "Daytime Bus Stop Commuters (Validation)",
+                "rel_path": "datasets/nuscenes/samples/LIDAR_TOP/n008-2018-08-28-16-43-51-0400__LIDAR_TOP__1535489296047917.pcd.bin",
+                "desc": "Dense group of pedestrians along curbside sidewalk"
+            },
+            {
+                "id": "sample_night_highway",
+                "name": "Low-Light Night Highway Cruise",
+                "scene": "scene-1100",
+                "condition": "Night Low-Light Arterial (Unseen Test)",
+                "rel_path": "datasets/nuscenes/samples/LIDAR_TOP/n015-2018-11-21-19-38-26+0800__LIDAR_TOP__1542800987947699.pcd.bin",
+                "desc": "High-speed night traversal with distant vehicles in sensor field"
+            }
+        ]
+        
+        valid_samples = []
+        for s in samples:
+            full_p = REPO_ROOT / s["rel_path"]
+            if full_p.is_file():
+                s["exists"] = True
+                s["file_size_kb"] = round(full_p.stat().st_size / 1024, 1)
+                valid_samples.append(s)
+            else:
+                cands = list((REPO_ROOT / "datasets" / "nuscenes").glob(f"**/{Path(s['rel_path']).name}"))
+                if cands:
+                    s["rel_path"] = str(cands[0].relative_to(REPO_ROOT)).replace("\\", "/")
+                    s["exists"] = True
+                    s["file_size_kb"] = round(cands[0].stat().st_size / 1024, 1)
+                    valid_samples.append(s)
+                    
+        return jsonify({"samples": valid_samples}), 200
+
+    @app.route("/api/lidar/analyze", methods=["POST"])
+    def lidar_analyze_api():
+        """
+        Main REST endpoint executing standalone 3D LiDAR perception & decision arbitration.
+        Accepts:
+          - Form-data file upload under 'file' or 'lidar_file' (.pcd.bin or .bin)
+          - OR JSON payload with 'sample_id' or 'sample_path'
+          - Optional 'score_thresh' (default: 0.40)
+        """
+        from src.lidar_perception.point_cloud_ops import load_point_cloud, validate_and_filter_points
+        from src.lidar_perception.decision_arbiter import arbitrate_lidar_decision
+        
+        t0 = time.time()
+        score_thresh = float(request.args.get("score_thresh") or 0.40)
+        
+        target_pts = None
+        sample_name = "custom_upload.pcd.bin"
+        
+        # 1. Check for file upload
+        if request.files:
+            file_obj = request.files.get("file") or request.files.get("lidar_file")
+            if file_obj and file_obj.filename:
+                sample_name = file_obj.filename
+                data_bytes = file_obj.read()
+                raw_floats = np.frombuffer(data_bytes, dtype=np.float32)
+                if len(raw_floats) % 5 == 0:
+                    target_pts = raw_floats.reshape(-1, 5)
+                elif len(raw_floats) % 4 == 0:
+                    target_pts = raw_floats.reshape(-1, 4)
+                else:
+                    target_pts = raw_floats.reshape(-1, 3)
+                    
+        # 2. Check for JSON / Form sample selection
+        if target_pts is None:
+            data = request.get_json(silent=True) or request.form
+            if data:
+                score_thresh = float(data.get("score_thresh") or score_thresh)
+                sample_path = data.get("sample_path")
+                sample_id = data.get("sample_id")
+                
+                if sample_path:
+                    cand = Path(sample_path)
+                    if not cand.is_file():
+                        cand = REPO_ROOT / sample_path.lstrip("/\\")
+                    if cand.is_file():
+                        sample_name = cand.name
+                        target_pts = load_point_cloud(str(cand))
+                        
+                elif sample_id:
+                    sample_map = {
+                        "sample_night_rain": "datasets/nuscenes/samples/LIDAR_TOP/n015-2018-11-21-19-38-26+0800__LIDAR_TOP__1542800847948119.pcd.bin",
+                        "sample_urban_crossing": "datasets/nuscenes/samples/LIDAR_TOP/n015-2018-07-24-11-22-45+0800__LIDAR_TOP__1532402927647951.pcd.bin",
+                        "sample_multi_vehicle": "datasets/nuscenes/samples/LIDAR_TOP/n008-2018-08-01-15-16-36-0400__LIDAR_TOP__1533151603547590.pcd.bin",
+                        "sample_bus_stop": "datasets/nuscenes/samples/LIDAR_TOP/n008-2018-08-28-16-43-51-0400__LIDAR_TOP__1535489296047917.pcd.bin",
+                        "sample_night_highway": "datasets/nuscenes/samples/LIDAR_TOP/n015-2018-11-21-19-38-26+0800__LIDAR_TOP__1542800987947699.pcd.bin"
+                    }
+                    if sample_id in sample_map:
+                        full_p = REPO_ROOT / sample_map[sample_id]
+                        if full_p.is_file():
+                            sample_name = full_p.name
+                            target_pts = load_point_cloud(str(full_p))
+                            
+        if target_pts is None:
+            # Fallback to first available sample
+            fallback_dir = REPO_ROOT / "datasets" / "nuscenes" / "samples" / "LIDAR_TOP"
+            if fallback_dir.is_dir():
+                cands = list(fallback_dir.glob("*.pcd.bin"))
+                if cands:
+                    sample_name = cands[0].name
+                    target_pts = load_point_cloud(str(cands[0]))
+                    
+        if target_pts is None:
+            return jsonify({"error": "No valid LiDAR point cloud provided or found."}), 400
+            
+        raw_point_count = len(target_pts)
+        
+        # 3. Execute isolated detector
+        detector = get_lidar_detector(score_thresh=score_thresh)
+        predictions = detector.predict(target_pts, score_thresh=score_thresh)
+        
+        # 4. Execute autonomous decision arbiter based strictly on LiDAR readings
+        decision = arbitrate_lidar_decision(predictions)
+        
+        t1 = time.time()
+        inference_time_ms = round((t1 - t0) * 1000.0, 1)
+        
+        # 5. Extract downsampled 3D points for fast, smooth 60 FPS WebGL rendering in browser
+        pts_filtered, _ = validate_and_filter_points(target_pts)
+        total_valid = len(pts_filtered)
+        
+        # Stride downsample to max 12,000 points
+        max_render_pts = 12000
+        stride = max(1, total_valid // max_render_pts)
+        disp_pts = pts_filtered[::stride]
+        
+        render_points = [
+            [round(float(p[0]), 2), round(float(p[1]), 2), round(float(p[2]), 2), round(float(p[3] if len(p) > 3 else 0.0), 1)]
+            for p in disp_pts
+        ]
+        
+        return jsonify({
+            "success": True,
+            "sample_name": sample_name,
+            "raw_point_count": int(raw_point_count),
+            "valid_point_count": int(total_valid),
+            "rendered_points_count": len(render_points),
+            "inference_time_ms": inference_time_ms,
+            "score_threshold_used": score_thresh,
+            "device": "CPU",
+            "model_name": "TinyCenterNet3D-Lite",
+            "decision": decision,
+            "predictions_count": len(predictions),
+            "predictions": predictions,
+            "points": render_points
+        }), 200
+
+    # ==========================================================================
     # WEBSOCKET EVENT HANDLERS (/ws/live)
     # ==========================================================================
 

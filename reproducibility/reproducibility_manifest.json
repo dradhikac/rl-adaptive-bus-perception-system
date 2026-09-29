@@ -1,0 +1,163 @@
+{
+  "project_name": "AutoBus Adaptive Autonomous Transit LiDAR Perception",
+  "stage": "Stage 13 — Complete Reproducibility & Downstream Interface Contract",
+  "generated_at": "2026-09-28T23:57:00+05:30",
+  "random_seed": 42,
+  "environment": {
+    "os": "Windows 10 AMD64",
+    "cpu": "Intel 4 Physical Cores / 8 Logical Threads",
+    "gpu": "None (Strictly CPU-Native PyTorch)",
+    "python_version": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "packages": {
+      "torch": "2.12.0+cpu",
+      "numpy": "2.3.5",
+      "shapely": "2.0.7",
+      "matplotlib": "3.10.9"
+    },
+    "virtual_environment_path": "r:\\RL_Adaptive_Bus_Perception_System\\venv\\Scripts\\python.exe"
+  },
+  "dataset": {
+    "source": "nuScenes v1.0-mini",
+    "root_directory": "datasets/nuscenes",
+    "metadata_directory": "datasets/nuscenes/v1.0-mini",
+    "total_scenes": 10,
+    "total_keyframes": 404,
+    "points_per_frame_mean": 34718,
+    "point_format": "5 x float32 [x, y, z, intensity, ring_index]",
+    "total_3d_bounding_boxes": 18538,
+    "split_policy": "Strict Scene-Level Non-Overlapping (Zero Temporal Data Leakage)",
+    "split_file": "datasets/splits/controlled_404_split.json",
+    "splits": {
+      "TRAIN": {
+        "num_samples": 283,
+        "percentage": 70.05,
+        "scenes": [
+          "scene-0061",
+          "scene-0103",
+          "scene-0655",
+          "scene-0757",
+          "scene-0796",
+          "scene-0916",
+          "scene-1077"
+        ]
+      },
+      "VALIDATION": {
+        "num_samples": 41,
+        "percentage": 10.15,
+        "scenes": [
+          "scene-0553"
+        ]
+      },
+      "TEST": {
+        "num_samples": 80,
+        "percentage": 19.80,
+        "scenes": [
+          "scene-1094",
+          "scene-1100"
+        ],
+        "environmental_conditions": "Singapore Night + Heavy Rain (Adverse Weather Unseen Evaluation)"
+      }
+    }
+  },
+  "coordinate_system": {
+    "reference_frame": "LIDAR_TOP (Sensor-Centric)",
+    "origin": "Center of optical sensor on vehicle roof rack",
+    "extrinsics_translation": [0.9437, 0.0, 1.8402],
+    "road_surface_elevation_z": -1.84,
+    "axes": {
+      "+X": "Right (lateral)",
+      "+Y": "Forward (longitudinal direction of travel)",
+      "+Z": "Up (vertical toward sky)"
+    },
+    "yaw_definition": "Radians in [-pi, +pi], CCW from +X axis (+pi/2 is directly forward along +Y)",
+    "roi_ranges_meters": {
+      "x_range": [-32.0, 32.0],
+      "y_range": [-16.0, 48.0],
+      "z_range": [-2.8, 1.2]
+    },
+    "voxel_resolution_meters": [0.25, 0.25]
+  },
+  "model_architecture": {
+    "name": "TinyCenterNet3D-Lite",
+    "parameter_count": 486202,
+    "memory_footprint_mb": 1.85,
+    "input_channels": 6,
+    "input_spatial_shape": [256, 256],
+    "output_heads": {
+      "heatmap": "2 classes (CAR, PEDESTRIAN)",
+      "offset": "2 subpixel offsets (dx, dy)",
+      "z_elev": "1 vertical center (zc)",
+      "dim_3d": "3 log-dimensions (w, l, h)",
+      "rot_3d": "2 continuous sin/cos components (sin_yaw, cos_yaw)"
+    }
+  },
+  "training_hyperparameters": {
+    "epochs": 12,
+    "batch_size": 4,
+    "initial_lr": 0.001,
+    "optimizer": "AdamW (weight_decay=1e-4)",
+    "loss_weights": {
+      "heatmap_focal": 1.0,
+      "offset_l1": 1.0,
+      "z_elevation_l1": 1.0,
+      "dimensions_l1": 0.5,
+      "rotation_l1": 0.5
+    },
+    "gradient_clipping_max_norm": 10.0,
+    "data_augmentation": "Bilateral Horizontal Flip (p=0.5, x -> -x, theta' = atan2(sin_theta, -cos_theta))"
+  },
+  "winning_checkpoint": {
+    "path": "models/checkpoints_exp3_aug/best_model.pth",
+    "trained_epoch": 11,
+    "training_time_seconds": 1214.82,
+    "best_val_loss": 2.1734,
+    "optimal_score_threshold": 0.40
+  },
+  "empirical_evaluation_scorecard": {
+    "validation_set": {
+      "scene": "scene-0553",
+      "samples": 41,
+      "ground_truth_targets": 412,
+      "total_predictions": 348,
+      "matched_tps": 188,
+      "unmatched_fps": 160,
+      "missed_fns": 224,
+      "recall": 0.4563,
+      "precision": 0.5402,
+      "f1_score": 0.4947
+    },
+    "unseen_test_set": {
+      "scenes": ["scene-1094", "scene-1100"],
+      "samples": 80,
+      "ground_truth_targets": 1343,
+      "total_predictions": 1187,
+      "matched_tps": 592,
+      "unmatched_fps": 595,
+      "missed_fns": 751,
+      "recall": 0.4408,
+      "precision": 0.4987,
+      "f1_score": 0.4680,
+      "baseline_comparison": {
+        "precision_gain": "+26.55% (49.87% vs 23.32%)",
+        "f1_gain": "+16.00% (46.80% vs 30.80%)",
+        "false_positive_reduction": "-70.3% (595 vs 2,002 FPs)"
+      }
+    }
+  },
+  "downstream_integration_contract": {
+    "interface_file": "src/lidar_perception/interface_contract.py",
+    "cli_tool": "predict_lidar.py",
+    "python_class": "AutoBusLidar3DDetector",
+    "planned_pipeline_sequence": [
+      "LiDAR Detection",
+      "3D Tracking",
+      "Distance / Velocity Estimation",
+      "Blind Spot Analysis",
+      "Risk Assessment",
+      "Camera + LiDAR Fusion",
+      "RL Decision Engine",
+      "Decision Fusion"
+    ],
+    "current_status": "STANDALONE LIDAR 3D DETECTION LOCKED AND VERIFIED (Integration deliberately deferred until user authorization)"
+  }
+}
