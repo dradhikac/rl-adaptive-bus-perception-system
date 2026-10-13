@@ -1,7 +1,7 @@
 /**
  * web_flask/static/js/demo.js
  * ==============================================================================
- * AutoBus AI — Multi-Camera Video Perception & Temporal Decision Live Demo
+ * Saarthi AI — Multi-Camera Video Perception & Temporal Decision Live Demo
  *
  * Implements:
  * 1. 5-slot video dropzones with Required Front & Optional auto-degraded slots.
@@ -634,7 +634,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setProcessingState(false);
       renderImagePerceptionResults(data);
     } catch (err) {
-      console.error("[AutoBus Live Demo Error]:", err);
+      console.error("[Saarthi Live Demo Error]:", err);
       alert("Image analysis failed: " + err.message);
       setProcessingState(false);
     }
@@ -806,7 +806,7 @@ document.addEventListener("DOMContentLoaded", () => {
       startPollingJob(currentJobId);
 
     } catch (err) {
-      console.error("[AutoBus Live Demo Error]:", err);
+      console.error("[Saarthi Live Demo Error]:", err);
       alert("Could not start video analysis: " + err.message);
       setProcessingState(false);
     }

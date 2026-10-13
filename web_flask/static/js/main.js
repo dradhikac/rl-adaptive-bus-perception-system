@@ -1,5 +1,5 @@
 /**
- * AutoBus AI - Autonomous Urban Bus Perception & Decision System
+ * Saarthi AI - Autonomous Urban Bus Perception & Decision System
  * Landing Page Controls & Navigation
  */
 

@@ -1,5 +1,5 @@
 /**
- * AutoBus AI — 3D LiDAR Perception & Autonomous Decision Engine
+ * Saarthi AI — 3D LiDAR Perception & Autonomous Decision Engine
  * ==============================================================================
  * Interactive WebGL 3D Point Cloud Viewer (Three.js) + 2D Tactical BEV Canvas
  * Autonomous Decision Banner & Risk Assessment based on LiDAR Readings
