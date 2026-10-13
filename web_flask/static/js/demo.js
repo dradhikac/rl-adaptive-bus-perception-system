@@ -110,17 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const relFillRearRight = document.getElementById("rel-fill-rear_right");
   const relTextRearRight = document.getElementById("rel-text-rear_right");
 
-  // Summary elements
-  const sumBadgeDominant = document.getElementById("sum-badge-dominant");
-  const sumTotalFrames = document.getElementById("sum-total-frames");
-  const sumDuration = document.getElementById("sum-duration");
-  const sumAvgRisk = document.getElementById("sum-avg-risk");
-  const sumMaxRisk = document.getElementById("sum-max-risk");
-  const sumAvgSpeed = document.getElementById("sum-avg-speed");
-  const sumCamsActive = document.getElementById("sum-cams-active");
-  const distStackedBar = document.getElementById("dist-stacked-bar");
-  const distLegendRow = document.getElementById("dist-legend-row");
-
   // ----------------------------------------------------------------------------
   // APPLICATION STATE
   // ----------------------------------------------------------------------------
@@ -738,18 +727,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (videoControlsBar) videoControlsBar.style.display = "none";
     if (timelineStripContainer) timelineStripContainer.style.display = "none";
 
-    // Render snapshot summary cards
-    renderSummary({
-      dominant_decision: dec,
-      total_timesteps: 1,
-      duration_sec: 0.1,
-      avg_risk_score: rScore,
-      max_risk_score: rScore,
-      avg_recommended_speed: spd,
-      active_cameras: Object.keys(cameraState).filter(k => cameraState[k] !== null),
-      decision_distribution: { [dec]: 1 }
-    }, [entry]);
-
     if (resultsSection) {
       resultsSection.style.display = "block";
       resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -923,9 +900,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Render Timeline Ribbon
     renderTimelineStrip(jobData.timeline, jobData.summary.duration_sec);
-
-    // Render Summary Card
-    renderSummary(jobData.summary, jobData.timeline);
 
     // Initial sync with frame 0
     if (jobData.timeline && jobData.timeline.length > 0) {
@@ -1234,50 +1208,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ----------------------------------------------------------------------------
-  // 10. SUMMARY CARD RENDERER
-  // ----------------------------------------------------------------------------
-  function renderSummary(summary, timeline) {
-    if (!summary) return;
-
-    if (sumBadgeDominant) sumBadgeDominant.textContent = `Dominant: ${summary.dominant_decision || 'MOVE'}`;
-    if (sumTotalFrames) sumTotalFrames.textContent = summary.total_timesteps || timeline.length;
-    if (sumDuration) sumDuration.textContent = `${summary.duration_sec || 0}s`;
-    if (sumAvgRisk) sumAvgRisk.textContent = summary.avg_risk_score !== undefined ? summary.avg_risk_score : "5.0";
-    if (sumMaxRisk) sumMaxRisk.textContent = summary.max_risk_score !== undefined ? summary.max_risk_score : "5.0";
-    if (sumAvgSpeed) sumAvgSpeed.textContent = `${summary.avg_recommended_speed || 40} km/h`;
-    if (sumCamsActive) {
-      const activeCount = (summary.active_cameras || []).length;
-      sumCamsActive.textContent = `${activeCount} / 5`;
-    }
-
-    // Stacked Distribution Bar
-    if (distStackedBar && summary.decision_distribution) {
-      distStackedBar.innerHTML = "";
-      if (distLegendRow) distLegendRow.innerHTML = "";
-
-      const total = summary.total_timesteps || 1;
-      const dist = summary.decision_distribution;
-
-      for (const [dec, count] of Object.entries(dist)) {
-        const pct = ((count / total) * 100).toFixed(1);
-        const seg = document.createElement("div");
-        seg.className = `dist-bar-segment ${getDecisionColorClass(dec)}`;
-        seg.style.width = `${pct}%`;
-        seg.title = `${dec}: ${count} frames (${pct}%)`;
-        distStackedBar.appendChild(seg);
-
-        if (distLegendRow) {
-          const legItem = document.createElement("span");
-          legItem.className = "legend-item";
-          legItem.innerHTML = `<span class="legend-box ${getDecisionColorClass(dec)}"></span> ${dec}: ${pct}%`;
-          distLegendRow.appendChild(legItem);
-        }
-      }
-    }
-  }
-
-  // ----------------------------------------------------------------------------
-  // 11. PLAYBACK CONTROLS
+  // 10. PLAYBACK CONTROLS
   // ----------------------------------------------------------------------------
   function togglePlay() {
     if (videoPlayer.paused) {
